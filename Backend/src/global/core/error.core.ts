@@ -45,6 +45,15 @@ export class ForbiddenException extends CustomError {
   }
 }
 
+export class ConflictException extends CustomError {
+  status: string = 'error';
+  statusCode: number = HttpStatus.CONFLICT;
+
+  constructor(message: string) {
+    super(message);
+  }
+}
+
 export class InternalServerError extends CustomError {
   status: string = 'error';
   statusCode: number = HttpStatus.INTERNAL_SERVER_ERROR;
