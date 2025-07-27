@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { userService } from '../services/user.service';
+import { userCreateSchema } from '../schemas/user.schema';
+import HttpStatus from '~/global/constants/http.constant';
 
 class UserController {
   public async getAll(req: Request, res: Response, next: NextFunction) {
