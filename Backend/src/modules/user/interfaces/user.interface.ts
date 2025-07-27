@@ -1,20 +1,12 @@
-class User {
+interface IUser {
   email: string;
   password: string;
-
-  constructor(email: string, password: string) {
-    this.email = email;
-    this.password = password;
-  }
 }
 
-class SignUp extends User {
+interface IUserSignUp {
+  email: string;
   name: string;
-
-  constructor(email: string, password: string, name: string) {
-    super(email, password);
-    this.name = name;
-  }
+  password: string;
 }
 
-export { User, SignUp };
+export { IUser, IUserSignUp };

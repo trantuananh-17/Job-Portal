@@ -14,3 +14,14 @@ export const authSignUpSchema = Joi.object({
     'any.required': 'Mật khẩu phải tồn tại'
   })
 });
+
+export const authSignInSchema = Joi.object({
+  email: Joi.string().required().messages({
+    'string.empty': 'Email không được để trống',
+    'any.required': 'Email phải tồn tại'
+  }),
+  password: Joi.string().required().messages({
+    'string.empty': 'Mật khẩu không được để trống',
+    'any.required': 'Mật khẩu phải tồn tại'
+  })
+});

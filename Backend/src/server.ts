@@ -3,6 +3,7 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import HttpStatus from './global/constants/http.constant';
 import { CustomError, NotFoundException } from './global/core/error.core';
 import appRoutes from './global/routes/app.routes';
+import cookieParser from 'cookie-parser';
 
 export class Server {
   private app: Application;
@@ -20,6 +21,7 @@ export class Server {
 
   private setupMiddleware(): void {
     this.app.use(express.json());
+    this.app.use(cookieParser());
   }
 
   private setupRoutes(): void {
