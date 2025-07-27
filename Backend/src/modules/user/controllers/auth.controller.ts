@@ -29,6 +29,13 @@ class AuthController {
       data: token
     });
   }
+
+  public async getProfileUser(req: Request, res: Response) {
+    return res.status(HttpStatus.OK).json({
+      message: 'Lấy thông tin người dùng thành công',
+      data: req.user
+    });
+  }
 }
 
 export const authController: AuthController = new AuthController();
