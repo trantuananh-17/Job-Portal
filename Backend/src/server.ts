@@ -31,10 +31,10 @@ export class Server {
       next(new NotFoundException(`The URL ${req.originalUrl} not found with method ${req.method}`));
     });
 
-    this.app.use((error: any, res: Response) => {
-      if (error instanceof CustomError) {
-        return res.status(error.statusCode).json({
-          message: error.message
+    this.app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+      if (err instanceof CustomError) {
+        return res.status(err.statusCode).json({
+          message: err.message
         });
       }
 
