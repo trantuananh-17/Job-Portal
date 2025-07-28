@@ -1,6 +1,6 @@
 import prisma from '~/prisma';
 import { ICandidateProfile } from '../interfaces/candidate-profile.interface';
-import { CandidateProfile } from 'generated/prisma';
+import { CandidateProfile } from '@prisma/client';
 
 class CandidateProfileRepository {
   public async createCandidateProfile(data: ICandidateProfile, userId: number) {

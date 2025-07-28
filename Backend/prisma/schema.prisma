@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -37,6 +36,10 @@ model CandidateProfile {
   status Boolean @default(true)
   user User @relation(fields: [userId], references: [id])
   userId Int @unique
+}
+
+model Language{
+  name String @id 
 }
 
 enum Gender {
