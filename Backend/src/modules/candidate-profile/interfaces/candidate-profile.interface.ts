@@ -1,6 +1,6 @@
 import { Gender } from 'generated/prisma';
 
-interface ICreateCandidateProfile {
+interface ICandidateProfile {
   fullname: string;
   gender: Gender;
   phone: string;
@@ -9,4 +9,4 @@ interface ICreateCandidateProfile {
   address: string;
 }
 
-export { ICreateCandidateProfile };
+export { ICandidateProfile };

@@ -1,9 +1,9 @@
 import prisma from '~/prisma';
-import { ICreateCandidateProfile } from '../interfaces/candidate-profile.interface';
+import { ICandidateProfile } from '../interfaces/candidate-profile.interface';
 import { CandidateProfile } from 'generated/prisma';
 
 class CandidateProfileRepository {
-  public async createCandidateProfile(data: ICreateCandidateProfile, userId: number) {
+  public async createCandidateProfile(data: ICandidateProfile, userId: number) {
     const parsedDate = new Date(data.dateofbirth);
 
     return await prisma.candidateProfile.create({
@@ -27,6 +27,32 @@ class CandidateProfileRepository {
     return await prisma.candidateProfile.findUnique({
       where: { id }
     });
+  }
+
+  public async getExistProfile(userId: number) {
+    return await prisma.candidateProfile.findUnique({
+      where: { userId }
+    });
+  }
+
+  public async updateCandidateProfile(id: number, data: Partial<ICandidateProfile>) {
+    return await prisma.candidateProfile.update({
+      where: { id },
+      data: data
+    });
+  }
+
+  public async updateOpenToWorkStatus(id: number, openToWord: boolean) {
+    const status = !openToWord;
+
+    return await prisma.candidateProfile.update({
+      where: { id },
+      data: { openToWork: status }
+    });
+  }
+
+  public async deleteCandidateProfile(id: number) {
+    return await prisma.candidateProfile.delete({ where: { id } });
   }
 }
 
