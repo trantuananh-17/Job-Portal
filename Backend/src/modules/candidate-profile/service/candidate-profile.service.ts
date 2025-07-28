@@ -1,7 +1,7 @@
-import { candidateProfileRepository } from './../repositories/candidate-profile.repository';
-import { CandidateProfile } from 'generated/prisma';
-import { BadRequestException, ForbiddenException, NotFoundException } from '~/global/core/error.core';
+import { CandidateProfile } from '@prisma/client';
+import { BadRequestException, NotFoundException } from '~/global/core/error.core';
 import { ICandidateProfile } from '../interfaces/candidate-profile.interface';
+import { candidateProfileRepository } from './../repositories/candidate-profile.repository';
 
 class CandidateProfileService {
   public async create(requestBody: ICandidateProfile, userId: number): Promise<CandidateProfile> {
