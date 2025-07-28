@@ -4,8 +4,8 @@ import { ConflictException, UnauthorizedException } from '~/global/core/error.co
 import prisma from '~/prisma';
 import { generateAccessToken, generateRefreshToken } from '~/global/helpers/token.helper';
 import { IUser, IUserSignUp } from '../interfaces/user.interface';
-import { userRepository } from '../Repository/user.repository';
 import { ITokenResponse } from '../interfaces/auth.interface';
+import { userRepository } from '../Repository/implements/user.repository.impl';
 
 class AuthService {
   public async signUp(requestBody: IUserSignUp): Promise<ITokenResponse> {

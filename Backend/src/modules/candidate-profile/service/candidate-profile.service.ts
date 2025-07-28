@@ -1,7 +1,7 @@
 import { CandidateProfile } from '@prisma/client';
 import { BadRequestException, NotFoundException } from '~/global/core/error.core';
 import { ICandidateProfile } from '../interfaces/candidate-profile.interface';
-import { candidateProfileRepository } from './../repositories/candidate-profile.repository';
+import { candidateProfileRepository } from '../repositories/implements/candidate-profile.repository.impl';
 
 class CandidateProfileService {
   public async create(requestBody: ICandidateProfile, userId: number): Promise<CandidateProfile> {
@@ -17,13 +17,13 @@ class CandidateProfileService {
   }
 
   public async getAll(): Promise<CandidateProfile[] | []> {
-    const candidateProfiles: CandidateProfile[] = await candidateProfileRepository.getAll();
+    const candidateProfiles: CandidateProfile[] = await candidateProfileRepository.findAll();
 
     return candidateProfiles;
   }
 
   public async getOne(id: number): Promise<CandidateProfile> {
-    const candidateProfile: CandidateProfile | null = await candidateProfileRepository.getById(id);
+    const candidateProfile: CandidateProfile | null = await candidateProfileRepository.findById(id);
 
     if (!candidateProfile) {
       throw new NotFoundException('Không tìm thấy thông tin hồ sơ ứng viên');
@@ -43,7 +43,7 @@ class CandidateProfileService {
       }).filter(([_, v]) => v !== undefined)
     );
 
-    const profileUpdated: CandidateProfile = await candidateProfileRepository.updateCandidateProfile(id, data);
+    const profileUpdated: CandidateProfile = await candidateProfileRepository.update(id, data);
 
     return profileUpdated;
   }
@@ -57,7 +57,7 @@ class CandidateProfileService {
   public async delete(id: number): Promise<void> {
     await this.getOne(id);
 
-    await candidateProfileRepository.deleteCandidateProfile(id);
+    await candidateProfileRepository.delete(id);
   }
 }
 

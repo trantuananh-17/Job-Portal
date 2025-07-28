@@ -1,4 +1,4 @@
-import { Gender } from 'generated/prisma';
+import { Gender } from '@prisma/client';
 
 interface ICandidateProfile {
   fullname: string;
