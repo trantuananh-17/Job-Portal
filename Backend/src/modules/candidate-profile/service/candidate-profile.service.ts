@@ -32,6 +32,16 @@ class CandidateProfileService {
     return candidateProfile;
   }
 
+  public async getOneByUserId(userId: number): Promise<CandidateProfile> {
+    const candidate: CandidateProfile | null = await candidateProfileRepository.getExistProfile(userId);
+
+    if (!candidate) {
+      throw new NotFoundException('Hồ sơ ứng viên không tồn tại');
+    }
+
+    return candidate;
+  }
+
   public async update(id: number, requestBody: Partial<ICandidateProfile>) {
     await this.getOne(id);
 
