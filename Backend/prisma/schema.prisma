@@ -51,11 +51,11 @@ model CandidateLanguages {
   candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
   candidateProfileId Int
 
-  language Language @relation(fields: [languageId], references: [name])
-  languageId String
+  language Language @relation(fields: [languageName], references: [name])
+  languageName String
 
   level Level @default(BEGINNER)
-  @@unique([candidateProfileId])
+  @@unique([candidateProfileId, languageName])
 }
 
 

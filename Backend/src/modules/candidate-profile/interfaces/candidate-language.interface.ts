@@ -1,8 +1,7 @@
 import { Level } from './../../../../node_modules/.prisma/client/index.d';
 interface ICandidateLanguage {
-  candidateProfileId: number;
-  languageId: string;
-  level: Level;
+  languageName: string;
+  level?: Level;
 }
 
 export { ICandidateLanguage };
