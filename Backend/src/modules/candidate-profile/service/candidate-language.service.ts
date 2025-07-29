@@ -1,23 +1,10 @@
-import { CandidateProfile } from '@prisma/client';
+import { CandidateLanguages, Level } from '@prisma/client';
 import { ICandidateLanguage } from '../interfaces/candidate-language.interface';
-import { candidateProfileService } from './candidate-profile.service';
-import { candidateLanguageRepository } from '../repositories/implements/candidate-language.repository.impl';
 
-class CandidateLanguageSerive {
-  public async create(userId: number, requestBody: ICandidateLanguage) {
-    const { languageName, level } = requestBody;
-    const candidateProfile: CandidateProfile = await candidateProfileService.getOneByUserId(userId);
-
-    const data = {
-      candidateProfileId: candidateProfile.id,
-      languageName,
-      level
-    };
-
-    const candidateLanguage = await candidateLanguageRepository.create(data);
-
-    return candidateLanguage;
-  }
+export interface ICandidateLanguagesService {
+  create(userId: number, requestBody: ICandidateLanguage): Promise<CandidateLanguages>;
+  getAll(): Promise<CandidateLanguages[]>;
+  getMyLanguage(userId: number): Promise<CandidateLanguages[] | []>;
+  updateLevel(userId: number, languageName: string, level: Level): Promise<CandidateLanguages>;
+  deleteLanguage(userId: number, languageName: string): Promise<void>;
 }
-
-export const candidateLanguageSerive: CandidateLanguageSerive = new CandidateLanguageSerive();
