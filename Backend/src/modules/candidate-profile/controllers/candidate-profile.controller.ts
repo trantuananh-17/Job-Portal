@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import HttpStatus from '~/global/constants/http.constant';
-import { candidateProfileService } from '../service/candidate-profile.service';
+import { candidateProfileService } from '../service/implements/candidate-profile.service.impl';
 
 class CandidateProfileController {
   public async create(req: Request, res: Response) {

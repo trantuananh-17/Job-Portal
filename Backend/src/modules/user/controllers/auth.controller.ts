@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { authService } from '../services/auth.service';
 import HttpStatus from '~/global/constants/http.constant';
 import { sendTokenToCookie } from '~/global/helpers/cookie.helper';
+import { authService } from '../services/implements/auth.service.impl';
 
 class AuthController {
   public async signUp(req: Request, res: Response) {
