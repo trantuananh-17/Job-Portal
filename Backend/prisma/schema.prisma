@@ -77,7 +77,7 @@ model CandidateEducation{
   major String
   degree Degree @default(BACHELOR)
   yearStart Int
-  endStart Int
+  yearEnd  Int
 
   @@id([candidateProfileId, educationId])
 }
