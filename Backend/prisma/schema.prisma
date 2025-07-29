@@ -36,10 +36,33 @@ model CandidateProfile {
   status Boolean @default(true)
   user User @relation(fields: [userId], references: [id])
   userId Int @unique
+
+  candidateLanguages CandidateLanguages[]
 }
 
 model Language{
   name String @id 
+
+  candidateLanguages CandidateLanguages[]
+}
+
+// many-to-many
+model CandidateLanguages {
+  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int
+
+  language Language @relation(fields: [languageName], references: [name])
+  languageName String
+
+  level Level @default(BEGINNER)
+  @@unique([candidateProfileId, languageName])
+}
+
+
+enum Level {
+  NATIVE
+  FLUENT
+  BEGINNER
 }
 
 enum Gender {

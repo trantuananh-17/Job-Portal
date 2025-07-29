@@ -6,6 +6,16 @@ import { ICandidateProfileRepository } from '../../repositories/candidate-profil
 import { ICandidateProfileService } from '../candidate-profile.service';
 
 class CandidateProfileService implements ICandidateProfileService {
+  public async getOneByUserId(userId: number): Promise<CandidateProfile> {
+    const candidateProfile: CandidateProfile | null = await candidateProfileRepository.getExistProfile(userId);
+
+    if (!candidateProfile) {
+      throw new NotFoundException('Không tìm thấy hồ sơ ứng viên');
+    }
+
+    return candidateProfile;
+  }
+
   public async create(requestBody: ICandidateProfile, userId: number): Promise<CandidateProfile> {
     const existingProfile = await candidateProfileRepository.getExistProfile(userId);
 
