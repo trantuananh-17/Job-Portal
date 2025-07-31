@@ -7,6 +7,24 @@ class CandidateSkillRepository extends BaseRepository<CandidateSkill> implements
   constructor() {
     super(prisma.candidateSkill);
   }
+  async findCandidateSkill(candidateProfileId: number, skillName: string): Promise<CandidateSkill | null> {
+    return await prisma.candidateSkill.findUnique({
+      where: {
+        candidateProfileId_skillName: {
+          candidateProfileId,
+          skillName
+        }
+      }
+    });
+  }
+
+  async findMySkills(candidateProfileId: number): Promise<CandidateSkill[]> {
+    return await prisma.candidateSkill.findMany({
+      where: {
+        candidateProfileId
+      }
+    });
+  }
 
   async createCandidateSkill(candidateProfileId: number, skillName: string): Promise<CandidateSkill> {
     return await prisma.candidateSkill.create({

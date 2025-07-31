@@ -14,3 +14,5 @@ class SkillService implements ISkillService {
     return skill;
   }
 }
+
+export const skillService: ISkillService = new SkillService();
