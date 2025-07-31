@@ -1,4 +1,4 @@
-import { Education, Language, PrismaClient } from '@prisma/client';
+import { Education, Language, PrismaClient, Skill } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -22,10 +22,61 @@ async function createEducationData() {
   await prisma.education.createMany({ data });
 }
 
+async function createSkillData() {
+  const data: Skill[] = [
+    { name: 'JavaScript' },
+    { name: 'TypeScript' },
+    { name: 'Node.js' },
+    { name: 'React' },
+    { name: 'CSS' },
+    { name: 'HTML' },
+    { name: 'MongoDB' },
+    { name: 'SQL' },
+    { name: 'Python' },
+    { name: 'Git' },
+    { name: 'Vue.js' },
+    { name: 'Angular' },
+    { name: 'Django' },
+    { name: 'C++' },
+    { name: 'Java' },
+    { name: 'Ruby' },
+    { name: 'PHP' },
+    { name: 'Docker' },
+    { name: 'Kubernetes' },
+    { name: 'GraphQL' },
+    { name: 'PostgreSQL' },
+    { name: 'AWS' },
+    { name: 'Azure' },
+    { name: 'Google Cloud' },
+    { name: 'Linux' },
+    { name: 'GitHub' },
+    { name: 'C#' },
+    { name: 'Swift' },
+    { name: 'Unity' },
+    { name: 'TensorFlow' },
+    { name: 'Machine Learning' },
+    { name: 'Data Science' },
+    { name: 'CI/CD' }
+  ];
+
+  await prisma.skill.createMany({
+    data
+  });
+}
+
+/** SEED DATA
+ * Chạy riêng lẻ từng block comment
+ * cmd: npx prisma db seed
+ */
+
 // main()
 //   .then()
 //   .catch((err) => console.log(err));
 
-createEducationData()
+// createEducationData()
+//   .then()
+//   .catch((err) => console.log(err));
+
+createSkillData()
   .then()
   .catch((err) => console.log(err));
