@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useRoutes } from 'react-router-dom';
+import AppRoute from './routes';
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  return <h2 className='p-2 text-2xl text-blue-500'>Hello world</h2>;
+  const routing = useRoutes(AppRoute);
+  return <>{routing}</>;
 }
 
 export default App;
