@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Noto+Sans+JP:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+@font-face {
+  font-family: Figtree;
+  src: url('../src/assets/fonts/Figtree-Regular.ttf');
+}
+
+@import 'tailwindcss';
+
+@theme {
+  --breakpoint-sm: 380px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1440px;
+}
+
+:root {
+  --full: 100%;
+  --max-width: 1296px;
+
+  --spacing-inline: 72px;
+  --spacing-block: 20px;
+}
+
+body {
+  font-family: 'Figtree', sans-serif;
+}
+
+@layer components {
+  html,
+  body {
+    scroll-behavior: smooth;
+    font-size: 16px;
+    line-height: 0.7;
+  }
+
+  .container {
+    width: var(--full);
+    max-width: var(--max-width);
+    padding-block: var(--spacing-block);
+    padding-inline: var(--spacing-inline);
+    margin: auto;
+  }
+
+  .image {
+    max-width: var(--full);
+    display: block;
+    object-fit: cover;
+  }
+
+  @media (width >= var(--breakpoint-sm)) {
+    .container {
+      max-width: 380px;
+    }
+  }
+
+  @media (width >= var(--breakpoint-md)) {
+    .container {
+      max-width: 768px;
+    }
+  }
+
+  @media (width >= var(--breakpoint-lg)) {
+    .container {
+      max-width: 1024px;
+    }
+  }
+
+  @media (width >= var(--breakpoint-xl)) {
+    .container {
+      max-width: 1280px;
+    }
+  }
+
+  @media (width >= var(--breakpoint-2xl)) {
+    .container {
+      max-width: 1440px;
+    }
+  }
+}
