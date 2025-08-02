@@ -13,6 +13,17 @@
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1440px;
+
+  --animate-carouselLoop: carouselLoop 10s linear infinite;
+
+  @keyframes carouselLoop {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-104.5%);
+    }
+  }
 }
 
 :root {
@@ -21,10 +32,21 @@
 
   --spacing-inline: 72px;
   --spacing-block: 20px;
+  --color-primary: #309689;
+  --color-primary-light: color-mix(in srgb, var(--color-primary) 15%, white);
 }
 
 body {
   font-family: 'Figtree', sans-serif;
+}
+@layer utilities {
+  .paused {
+    animation-play-state: paused;
+  }
+}
+
+.paused {
+  animation-play-state: paused;
 }
 
 @layer components {
@@ -34,6 +56,9 @@ body {
     font-size: 16px;
     line-height: 0.7;
   }
+  .paused {
+    animation-play-state: paused;
+  }
 
   .container {
     width: var(--full);
@@ -41,6 +66,18 @@ body {
     padding-block: var(--spacing-block);
     padding-inline: var(--spacing-inline);
     margin: auto;
+  }
+
+  .text-primary {
+    color: var(--color-primary);
+  }
+
+  .bg-primary {
+    background: var(--color-primary);
+  }
+
+  .bg-primary-light {
+    background: var(--color-primary-light);
   }
 
   .image {
