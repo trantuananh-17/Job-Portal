@@ -32,6 +32,8 @@
 
   --spacing-inline: 72px;
   --spacing-block: 20px;
+  --color-primary: #309689;
+  --color-primary-light: color-mix(in srgb, var(--color-primary) 15%, white);
 }
 
 body {
@@ -43,12 +45,19 @@ body {
   }
 }
 
+.paused {
+  animation-play-state: paused;
+}
+
 @layer components {
   html,
   body {
     scroll-behavior: smooth;
     font-size: 16px;
     line-height: 0.7;
+  }
+  .paused {
+    animation-play-state: paused;
   }
 
   .container {
@@ -57,6 +66,18 @@ body {
     padding-block: var(--spacing-block);
     padding-inline: var(--spacing-inline);
     margin: auto;
+  }
+
+  .text-primary {
+    color: var(--color-primary);
+  }
+
+  .bg-primary {
+    background: var(--color-primary);
+  }
+
+  .bg-primary-light {
+    background: var(--color-primary-light);
   }
 
   .image {

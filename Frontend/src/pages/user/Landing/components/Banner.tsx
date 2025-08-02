@@ -20,7 +20,7 @@ const Banner = () => {
               className='flex-1 p-5 placeholder:leading-[19px] placeholder:text-black placeholder:opacity-50'
             />
 
-            <button className='flex items-center justify-center gap-[10px] rounded-r-2xl bg-[#309689] p-5'>
+            <button className='bg-primary flex cursor-pointer items-center justify-center gap-[10px] rounded-r-2xl p-5'>
               <Search /> <span className='text-[18px] leading-[22px]'>Search Job</span>
             </button>
           </form>
@@ -28,7 +28,7 @@ const Banner = () => {
 
         <ul className='flex justify-center gap-15'>
           <li className='flex items-center gap-3'>
-            <div className='rounded-full bg-[#309689] p-4'>
+            <div className='bg-primary rounded-full p-4'>
               <img src={LOGO} className='image h-7 w-7' />
             </div>
             <div className='flex flex-col gap-3 text-start'>
@@ -37,7 +37,7 @@ const Banner = () => {
             </div>
           </li>
           <li className='flex items-center gap-3'>
-            <div className='rounded-full bg-[#309689] p-4'>
+            <div className='bg-primary rounded-full p-4'>
               <img src={USERS} className='image h-7 w-7' />
             </div>
             <div className='flex flex-col gap-3 text-start'>
@@ -46,7 +46,7 @@ const Banner = () => {
             </div>
           </li>
           <li className='flex items-center gap-3'>
-            <div className='rounded-full bg-[#309689] p-4'>
+            <div className='bg-primary rounded-full p-4'>
               <img src={BUILDING} className='image h-7 w-7' />
             </div>
             <div className='flex flex-col gap-3 text-start'>

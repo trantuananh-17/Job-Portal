@@ -14,7 +14,7 @@ const Carousel = () => {
   return (
     <div className='bg-black'>
       <div className='group container flex space-x-16 overflow-hidden'>
-        <div className='animate-carouselLoop group-hover:paused flex space-x-12'>
+        <div className='animate-carouselLoop flex space-x-12 group-hover:[animation-play-state:paused]'>
           <img loading='lazy' className='h-20 w-20 max-w-none' src={JS} alt='' />
           <img loading='lazy' className='h-20 w-20 max-w-none' src={TS} alt='' />
           <img loading='lazy' className='h-20 w-20 max-w-none' src={JAVA} alt='' />
@@ -28,7 +28,7 @@ const Carousel = () => {
           <img loading='lazy' className='h-20 w-20 max-w-none' src={VUE} alt='' />
           <img loading='lazy' className='h-20 w-20 max-w-none' src={DOCKER} alt='' />
         </div>
-        <div className='animate-carouselLoop aria-hidden:true group-hover:paused flex space-x-12'>
+        <div className='animate-carouselLoop aria-hidden:true flex space-x-12 group-hover:[animation-play-state:paused]'>
           <img loading='lazy' className='h-20 w-20 max-w-none' src={JS} alt='' />
           <img loading='lazy' className='h-20 w-20 max-w-none' src={TS} alt='' />
           <img loading='lazy' className='h-20 w-20 max-w-none' src={JAVA} alt='' />
