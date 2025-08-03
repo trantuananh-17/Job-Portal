@@ -21,6 +21,8 @@ model User {
   role Role @default(CANDIDATE)
   status Boolean @default(true)
   candidateProfile CandidateProfile?
+
+  companies Company[]
 }
 
 // 1 - 1
@@ -113,6 +115,23 @@ model CandidateExperience {
 
     candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
     candidateProfileId Int
+}
+
+model Company {
+  id    Int     @id @default(autoincrement())
+  name String
+  description String
+  teamSize Int @default(50)
+  establishmentDate DateTime @db.Date
+  views Int @default(0)
+  websiteUrl String?
+  isApproved Boolean @default(false)
+  mapLink String?
+  address String?
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
 }
 
 
