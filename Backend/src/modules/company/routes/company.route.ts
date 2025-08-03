@@ -16,4 +16,8 @@ companyRoute.post(
   asyncWrapper(companyController.create)
 );
 
+companyRoute.get('/', asyncWrapper(companyController.getAll));
+companyRoute.get('/me', verify, allowRole('RECRUITER'), asyncWrapper(companyController.getMyCompanies));
+companyRoute.get('/admin', verify, allowRole('ADMIN'), asyncWrapper(companyController.getAllForAdmin));
+
 export default companyRoute;
