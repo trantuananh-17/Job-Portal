@@ -9,6 +9,10 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
     super(prisma.company);
   }
 
+  async getOne(companyId: number, userId: number): Promise<Company | null> {
+    return await prisma.company.findFirst({ where: { id: companyId, userId } });
+  }
+
   async getMyCompanies(userId: number): Promise<Company[]> {
     return await prisma.company.findMany({
       where: {
@@ -38,6 +42,39 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
         userId
       }
     });
+  }
+
+  async updateCompany(id: number, data: Partial<ICompany>, userId: number): Promise<Company> {
+    return await prisma.company.update({
+      where: { id, userId },
+      data: {
+        name: data.name,
+        description: data.description,
+        teamSize: data.teamSize,
+        establishmentDate: data.establishmentDate ? new Date(data.establishmentDate) : undefined,
+        websiteUrl: data.websiteUrl,
+        mapLink: data.mapLink,
+        address: data.address
+      }
+    });
+  }
+
+  async updateApproved(id: number, isApproved: boolean): Promise<Company> {
+    return await prisma.company.update({
+      where: { id },
+      data: { isApproved }
+    });
+  }
+
+  async deleteCompany(id: number, userId: number): Promise<boolean> {
+    const deleted = await prisma.company.delete({
+      where: {
+        id,
+        userId
+      }
+    });
+
+    return !!deleted;
   }
 }
 

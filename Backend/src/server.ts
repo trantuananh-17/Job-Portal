@@ -39,6 +39,7 @@ export class Server {
           message: err.message
         });
       }
+      console.log(err);
 
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'Something went wrong!'

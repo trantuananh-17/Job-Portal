@@ -11,7 +11,7 @@ export interface ICompanyService {
   getMyCompanies({ page, limit, filter }: any, userId: number): Promise<IPaginatedResult<Company>>;
   getOneAdmin(id: number): Promise<Company>;
   findOne(companyId: number, userId: number): Promise<Company>;
-  update(id: number, requestBody: ICompany, userId: number): Promise<Company>;
+  update(id: number, requestBody: Partial<ICompany>, userId: number): Promise<Company>;
   approved(id: number, isApproved: boolean): Promise<Company>;
   delete(id: number, userId: number): Promise<void>;
 }

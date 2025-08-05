@@ -4,6 +4,7 @@ import { ICompanyService } from '../company.service';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
 import { companyRepository } from '../../repositories/implements/company.repository.impl';
 import { getPaginationAndFilters } from '~/global/helpers/pagination-filter.helper';
+import { NotFoundException } from '~/global/core/error.core';
 
 class CompanyService implements ICompanyService {
   public async create(requestBody: ICompany, userId: number): Promise<Company> {
@@ -17,8 +18,14 @@ class CompanyService implements ICompanyService {
     return companies;
   }
 
-  getOne(id: number): Promise<Company> {
-    throw new Error('Method not implemented.');
+  public async getOne(id: number): Promise<Company> {
+    const company = await companyRepository.findById(id);
+
+    if (!company) {
+      throw new NotFoundException(`Cannot find company with id: ${id}`);
+    }
+
+    return company;
   }
 
   public async getAllPagination({ page, limit, filter }: any): Promise<IPaginatedResult<Company>> {
@@ -59,24 +66,47 @@ class CompanyService implements ICompanyService {
     return { data, totalCounts };
   }
 
-  getOneAdmin(id: number): Promise<Company> {
-    throw new Error('Method not implemented.');
+  public async getOneAdmin(id: number): Promise<Company> {
+    const company = await companyRepository.findById(id);
+
+    if (!company) {
+      throw new NotFoundException(`Cannot find company with id: ${id}`);
+    }
+    return company;
   }
 
-  findOne(companyId: number, userId: number): Promise<Company> {
-    throw new Error('Method not implemented.');
+  public async findOne(companyId: number, userId: number): Promise<Company> {
+    const company = await companyRepository.getOne(companyId, userId);
+
+    if (!company) {
+      throw new NotFoundException(`Cannot find company ${companyId} of user ${userId}`);
+    }
+
+    return company;
   }
 
-  update(id: number, requestBody: ICompany, userId: number): Promise<Company> {
-    throw new Error('Method not implemented.');
+  public async update(id: number, requestBody: Partial<ICompany>, userId: number): Promise<Company> {
+    await this.findOne(id, userId);
+
+    const company = await companyRepository.updateCompany(id, requestBody, userId);
+
+    console.log(company);
+
+    return company;
   }
 
-  approved(id: number, isApproved: boolean): Promise<Company> {
-    throw new Error('Method not implemented.');
+  public async approved(id: number, isApproved: boolean): Promise<Company> {
+    await this.getOneAdmin(id);
+
+    const company = await companyRepository.updateApproved(id, isApproved);
+
+    return company;
   }
 
-  delete(id: number, userId: number): Promise<void> {
-    throw new Error('Method not implemented.');
+  public async delete(id: number, userId: number): Promise<void> {
+    await this.getOneAdmin(id);
+
+    await companyRepository.deleteCompany(id, userId);
   }
 }
 
