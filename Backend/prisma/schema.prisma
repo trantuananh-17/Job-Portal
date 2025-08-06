@@ -140,7 +140,8 @@ model CompanyImage {
   id    Int     @id @default(autoincrement())
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId Int
-
+  
+  imageKey String
   imageUrl String
 }
 
