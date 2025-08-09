@@ -1,0 +1,284 @@
+openapi: 3.0.3
+info:
+  title: REST API Website Job Portal
+  description: |
+    Đây là REST API cho nền tảng Website Job Portal, cho phép các ứng viên và nhà tuyển dụng
+    tương tác với hệ thống tuyển dụng trực tuyến.
+
+    **Lưu ý khi sử dụng**:
+    - Các endpoint có biểu tượng 🔒 yêu cầu gửi `Authorization: Bearer <access_token>`.
+
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api/v1
+tags:
+  - name: Auth
+  - name: Profile
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    # Auth
+    SignUpRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: user@example.com }
+        password: { type: string, minLength: 6, example: 'P@ssw0rd!' }
+        name: { type: string, example: 'Tuấn Anh' }
+    SignInRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: abc@gmail.com }
+        password: { type: string, example: '123456' }
+    User:
+      type: object
+      properties:
+        id: { type: string, example: 'u_123' }
+        email: { type: string, format: email }
+        name: { type: string, nullable: true }
+    MeResponse:
+      type: object
+      properties:
+        message: { type: string, example: 'Get user info successfully' }
+        data:
+          $ref: '#/components/schemas/User'
+    Tokens:
+      type: object
+      properties:
+        accessToken: { type: string, example: 'eyJhbGciOi...' }
+        refreshToken: { type: string, example: 'eyJhbGciOi...' }
+    AuthResponse:
+      type: object
+      properties:
+        tokens: { $ref: '#/components/schemas/Tokens' }
+
+    # --- Candidate Profiles ---
+    CandidateProfile:
+      type: object
+      properties:
+        id: { type: string, example: 'cp_123' }
+        userId: { type: string, example: 'u_123' }
+        fullname: { type: string, example: 'Tuấn Anh' }
+        phone: { type: string, example: '0123445622' }
+        gender: { type: string, example: 'MALE' }
+        cv: { type: string, example: 'https://vn.joboko.com/xem-cv/tran-tuan-anh-c12e8fcd55c5adb2-3422035' }
+        dateofbirth: { type: string, example: '1999-12-20' }
+        address: { type: string, example: 'HN' }
+        openToWork: { type: boolean, example: true }
+    CreateProfileRequest:
+      type: object
+      required:
+        - fullname
+        - phone
+        - gender
+        - cv
+        - dateofbirth
+        - address
+      properties:
+        fullname: { type: string, example: 'Tuấn Anh' }
+        phone: { type: string, example: '0123445622' }
+        gender: { type: string, example: 'MALE' }
+        cv: { type: string, example: 'https://vn.joboko.com/xem-cv/tran-tuan-anh-c12e8fcd55c5adb2-3422035' }
+        dateofbirth: { type: string, example: '1999-12-20' }
+        address: { type: string, example: 'HN' }
+    CreateProfileResponse:
+      type: object
+      properties:
+        message: { type: string, example: 'Create candidate profile successfully' }
+        data:
+          $ref: '#/components/schemas/CandidateProfile'
+
+    GetProfileResponse:
+      type: object
+      properties:
+        message: { type: string, example: 'Get candidate profile successfully' }
+        data:
+          $ref: '#/components/schemas/CandidateProfile'
+
+    ListProfilesResponse:
+      type: object
+      properties:
+        message: { type: string, example: 'Get candidate profiles successfully' }
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CandidateProfile'
+    UpdateProfileRequest:
+      type: object
+      properties:
+        fullname: { type: string, example: 'Tuấn Anh' }
+        phone: { type: string, example: '0123445622' }
+        gender: { type: string, example: 'MALE' }
+        cv: { type: string, example: 'https://vn.joboko.com/xem-cv/tran-tuan-anh-c12e8fcd55c5adb2-3422035' }
+        dateofbirth: { type: string, example: '1999-12-20' }
+        address: { type: string, example: 'HN' }
+
+    ChangeOpenToWorkRequest:
+      type: object
+      properties:
+        openToWork: { type: boolean, example: true }
+
+    MessageOnly:
+      type: object
+      properties:
+        message: { type: string, example: 'Deleted successfully' }
+paths:
+  /auth/signup:
+    post:
+      tags: [Auth]
+      summary: Sign up
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SignUpRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Sign in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SignInRequest' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/MeResponse'
+
+  # --- Candidate Profiles ---
+  /candidate-profiles:
+    post:
+      tags: [Profile]
+      summary: Create candidate profile
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateProfileRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CreateProfileResponse' }
+
+    get:
+      tags: [Profile]
+      summary: Get all candidate profiles (admin only)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ListProfilesResponse' }
+
+  /candidate-profiles/{id}:
+    get:
+      tags: [Profile]
+      summary: Get candidate profile by id
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, example: 'cp_123' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/GetProfileResponse' }
+
+    patch:
+      tags: [Profile]
+      summary: Update candidate profile (partial)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, example: 'cp_123' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateProfileRequest' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/GetProfileResponse' }
+
+    delete:
+      tags: [Profile]
+      summary: Delete candidate profile
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, example: 'cp_123' }
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageOnly' }
+
+  /candidate-profiles/open-to-work/{id}:
+    patch:
+      tags: [Profile]
+      summary: Change open-to-work status (partial)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, example: 'cp_123' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChangeOpenToWorkRequest' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/GetProfileResponse' }

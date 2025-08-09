@@ -35,7 +35,7 @@ export class Server {
 
   private setupSwagger(): void {
     try {
-      const specPath = path.resolve(__dirname, '../openapi.yaml'); // ra Backend/openapi.yaml
+      const specPath = path.resolve(__dirname, '../swagger.yaml'); // ra Backend/openapi.yaml
       const spec = yaml.load(fs.readFileSync(specPath, 'utf8')) as object;
 
       this.app.get('/docs.json', (_req, res) => res.json(spec));
