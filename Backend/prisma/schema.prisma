@@ -133,7 +133,7 @@ model Company {
   userId Int
   
   companyImages CompanyImage[]
-
+  companyIndustries CompanyIndustry[]
 }
 
 model CompanyImage {
@@ -145,6 +145,22 @@ model CompanyImage {
   imageUrl String
 }
 
+model Industry{
+  name String @id
+
+ companyIndustries CompanyIndustry[]
+}
+
+
+model CompanyIndustry {
+  company Company @relation(fields: [companyId], references: [id])
+  companyId Int
+
+  industry Industry @relation(fields: [industryName], references: [name], onDelete: Cascade)
+  industryName String 
+
+  @@id([companyId, industryName])
+}
 
 enum Degree {
   BACHELOR

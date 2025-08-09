@@ -1,4 +1,4 @@
-import { Education, Language, PrismaClient, Skill } from '@prisma/client';
+import { Education, Industry, Language, PrismaClient, Skill } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -64,6 +64,20 @@ async function createSkillData() {
   });
 }
 
+async function createIndustryData() {
+  const data: Industry[] = [
+    { name: 'Infomation Technology' },
+    { name: 'Advertising and marketing' },
+    { name: 'Computer and technology' },
+    { name: 'Education' },
+    { name: 'Finance and economic' }
+  ];
+
+  await prisma.industry.createMany({
+    data
+  });
+}
+
 /** SEED DATA
  * Chạy riêng lẻ từng block comment
  * cmd: npx prisma db seed
@@ -77,6 +91,10 @@ async function createSkillData() {
 //   .then()
 //   .catch((err) => console.log(err));
 
-createSkillData()
+// createSkillData()
+//   .then()
+//   .catch((err) => console.log(err));
+
+createIndustryData()
   .then()
   .catch((err) => console.log(err));
