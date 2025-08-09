@@ -66,7 +66,7 @@ async function createSkillData() {
 
 async function createIndustryData() {
   const data: Industry[] = [
-    { name: 'Infomation Technology' },
+    { name: 'Information Technology' },
     { name: 'Advertising and marketing' },
     { name: 'Computer and technology' },
     { name: 'Education' },

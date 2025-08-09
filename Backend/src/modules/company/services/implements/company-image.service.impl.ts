@@ -1,14 +1,13 @@
+import { DeleteObjectCommand, ObjectCannedACL, PutObjectCommand } from '@aws-sdk/client-s3';
 import { CompanyImage } from '@prisma/client';
-import { ICompanyImageService } from '../company-image.service';
-import { companyService } from './company.service.impl';
 import dotnev from 'dotenv';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
-import { DeleteObjectCommand, ObjectCannedACL, PutObjectCommand } from '@aws-sdk/client-s3';
 import s3 from '~/global/configs/s3.config';
-import { companyImageRepository } from '../../repositories/implements/company-image.repository.impl';
-import prisma from '~/prisma';
 import { NotFoundException } from '~/global/core/error.core';
+import { companyImageRepository } from '../../repositories/implements/company-image.repository.impl';
+import { ICompanyImageService } from '../company-image.service';
+import { companyService } from './company.service.impl';
 
 dotnev.config();
 
