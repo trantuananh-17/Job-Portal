@@ -23,6 +23,7 @@ model User {
   candidateProfile CandidateProfile?
 
   companies Company[]
+  jobs Job[]
 }
 
 // 1 - 1
@@ -91,6 +92,7 @@ model Skill {
   name String @id
 
   candidateSkill CandidateSkill[]
+  jobSkills JobSkill[]
 
 }
 
@@ -134,6 +136,7 @@ model Company {
   
   companyImages CompanyImage[]
   companyIndustries CompanyIndustry[]
+  jobs Job[]
 }
 
 model CompanyImage {
@@ -161,6 +164,77 @@ model CompanyIndustry {
 
   @@id([companyId, industryName])
 }
+
+model Job {
+  id    Int     @id @default(autoincrement())
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId Int
+
+  postBy User @relation(fields: [postById], references: [id])
+  postById Int
+
+  jobRole JobRole @relation(fields: [jobRoleName], references: [name], onDelete: Cascade)
+  jobRoleName String
+
+  title String
+  description String
+  status JobStatus @default(PENDING)
+  minSalary Float
+  maxSalary Float?
+
+  totalViews Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+
+  isDeleted Boolean @default(false)
+
+  jobSkills JobSkill[]
+  jobBenefits JobBenefit[]
+
+}
+
+model JobRole {
+  name String @id
+
+  jobs Job[]
+}
+
+
+model JobSkill {
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId Int
+  
+  skill Skill @relation(fields: [skillName], references: [name], onDelete: Cascade)
+  skillName String
+
+  @@id([jobId, skillName])
+}
+
+model Benefit {
+  name String @id
+
+  jobBenefits JobBenefit[]
+}
+
+model JobBenefit {
+  job Job @relation(fields: [jobId], references: [id])
+  jobId Int
+
+  benefit Benefit @relation(fields: [benefitName], references: [name], onDelete: Cascade)
+  benefitName String
+
+  @@id([jobId, benefitName])
+}
+
+enum JobStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  REJECTED
+}
+
+
 
 enum Degree {
   BACHELOR
