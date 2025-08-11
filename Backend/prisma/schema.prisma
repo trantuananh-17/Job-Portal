@@ -24,6 +24,8 @@ model User {
 
   companies Company[]
   jobs Job[]
+  recruiterPackages RecruiterPackage[]
+  orders Order[]
 }
 
 // 1 - 1
@@ -226,6 +228,51 @@ model JobBenefit {
 
   @@id([jobId, benefitName])
 }
+
+model Package {
+  id    Int     @id @default(autoincrement())
+  label String
+  price Float
+  jobPostLimit Int
+  isActive Boolean @default(true)
+
+  recruiterPackages RecruiterPackage[]
+  orders Order[]
+}
+
+model RecruiterPackage {
+  id    Int     @id @default(autoincrement())
+
+  recruiter User @relation(fields: [recruiterId], references: [id])
+  recruiterId Int
+
+  package Package @relation(fields: [packageId], references: [id])
+  packageId Int
+
+  startDate DateTime @db.Date @default(now())
+  endDate DateTime
+}
+
+model Order {
+  id    Int     @id @default(autoincrement())
+  recruiter User @relation(fields: [recruiterId], references: [id])
+  recruiterId Int
+
+  package Package @relation(fields: [packageId], references: [id])
+  packageId Int
+
+  totalPrice Float @default(0)
+  status OrderStatus @default(PENDING)
+  orderDate DateTime @db.Date @default(now())
+}
+
+enum OrderStatus {
+  PENDING 
+  SUCCESS 
+  FAILED
+}
+
+
 
 enum JobStatus {
   PENDING
