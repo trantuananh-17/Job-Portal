@@ -4,4 +4,13 @@ interface IPackage {
   jobPostLimit: number;
 }
 
-export { IPackage };
+interface recuiterPackageActive {
+  id: number;
+  recruiterId: number;
+  packageId: number;
+  startDate: string;
+  endDate: string;
+  status: string;
+}
+
+export { IPackage, recuiterPackageActive };

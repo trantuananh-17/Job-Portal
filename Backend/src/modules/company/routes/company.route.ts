@@ -9,11 +9,8 @@ import { companyApprovedSchema, companyCreateSchema, companyUpdateSchema } from 
 const companyRoute = Router();
 
 companyRoute.get('/', asyncWrapper(companyController.getAll));
-companyRoute.get('/admin/get-all', verify, allowRole('ADMIN'), asyncWrapper(companyController.getAllForAdmin));
 
-companyRoute.get('/:id', asyncWrapper(companyController.getOne));
-
-companyRoute.get('/me', verify, allowRole('RECRUITER'), asyncWrapper(companyController.getMyCompanies));
+companyRoute.get('/me/get-all', verify, allowRole('RECRUITER'), asyncWrapper(companyController.getMyCompanies));
 companyRoute.post(
   '/',
   verify,
@@ -21,6 +18,9 @@ companyRoute.post(
   validateSchema(companyCreateSchema),
   asyncWrapper(companyController.create)
 );
+
+companyRoute.get('/:id', asyncWrapper(companyController.getOne));
+
 companyRoute.patch(
   '/:id',
   verify,
