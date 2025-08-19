@@ -13,6 +13,7 @@ import packageRoute from '~/modules/package/routes/package.route';
 import authRoute from '~/modules/user/routes/auth.route';
 import userRoute from '~/modules/user/routes/user.route';
 import jobRoleRoute from '../../modules/job/routes/job-role.route';
+import jobBenefitRoute from '~/modules/job/routes/job-benefit.route';
 
 function appRoutes(app: Application) {
   app.use('/api/v1/users', userRoute);
@@ -28,6 +29,7 @@ function appRoutes(app: Application) {
   app.use('/api/v1/jobs', jobRoute);
   app.use('/api/v1/job-skills', jobSkillRoute);
   app.use('/api/v1/job-roles', jobRoleRoute);
+  app.use('/api/v1/job-benefits', jobBenefitRoute);
   app.use('/api/v1/packages', packageRoute);
 }
 

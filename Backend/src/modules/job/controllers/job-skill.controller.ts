@@ -15,9 +15,9 @@ class JobSkillController {
   }
 
   public async getAllByJob(req: Request, res: Response) {
-    const userId = +req.user.id;
+    const jobId = +req.params.jobId;
 
-    const jobSkills = await jobSkillService.getAllByJob(userId);
+    const jobSkills = await jobSkillService.getAllByJob(jobId);
 
     return res.status(HttpStatus.OK).json({
       message: 'Get all job skills',

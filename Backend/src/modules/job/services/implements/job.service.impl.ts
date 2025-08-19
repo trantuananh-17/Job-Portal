@@ -21,15 +21,15 @@ class JobService implements IJobService {
 
     const user = await userService.findUserUnique(userId);
 
-    const activePackage = await userService.checkActivePackage(user);
+    // const activePackage = await userService.checkActivePackage(user);
 
-    const jobsCount = await jobRepository.jobsCount(userId, activePackage);
+    // const jobsCount = await jobRepository.jobsCount(userId, activePackage);
 
-    const packageEntity = await packageService.readOne(activePackage.packageId, { isActive: true });
+    // const packageEntity = await packageService.readOne(activePackage.packageId, { isActive: true });
 
-    if (jobsCount >= packageEntity.jobPostLimit) {
-      throw new BadRequestException('You already reach the limit of current package');
-    }
+    // if (jobsCount >= packageEntity.jobPostLimit) {
+    //   throw new BadRequestException('You already reach the limit of current package');
+    // }
 
     const job = await jobRepository.createJob(requestBody, userId);
 
