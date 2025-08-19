@@ -5,10 +5,12 @@ import { IJobService } from '../job.service';
 import { companyService } from '~/modules/company/services/implements/company.service.impl';
 import { jobRoleService } from './job-role.service.impl';
 import { userService } from '~/modules/user/services/user.service';
-import prisma from '~/prisma';
 import { jobRepository } from '../../repositories/implements/job.repository';
 import { packageService } from '~/modules/package/services/implements/package.service.impl';
-import { BadRequestException } from '~/global/core/error.core';
+import { BadRequestException, NotFoundException } from '~/global/core/error.core';
+import { getPaginationAndFilters } from '~/global/helpers/pagination-filter.helper';
+import { excludeFields } from '~/global/helpers/excludeFields.helper';
+import { serializeData } from '~/global/helpers/serialize.helper';
 
 class JobService implements IJobService {
   async create(requestBody: IJob, userId: number): Promise<Job> {
@@ -17,15 +19,9 @@ class JobService implements IJobService {
     await companyService.findOne(companyId, userId);
     await jobRoleService.findOne(jobRoleName);
 
-    console.log(userId);
-
     const user = await userService.findUserUnique(userId);
 
-    console.log(user);
-
     const activePackage = await userService.checkActivePackage(user);
-
-    console.log(activePackage);
 
     const jobsCount = await jobRepository.jobsCount(userId, activePackage);
 
@@ -41,39 +37,94 @@ class JobService implements IJobService {
   }
 
   async getAll({ page, limit, filter, minSalary }: any): Promise<IPaginatedResult<Job>> {
-    throw new Error('Method not implemented.');
+    const { data, totalCounts } = await getPaginationAndFilters({
+      page,
+      limit,
+      filter,
+      filterFields: ['title', 'description'],
+      entity: 'job',
+      additionalCondition: { minSalary: { gte: minSalary }, isDeleted: false },
+      orderCondition: { createdAt: 'desc' }
+    });
+
+    return { data, totalCounts };
   }
 
   async getAllForRecruiter({ page, limit, filter, minSalary }: any, userId: number): Promise<IPaginatedResult<Job>> {
-    throw new Error('Method not implemented.');
+    const { data, totalCounts } = await getPaginationAndFilters({
+      page,
+      limit,
+      filter,
+      filterFields: ['title', 'description'],
+      entity: 'job',
+      additionalCondition: { minSalary: { gte: minSalary }, postById: userId },
+      orderCondition: { createdAt: 'desc' }
+    });
+
+    return { data, totalCounts };
   }
 
   async getOne(id: number): Promise<Job> {
-    throw new Error('Method not implemented.');
+    const job = await jobRepository.findUnique(id);
+    if (!job) throw new NotFoundException(`Cannot find job: ${id}`);
+
+    const dataConfig = {
+      company: [
+        { newKey: 'companyName', property: 'name' },
+        { newKey: 'companyWebsiteUrl', property: 'websiteUrl' }
+      ],
+      postBy: [{ newKey: 'postByName', property: 'name' }]
+    };
+
+    const data = serializeData(job, dataConfig);
+
+    return excludeFields(data, ['companyId', 'postById']);
   }
 
-  async update(id: number, companyId: number, requestBody: IJob, userId: number): Promise<Job> {
-    throw new Error('Method not implemented.');
+  async update(id: number, companyId: number, requestBody: Partial<IJob>, userId: number): Promise<Job> {
+    await this.findOne(id, companyId, userId);
+
+    const job = await jobRepository.updateJob(id, companyId, userId, requestBody);
+
+    return job;
   }
 
   async updateStatus(id: number, companyId: number, status: JobStatus, userId: number): Promise<Job> {
-    throw new Error('Method not implemented.');
+    await this.findOne(id, companyId, userId);
+
+    const job = await jobRepository.updateStatus(id, companyId, userId, status);
+
+    return job;
   }
 
   async delete(id: number, companyId: number, userId: number): Promise<void> {
-    throw new Error('Method not implemented.');
+    await this.findOne(id, companyId, userId);
+
+    const job = await jobRepository.deleteJob(id, companyId, userId);
   }
 
   async findOne(id: number, companyId: number, userId: number): Promise<Job> {
-    throw new Error('Method not implemented.');
+    const job = await jobRepository.findFirst(id, companyId, userId);
+
+    if (!job) throw new NotFoundException(`Cannot find company: ${companyId} belong to user: ${userId}`);
+
+    return job;
   }
 
   async findOneActive(jobId: number): Promise<Job> {
-    throw new Error('Method not implemented.');
+    const job = await jobRepository.findOneActive(jobId);
+
+    if (!job) throw new NotFoundException('This job is no longer active');
+
+    return job;
   }
 
   async findJobByUser(id: number, userId: number): Promise<Job> {
-    throw new Error('Method not implemented.');
+    const job = await jobRepository.findByUser(id, userId);
+
+    if (!job) throw new NotFoundException(`Cannot find job`);
+
+    return job;
   }
 }
 
