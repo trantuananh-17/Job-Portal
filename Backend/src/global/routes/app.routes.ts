@@ -11,6 +11,7 @@ import jobRoute from '~/modules/job/routes/job.route';
 import packageRoute from '~/modules/package/routes/package.route';
 import authRoute from '~/modules/user/routes/auth.route';
 import userRoute from '~/modules/user/routes/user.route';
+import jobRoleRoute from '../../modules/job/routes/job-role.route';
 
 function appRoutes(app: Application) {
   app.use('/api/v1/users', userRoute);
@@ -24,6 +25,7 @@ function appRoutes(app: Application) {
   app.use('/api/v1/company-images', companyImageRoute);
   app.use('/api/v1/company-industries', companyIndustryRoute);
   app.use('/api/v1/jobs', jobRoute);
+  app.use('/api/v1/job-roles', jobRoleRoute);
   app.use('/api/v1/packages', packageRoute);
 }
 
