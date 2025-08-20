@@ -1,6 +1,7 @@
-import { Job, JobStatus } from '@prisma/client';
+import { Company, Job, JobBenefit, JobSkill, JobStatus, User } from '@prisma/client';
 import { IBaseRepository } from '~/global/base/repositories/base.repository';
 import { IJob } from '../interfaces/job.interface';
+import { JobDocument } from '~/search/job/mapper/job.mapper';
 
 export interface IJobRepository extends IBaseRepository<Job> {
   jobsCount(userId: number, activePackage: any): Promise<number>;
@@ -12,4 +13,8 @@ export interface IJobRepository extends IBaseRepository<Job> {
   findFirst(id: number, companyId: number, userId: number): Promise<Job | null>;
   findOneActive(id: number): Promise<Job | null>;
   findByUser(id: number, userId: number): Promise<Job | null>;
+
+  findIndex(
+    id: number
+  ): Promise<(Job & { company: Company; postBy: User; jobSkills: JobSkill[]; jobBenefits: JobBenefit[] }) | null>;
 }

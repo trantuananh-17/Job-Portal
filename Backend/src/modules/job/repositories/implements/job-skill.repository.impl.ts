@@ -9,13 +9,13 @@ class JobSkillRepository extends BaseRepository<JobSkill> implements IJobSkillRe
   }
 
   async getAllByJob(jobId: number): Promise<JobSkill[]> {
-    return prisma.jobSkill.findMany({
+    return await prisma.jobSkill.findMany({
       where: { jobId }
     });
   }
 
   async deleteJobSkill(jobId: number, skillName: string): Promise<boolean> {
-    const deleted = prisma.jobSkill.delete({
+    const deleted = await prisma.jobSkill.delete({
       where: {
         jobId_skillName: {
           jobId,

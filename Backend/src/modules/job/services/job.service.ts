@@ -1,6 +1,7 @@
 import { Job, JobStatus } from '@prisma/client';
 import { IJob } from '../interfaces/job.interface';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
+import { JobDocument } from '~/search/job/mapper/job.mapper';
 
 export interface IJobService {
   create(requestBody: IJob, userId: number): Promise<Job>;
@@ -17,4 +18,6 @@ export interface IJobService {
   findOne(id: number, companyId: number, userId: number): Promise<Job>;
   findOneActive(jobId: number): Promise<Job>;
   findJobByUser(id: number, userId: number): Promise<Job>;
+
+  findIndex(id: number): Promise<JobDocument>;
 }

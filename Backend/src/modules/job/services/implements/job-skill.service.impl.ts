@@ -2,8 +2,12 @@ import { JobSkill } from '@prisma/client';
 import { IJobSkillService } from '../job-skill.service';
 import { jobSkillRepository } from '../../repositories/implements/job-skill.repository.impl';
 import { skillService } from '~/modules/skill/services/implements/skill.service.impl';
+import { jobService } from './job.service.impl';
+import { JobSyncService } from '~/search/job/sync/job.sync';
 
 class JobSkillService implements IJobSkillService {
+  private readonly jobSyncService = new JobSyncService();
+
   async create(jobId: number, skillName: string, userId: number): Promise<JobSkill> {
     await skillService.findSkill(skillName);
 
@@ -13,6 +17,12 @@ class JobSkillService implements IJobSkillService {
     };
 
     const jobSkill = await jobSkillRepository.create(data);
+
+    const jobIndex = await jobService.findIndex(jobId);
+
+    if (jobIndex) {
+      this.jobSyncService.updateJob(jobIndex);
+    }
 
     return jobSkill;
   }
@@ -25,6 +35,12 @@ class JobSkillService implements IJobSkillService {
 
   async delete(jobId: number, skillName: string, userId: number): Promise<void> {
     await jobSkillRepository.deleteJobSkill(jobId, skillName);
+
+    const jobIndex = await jobService.findIndex(jobId);
+
+    if (jobIndex) {
+      this.jobSyncService.updateJob(jobIndex);
+    }
   }
 }
 

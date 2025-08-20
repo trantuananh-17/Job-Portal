@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.1.1
+    container_name: elasticsearch_container
+    restart: always
+    environment:
+      - ES_JAVA_OPTS=-Xmx1g -Xms1g
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=admin1234
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./backend/volumes/elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - elastic
+
+  kibana:
+    container_name: kibana_container
+    image: docker.elastic.co/kibana/kibana:9.1.1
+    restart: always
+    environment:
+      - ELASTICSEARCH_HOSTS="http://elasticsearch_container:9200"
+      - ELASTICSEARCH_SERVICEACCOUNT_TOKEN=${KIBANA_SERVICE_TOKEN}
+      - XPACK_FLEET_AGENTS_ELASTICSEARCH_HOSTS=["http://elasticsearch_container:9200"]
+    ports:
+      - 5601:5601
+    networks:
+      - elastic
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+    depends_on:
+      - elasticsearch
+
+networks:
+  elastic:
+    name: elastic
