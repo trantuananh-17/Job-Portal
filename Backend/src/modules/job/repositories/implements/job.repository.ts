@@ -1,4 +1,4 @@
-import { Job, JobStatus } from '@prisma/client';
+import { Company, Job, JobBenefit, JobSkill, JobStatus, User } from '@prisma/client';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import { IJobRepository } from '../job.repository';
 import prisma from '~/prisma';
@@ -7,6 +7,19 @@ import { IJob } from '../../interfaces/job.interface';
 class JobRepository extends BaseRepository<Job> implements IJobRepository {
   constructor() {
     super(prisma.job);
+  }
+  async findIndex(
+    id: number
+  ): Promise<(Job & { company: Company; postBy: User; jobSkills: JobSkill[]; jobBenefits: JobBenefit[] }) | null> {
+    return prisma.job.findUnique({
+      where: { id },
+      include: {
+        company: true,
+        postBy: true,
+        jobSkills: true,
+        jobBenefits: true
+      }
+    });
   }
   async findByUser(id: number, userId: number): Promise<Job | null> {
     return await prisma.job.findFirst({

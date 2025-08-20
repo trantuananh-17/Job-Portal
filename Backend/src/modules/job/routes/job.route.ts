@@ -25,7 +25,7 @@ jobRoute.patch(
   '/:id/:companyId/status',
   verify,
   allowRole('RECRUITER'),
-  validateSchema(jobUpdateSchema),
+  // validateSchema(jobUpdateSchema),
   asyncWrapper(jobController.updateStatus)
 );
 jobRoute.patch(

@@ -31,6 +31,9 @@ export const jobUpdateSchema = Joi.object({
   title: Joi.string().optional().messages({
     'string.base': 'Title must be a string'
   }),
+  jobRoleName: Joi.string().optional().messages({
+    'string.base': 'Job role name must be a string'
+  }),
   description: Joi.string().optional().messages({
     'string.base': 'Description must be a string'
   }),
