@@ -11,8 +11,13 @@ import { BadRequestException, NotFoundException } from '~/global/core/error.core
 import { getPaginationAndFilters } from '~/global/helpers/pagination-filter.helper';
 import { excludeFields } from '~/global/helpers/excludeFields.helper';
 import { serializeData } from '~/global/helpers/serialize.helper';
+import prisma from '~/prisma';
+import { JobSyncService } from '~/search/job/sync/job.sync';
+import { JobDocument, mapJobToDocument } from '~/search/job/mapper/job.mapper';
 
 class JobService implements IJobService {
+  private readonly jobSyncService = new JobSyncService();
+
   async create(requestBody: IJob, userId: number): Promise<Job> {
     const { companyId, jobRoleName } = requestBody;
 
@@ -32,6 +37,12 @@ class JobService implements IJobService {
     // }
 
     const job = await jobRepository.createJob(requestBody, userId);
+
+    const jobIndex = await this.findIndex(job.id);
+
+    if (jobIndex) {
+      this.jobSyncService.indexJob(jobIndex);
+    }
 
     return job;
   }
@@ -86,6 +97,12 @@ class JobService implements IJobService {
 
     const job = await jobRepository.updateJob(id, companyId, userId, requestBody);
 
+    const jobIndex = await this.findIndex(job.id);
+
+    if (jobIndex) {
+      this.jobSyncService.updateJob(jobIndex);
+    }
+
     return job;
   }
 
@@ -94,13 +111,21 @@ class JobService implements IJobService {
 
     const job = await jobRepository.updateStatus(id, companyId, userId, status);
 
+    const jobIndex = await this.findIndex(job.id);
+
+    if (jobIndex) {
+      this.jobSyncService.updateJob(jobIndex);
+    }
+
     return job;
   }
 
   async delete(id: number, companyId: number, userId: number): Promise<void> {
     await this.findOne(id, companyId, userId);
 
-    const job = await jobRepository.deleteJob(id, companyId, userId);
+    await jobRepository.deleteJob(id, companyId, userId);
+
+    this.jobSyncService.deleteJob(id);
   }
 
   async findOne(id: number, companyId: number, userId: number): Promise<Job> {
@@ -125,6 +150,15 @@ class JobService implements IJobService {
     if (!job) throw new NotFoundException(`Cannot find job`);
 
     return job;
+  }
+
+  async findIndex(id: number): Promise<JobDocument> {
+    const job = await jobRepository.findIndex(id);
+
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+    return mapJobToDocument(job);
   }
 }
 

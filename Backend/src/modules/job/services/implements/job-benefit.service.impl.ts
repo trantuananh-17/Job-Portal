@@ -3,8 +3,11 @@ import { IJobBenefitService } from '../job-benefit.service';
 import { jobBenefitRepository } from '../../repositories/implements/job-benefit.repository.impl';
 import { jobService } from './job.service.impl';
 import { NotFoundException } from '~/global/core/error.core';
+import { JobSyncService } from '~/search/job/sync/job.sync';
 
 class JobBenefitService implements IJobBenefitService {
+  private readonly jobSyncService = new JobSyncService();
+
   async create(jobId: number, benefitName: string, userId: number): Promise<JobBenefit> {
     await jobService.findJobByUser(jobId, userId);
     await this.findBenefit(benefitName);
@@ -15,6 +18,12 @@ class JobBenefitService implements IJobBenefitService {
     };
 
     const jobBenefit = await jobBenefitRepository.create(data);
+
+    const jobIndex = await jobService.findIndex(jobId);
+
+    if (jobIndex) {
+      this.jobSyncService.updateJob(jobIndex);
+    }
 
     return jobBenefit;
   }
@@ -39,6 +48,12 @@ class JobBenefitService implements IJobBenefitService {
     await this.findOne(jobId, benefitName);
 
     await jobBenefitRepository.deleteBenefit(jobId, benefitName);
+
+    const jobIndex = await jobService.findIndex(jobId);
+
+    if (jobIndex) {
+      this.jobSyncService.updateJob(jobIndex);
+    }
   }
 
   async findOne(jobId: number, benefitName: string): Promise<JobBenefit> {
