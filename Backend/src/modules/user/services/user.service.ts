@@ -1,4 +1,6 @@
 import { User } from '@prisma/client';
+import { BadRequestException, NotFoundException } from '~/global/core/error.core';
+import { recuiterPackageActive } from '~/modules/package/interfaces/package.interface';
 import prisma from '~/prisma';
 
 class UserService {
@@ -22,6 +24,26 @@ class UserService {
     const users = await prisma.user.findMany();
 
     return users;
+  }
+
+  public async findUserUnique(userId: number) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { recruiterPackages: true }
+    });
+
+    if (!user) throw new NotFoundException('user does not exist');
+
+    return user;
+  }
+
+  public async checkActivePackage(user: any) {
+    const activePackage = user.recruiterPackages.find(
+      (pkg: recuiterPackageActive) => Date.now() < new Date(pkg.endDate).getTime()
+    );
+    if (!activePackage) throw new BadRequestException('You must buy the package');
+
+    return activePackage;
   }
 }
 
