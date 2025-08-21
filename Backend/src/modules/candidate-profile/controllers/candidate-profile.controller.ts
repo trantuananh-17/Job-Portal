@@ -52,7 +52,7 @@ class CandidateProfileController {
 
     await candidateProfileService.changeOpenToWorkStatus(id);
 
-    return res.status(HttpStatus.CREATED).json({
+    return res.status(HttpStatus.OK).json({
       message: 'Cập nhập trạng thái tìm việc thành công'
     });
   }
@@ -64,7 +64,7 @@ class CandidateProfileController {
 
     await candidateProfileService.delete(id);
 
-    return res.status(HttpStatus.CREATED).json({
+    return res.status(HttpStatus.OK).json({
       message: 'Xoá hồ sơ ứng viên thành công'
     });
   }

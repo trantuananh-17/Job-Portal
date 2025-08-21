@@ -2,7 +2,6 @@ import { CandidateProfile } from '@prisma/client';
 import { BadRequestException, NotFoundException } from '~/global/core/error.core';
 import { ICandidateProfile } from '../../interfaces/candidate-profile.interface';
 import { candidateProfileRepository } from '../../repositories/implements/candidate-profile.repository.impl';
-import { ICandidateProfileRepository } from '../../repositories/candidate-profile.repository';
 import { ICandidateProfileService } from '../candidate-profile.service';
 
 class CandidateProfileService implements ICandidateProfileService {
