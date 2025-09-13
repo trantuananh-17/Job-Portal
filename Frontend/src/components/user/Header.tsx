@@ -18,7 +18,7 @@ const Header = () => {
   };
 
   return (
-    <header className='bg-black text-white'>
+    <header className='fixed top-0 left-0 w-[100%] bg-black text-white'>
       <div className='container flex items-center justify-between'>
         <div className='flex items-center gap-[10px]'>
           <img src={LOGO} className='image h-7 w-7' alt='LOGO ICON' />

@@ -34,6 +34,7 @@
   --spacing-block: 20px;
   --color-primary: #309689;
   --color-primary-light: color-mix(in srgb, var(--color-primary) 15%, white);
+  --color-secondary: #ebf5f4;
 }
 
 body {
@@ -76,6 +77,10 @@ body {
     background: var(--color-primary);
   }
 
+  .bg-secondary {
+    background: var(--color-secondary);
+  }
+
   .bg-primary-light {
     background: var(--color-primary-light);
   }
@@ -84,6 +89,20 @@ body {
     max-width: var(--full);
     display: block;
     object-fit: cover;
+  }
+
+  /*Css cho slider range*/
+  .MuiSlider-root {
+  }
+  .MuiSlider-track {
+    background-color: var(--color-primary) !important; /* Màu xám sáng cho đường ray */
+    border: var(--color-primary) !important;
+  }
+
+  .MuiSlider-thumb {
+    background-color: var(--color-primary) !important  ; /* Màu xanh lá cây cho điểm đánh dấu */
+    width: 20px !important;
+    height: 20px !important;
   }
 
   @media (width >= var(--breakpoint-sm)) {
