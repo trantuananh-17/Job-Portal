@@ -16,6 +16,8 @@ jobRoute.post(
   asyncWrapper(jobController.create)
 );
 
+jobRoute.get('/get/all', jobController.getES);
+
 jobRoute.get('/', asyncWrapper(jobController.getAll));
 jobRoute.get('/me', verify, allowRole('RECRUITER'), asyncWrapper(jobController.getAllForRecruiter));
 

@@ -41,7 +41,8 @@ class JobService implements IJobService {
     const jobIndex = await this.findIndex(job.id);
 
     if (jobIndex) {
-      this.jobSyncService.indexJob(jobIndex);
+      await this.jobSyncService.createIndex();
+      await this.jobSyncService.indexJob(jobIndex);
     }
 
     return job;

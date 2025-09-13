@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import HttpStatus from '~/global/constants/http.constant';
 import { jobService } from '../services/implements/job.service.impl';
+import { jobQuery } from '~/search/job/queries/job.query';
+import { esClient } from '~/global/configs/elastic.config';
 
 class JobController {
   public async create(req: Request, res: Response) {
@@ -100,6 +102,16 @@ class JobController {
 
     return res.status(HttpStatus.OK).json({
       message: 'Delete job successfully'
+    });
+  }
+
+  public async getES(req: Request, res: Response) {
+    const query = jobQuery.searchMany();
+    const jobs = await esClient.search(query);
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Delete job successfully',
+      data: jobs.hits.hits
     });
   }
 }

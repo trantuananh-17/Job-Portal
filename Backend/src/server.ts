@@ -11,6 +11,7 @@ import path from 'path';
 import logger from './global/helpers/logger.helper';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import { checkElasticConnection } from './global/configs/elastic.config';
 
 export class Server {
   private app: Application;
@@ -103,9 +104,16 @@ export class Server {
   private listenServer() {
     const port = process.env.PORT || 5000;
 
-    this.app.listen(port, () => {
+    this.app.listen(port, async () => {
       logger.info(`Connected to server with port ${port}`);
       logger.info(`Swagger UI: http://localhost:${port}/docs`);
+
+      const esStatus = await checkElasticConnection();
+      if (esStatus.success) {
+        logger.info(`Elasticsearch connected. Cluster health: ${esStatus.status}`);
+      } else {
+        logger.error(`Elasticsearch connection failed: ${esStatus.error}`);
+      }
     });
   }
 }
