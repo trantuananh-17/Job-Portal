@@ -5,7 +5,7 @@ import LOGO from '@assets/images/img_logo.png';
 
 const Banner = () => {
   return (
-    <section className='bg-black py-18 text-center text-white'>
+    <section className='bg-black py-[180px] text-center text-white'>
       <div className='container flex flex-col justify-center'>
         <h1 className='text-[70px] leading-[70px]'>Find Your Dream Job Today!</h1>
         <p className='mt-3 text-[18px] leading-[22px]'>

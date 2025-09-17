@@ -12,7 +12,7 @@ import DOCKER from '@assets/images/logo_social.png';
 import PYTHON from '@assets/images/logo_python.png';
 const Carousel = () => {
   return (
-    <div className='bg-black'>
+    <div className='bg-black py-10'>
       <div className='group container flex space-x-16 overflow-hidden'>
         <div className='animate-carouselLoop flex space-x-12 group-hover:[animation-play-state:paused]'>
           <img loading='lazy' className='h-20 w-20 max-w-none' src={JS} alt='' />
