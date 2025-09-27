@@ -3,11 +3,18 @@ import { ICandidateLanguage } from '../../interfaces/candidate-language.interfac
 import { candidateLanguageRepository } from '../../repositories/implements/candidate-language.repository.impl';
 import { ICandidateLanguagesService } from '../candidate-language.service';
 import { candidateProfileService } from './candidate-profile.service.impl';
+import { ICandidateProfileService } from '../candidate-profile.service';
+import { ICandidateLanguageRepository } from '../../repositories/candidate-language.repository';
 
 class CandidateLanguageSerive implements ICandidateLanguagesService {
+  constructor(
+    private readonly candidateProfileService: ICandidateProfileService,
+    private readonly candidateLanguageRepository: ICandidateLanguageRepository
+  ) {}
+
   public async create(userId: number, requestBody: ICandidateLanguage): Promise<CandidateLanguages> {
     const { languageName, level } = requestBody;
-    const candidateProfile: CandidateProfile = await candidateProfileService.getOneByUserId(userId);
+    const candidateProfile: CandidateProfile = await this.candidateProfileService.getOneByUserId(userId);
 
     const data = {
       candidateProfileId: candidateProfile.id,
@@ -15,21 +22,21 @@ class CandidateLanguageSerive implements ICandidateLanguagesService {
       level
     };
 
-    const candidateLanguage = await candidateLanguageRepository.create(data);
+    const candidateLanguage = await this.candidateLanguageRepository.create(data);
 
     return candidateLanguage;
   }
 
   public async getAll(): Promise<CandidateLanguages[]> {
-    const candidateLanguages: CandidateLanguages[] = await candidateLanguageRepository.findAll();
+    const candidateLanguages: CandidateLanguages[] = await this.candidateLanguageRepository.findAll();
 
     return candidateLanguages;
   }
 
   public async getMyLanguage(userId: number): Promise<CandidateLanguages[] | []> {
-    const candidateProfile: CandidateProfile = await candidateProfileService.getOneByUserId(userId);
+    const candidateProfile: CandidateProfile = await this.candidateProfileService.getOneByUserId(userId);
 
-    const candidateLanguages: CandidateLanguages[] = await candidateLanguageRepository.getAllMyLanguages(
+    const candidateLanguages: CandidateLanguages[] = await this.candidateLanguageRepository.getAllMyLanguages(
       candidateProfile.id
     );
 
@@ -37,9 +44,9 @@ class CandidateLanguageSerive implements ICandidateLanguagesService {
   }
 
   public async updateLevel(userId: number, languageName: string, level: Level): Promise<CandidateLanguages> {
-    const candidateProfile: CandidateProfile = await candidateProfileService.getOneByUserId(userId);
+    const candidateProfile: CandidateProfile = await this.candidateProfileService.getOneByUserId(userId);
 
-    const candidateLanguageUpdated: CandidateLanguages = await candidateLanguageRepository.updateLevel(
+    const candidateLanguageUpdated: CandidateLanguages = await this.candidateLanguageRepository.updateLevel(
       candidateProfile.id,
       languageName,
       level
@@ -49,10 +56,13 @@ class CandidateLanguageSerive implements ICandidateLanguagesService {
   }
 
   public async deleteLanguage(userId: number, languageName: string): Promise<void> {
-    const candidateProfile: CandidateProfile = await candidateProfileService.getOneByUserId(userId);
+    const candidateProfile: CandidateProfile = await this.candidateProfileService.getOneByUserId(userId);
 
-    await candidateLanguageRepository.deleteLanguage(candidateProfile.id, languageName);
+    await this.candidateLanguageRepository.deleteLanguage(candidateProfile.id, languageName);
   }
 }
 
-export const candidateLanguageSerive: ICandidateLanguagesService = new CandidateLanguageSerive();
+export const candidateLanguageSerive: ICandidateLanguagesService = new CandidateLanguageSerive(
+  candidateProfileService,
+  candidateLanguageRepository
+);

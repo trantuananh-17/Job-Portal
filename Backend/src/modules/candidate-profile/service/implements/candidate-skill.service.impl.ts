@@ -7,13 +7,13 @@ import { candidateSkillRepository } from '../../repositories/implements/candidat
 import { ConflictException, NotFoundException } from '~/global/core/error.core';
 import { ICandidateProfileService } from '../candidate-profile.service';
 import { ISkillService } from '~/modules/skill/services/skill.service';
-import { ICandiateSkillRepository } from '../../repositories/candidate-skill.repository';
+import { ICandidateSkillRepository } from '../../repositories/candidate-skill.repository';
 
 class CandidateSkillService implements ICandidateSkillService {
   constructor(
     private readonly candidateProfileService: ICandidateProfileService,
     private readonly skillService: ISkillService,
-    private readonly candidateSkillRepository: ICandiateSkillRepository
+    private readonly candidateSkillRepository: ICandidateSkillRepository
   ) {}
 
   public async create(requestBody: ICreateCandidateSkill, userId: number): Promise<CandidateSkill> {
