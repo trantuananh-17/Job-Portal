@@ -92,8 +92,6 @@ body {
   }
 
   /*Css cho slider range*/
-  .MuiSlider-root {
-  }
   .MuiSlider-track {
     background-color: var(--color-primary) !important; /* Màu xám sáng cho đường ray */
     border: var(--color-primary) !important;
@@ -103,6 +101,11 @@ body {
     background-color: var(--color-primary) !important  ; /* Màu xanh lá cây cho điểm đánh dấu */
     width: 20px !important;
     height: 20px !important;
+  }
+
+  ul li::marker {
+    color: var(--color-primary);
+    font-size: 1.6rem;
   }
 
   @media (width >= var(--breakpoint-sm)) {
