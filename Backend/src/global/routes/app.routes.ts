@@ -16,6 +16,7 @@ import jobRoleRoute from '../../modules/job/routes/job-role.route';
 import jobBenefitRoute from '~/modules/job/routes/job-benefit.route';
 import orderRoute from '~/modules/order/routes/order.route';
 import recruiterPackageRoute from '~/modules/package/routes/recruiter-package.route';
+import applyRoute from '~/modules/apply/routes/apply.route';
 
 function appRoutes(app: Application) {
   app.use('/api/v1/users', userRoute);
@@ -35,6 +36,7 @@ function appRoutes(app: Application) {
   app.use('/api/v1/packages', packageRoute);
   app.use('/api/v1/recruiter-packages', recruiterPackageRoute);
   app.use('/api/v1/orders', orderRoute);
+  app.use('/api/v1/applies', applyRoute);
 }
 
 export default appRoutes;

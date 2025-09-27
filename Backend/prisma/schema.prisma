@@ -46,6 +46,7 @@ model CandidateProfile {
   candidateEducation CandidateEducation[]
   candidateSkill CandidateSkill[]
   candidateExperiences CandidateExperience[]
+  applies Apply[]
 }
 
 
@@ -193,7 +194,7 @@ model Job {
 
   jobSkills JobSkill[]
   jobBenefits JobBenefit[]
-
+  applies Apply[]
 }
 
 model JobRole {
@@ -266,12 +267,32 @@ model Order {
   orderDate DateTime @db.Date @default(now())
 }
 
+model Apply {
+  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int
+
+  job Job @relation(fields: [jobId], references: [id])
+  jobId Int
+
+  cv String?
+
+  applyDate DateTime @default(now())
+  status ApplyStatus @default(PENDING)
+
+  @@id([candidateProfileId, jobId])
+}
+
+enum ApplyStatus {
+  PENDING
+  VIEWED
+  APPROVED
+}
+
 enum OrderStatus {
   PENDING 
   SUCCESS 
   FAILED
 }
-
 
 
 enum JobStatus {
@@ -280,7 +301,6 @@ enum JobStatus {
   EXPIRED
   REJECTED
 }
-
 
 
 enum Degree {
