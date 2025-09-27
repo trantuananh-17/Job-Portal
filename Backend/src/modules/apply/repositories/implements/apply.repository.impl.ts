@@ -1,7 +1,7 @@
 import { Apply, ApplyStatus } from '@prisma/client';
 import { IApplyRepository } from '../apply.repository';
 import prisma from '~/prisma';
-import { PrismaClient } from '@prisma/client/extension';
+import { PrismaClient } from '@prisma/client';
 
 class ApplyRepository implements IApplyRepository {
   constructor(private readonly prisma: PrismaClient) {}
