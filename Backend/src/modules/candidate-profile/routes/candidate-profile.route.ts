@@ -33,7 +33,7 @@ candidateProfileRoute.patch(
   '/open-to-work/:id',
   verify,
   permission('candidateProfile', 'userId'),
-  asyncWrapper(candidateProfileController.changeOpenToWordStatus)
+  asyncWrapper(candidateProfileController.changeOpenToWorkStatus)
 );
 candidateProfileRoute.delete(
   '/:id',

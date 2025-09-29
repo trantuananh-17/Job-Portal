@@ -1,16 +1,16 @@
-import { CandidateEducation, Education } from '@prisma/client';
+import { CandidateEducation, PrismaClient } from '@prisma/client';
 import { ICandidateEducationRepository } from '../candidate-education.repository';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import prisma from '~/prisma';
 import { IUpdateCandidateEducation } from '../../interfaces/candidate-education.interface';
 
 class CandidateEducationRepository extends BaseRepository<CandidateEducation> implements ICandidateEducationRepository {
-  constructor() {
+  constructor(private readonly prisma: PrismaClient) {
     super(prisma.candidateEducation);
   }
 
   async findByProfileId(profileId: number): Promise<CandidateEducation[]> {
-    return await prisma.candidateEducation.findMany({
+    return await this.prisma.candidateEducation.findMany({
       where: { candidateProfileId: profileId }
     });
   }
@@ -20,7 +20,7 @@ class CandidateEducationRepository extends BaseRepository<CandidateEducation> im
     educationId: number,
     data: Partial<IUpdateCandidateEducation>
   ): Promise<CandidateEducation> {
-    return await prisma.candidateEducation.update({
+    return await this.prisma.candidateEducation.update({
       where: {
         candidateProfileId_educationId: {
           candidateProfileId,
@@ -32,7 +32,7 @@ class CandidateEducationRepository extends BaseRepository<CandidateEducation> im
   }
 
   async deleteCandidateEducation(educationId: number, candidateProfileId: number): Promise<boolean> {
-    const deleted = await prisma.candidateEducation.delete({
+    const deleted = await this.prisma.candidateEducation.delete({
       where: {
         candidateProfileId_educationId: {
           candidateProfileId,
@@ -45,4 +45,4 @@ class CandidateEducationRepository extends BaseRepository<CandidateEducation> im
   }
 }
 
-export const candidateEducationRepository: ICandidateEducationRepository = new CandidateEducationRepository();
+export const candidateEducationRepository: ICandidateEducationRepository = new CandidateEducationRepository(prisma);

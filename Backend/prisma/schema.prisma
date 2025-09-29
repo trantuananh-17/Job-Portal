@@ -21,6 +21,11 @@ model User {
   role Role @default(CANDIDATE)
   status Boolean @default(true)
   candidateProfile CandidateProfile?
+
+  companies Company[]
+  jobs Job[]
+  recruiterPackages RecruiterPackage[]
+  orders Order[]
 }
 
 // 1 - 1
@@ -40,7 +45,10 @@ model CandidateProfile {
   candidateLanguages CandidateLanguages[]
   candidateEducation CandidateEducation[]
   candidateSkill CandidateSkill[]
+  candidateExperiences CandidateExperience[]
+  applies Apply[]
 }
+
 
 model Language{
   name String @id 
@@ -50,10 +58,10 @@ model Language{
 
 // many-to-many
 model CandidateLanguages {
-  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
   candidateProfileId Int
 
-  language Language @relation(fields: [languageName], references: [name])
+  language Language @relation(fields: [languageName], references: [name], onDelete: Cascade)
   languageName String
 
   level Level @default(BEGINNER)
@@ -69,10 +77,10 @@ model Education {
 }
 
 model CandidateEducation{ 
-  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
   candidateProfileId Int
 
-  education Education @relation(fields: [educationId], references: [id]) 
+  education Education @relation(fields: [educationId], references: [id], onDelete: Cascade) 
   educationId Int
 
   major String
@@ -87,18 +95,213 @@ model Skill {
   name String @id
 
   candidateSkill CandidateSkill[]
+  jobSkills JobSkill[]
 
 }
 
 model CandidateSkill {
-  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
   candidateProfileId Int
 
-  skill Skill @relation(fields: [skillName], references: [name])
+  skill Skill @relation(fields: [skillName], references: [name], onDelete: Cascade)
   skillName String
 
   @@id([candidateProfileId, skillName])
 }
+
+//1-n
+model CandidateExperience {
+    id Int @id @default(autoincrement())
+    company String
+    department String
+    startDate DateTime @db.Date
+    endDate DateTime? @db.Date
+    responsibilities String
+
+    candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+    candidateProfileId Int
+}
+
+model Company {
+  id    Int     @id @default(autoincrement())
+  name String
+  description String
+  teamSize Int @default(50)
+  establishmentDate DateTime @db.Date
+  views Int @default(0)
+  websiteUrl String?
+  isApproved Boolean @default(false)
+  mapLink String?
+  address String?
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  
+  companyImages CompanyImage[]
+  companyIndustries CompanyIndustry[]
+  jobs Job[]
+}
+
+model CompanyImage {
+  id    Int     @id @default(autoincrement())
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId Int
+  
+  imageKey String
+  imageUrl String
+}
+
+model Industry{
+  name String @id
+
+ companyIndustries CompanyIndustry[]
+}
+
+
+model CompanyIndustry {
+  company Company @relation(fields: [companyId], references: [id])
+  companyId Int
+
+  industry Industry @relation(fields: [industryName], references: [name], onDelete: Cascade)
+  industryName String 
+
+  @@id([companyId, industryName])
+}
+
+model Job {
+  id    Int     @id @default(autoincrement())
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId Int
+
+  postBy User @relation(fields: [postById], references: [id])
+  postById Int
+
+  jobRole JobRole @relation(fields: [jobRoleName], references: [name], onDelete: Cascade)
+  jobRoleName String
+
+  title String
+  description String
+  status JobStatus @default(PENDING)
+  minSalary Float
+  maxSalary Float?
+
+  totalViews Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+
+  isDeleted Boolean @default(false)
+
+  jobSkills JobSkill[]
+  jobBenefits JobBenefit[]
+  applies Apply[]
+}
+
+model JobRole {
+  name String @id
+
+  jobs Job[]
+}
+
+
+model JobSkill {
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId Int
+  
+  skill Skill @relation(fields: [skillName], references: [name], onDelete: Cascade)
+  skillName String
+
+  @@id([jobId, skillName])
+}
+
+model Benefit {
+  name String @id
+
+  jobBenefits JobBenefit[]
+}
+
+model JobBenefit {
+  job Job @relation(fields: [jobId], references: [id])
+  jobId Int
+
+  benefit Benefit @relation(fields: [benefitName], references: [name], onDelete: Cascade)
+  benefitName String
+
+  @@id([jobId, benefitName])
+}
+
+model Package {
+  id    Int     @id @default(autoincrement())
+  label String
+  price Float
+  jobPostLimit Int
+  isActive Boolean @default(true)
+
+  recruiterPackages RecruiterPackage[]
+  orders Order[]
+}
+
+model RecruiterPackage {
+  id    Int     @id @default(autoincrement())
+
+  recruiter User @relation(fields: [recruiterId], references: [id])
+  recruiterId Int
+
+  package Package @relation(fields: [packageId], references: [id])
+  packageId Int
+
+  startDate DateTime @db.Date @default(now())
+  endDate DateTime
+}
+
+model Order {
+  id    Int     @id @default(autoincrement())
+  recruiter User @relation(fields: [recruiterId], references: [id])
+  recruiterId Int
+
+  package Package @relation(fields: [packageId], references: [id])
+  packageId Int
+
+  totalPrice Float @default(0)
+  status OrderStatus @default(PENDING)
+  orderDate DateTime @db.Date @default(now())
+}
+
+model Apply {
+  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int
+
+  job Job @relation(fields: [jobId], references: [id])
+  jobId Int
+
+  cv String?
+
+  applyDate DateTime @default(now())
+  status ApplyStatus @default(PENDING)
+
+  @@id([candidateProfileId, jobId])
+}
+
+enum ApplyStatus {
+  PENDING
+  VIEWED
+  APPROVED
+}
+
+enum OrderStatus {
+  PENDING 
+  SUCCESS 
+  FAILED
+}
+
+
+enum JobStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  REJECTED
+}
+
 
 enum Degree {
   BACHELOR
