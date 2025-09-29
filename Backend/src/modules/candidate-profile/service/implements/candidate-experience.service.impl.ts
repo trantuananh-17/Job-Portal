@@ -1,15 +1,22 @@
-import { candidateExperienceRepository } from './../../repositories/implements/candidate-experience.repository.impl';
 import { CandidateExperience } from '@prisma/client';
 import { ICandidateExperience } from '../../interfaces/candidate-experience.interface';
 import { ICandidateExperienceService } from '../candidate-experience.service';
-import { candidateProfileService } from './candidate-profile.service.impl';
+import { ICandidateExperienceRepository } from '../../repositories/candidate-experience.repository';
+import { ICandidateProfileService } from '../candidate-profile.service';
 import { NotFoundException } from '~/global/core/error.core';
+import { candidateProfileService } from './candidate-profile.service.impl';
+import { candidateExperienceRepository } from '../../repositories/implements/candidate-experience.repository.impl';
 
 class CandidateExperienceService implements ICandidateExperienceService {
-  public async create(requestBody: ICandidateExperience, userId: number): Promise<CandidateExperience> {
-    const candidateProfile = await candidateProfileService.getOneByUserId(userId);
+  constructor(
+    private readonly candidateExperienceRepository: ICandidateExperienceRepository,
+    private readonly candidateProfileService: ICandidateProfileService
+  ) {}
 
-    const candidateExperience = await candidateExperienceRepository.createCandidateExperience(
+  public async create(requestBody: ICandidateExperience, userId: number): Promise<CandidateExperience> {
+    const candidateProfile = await this.candidateProfileService.getOneByUserId(userId);
+
+    const candidateExperience = await this.candidateExperienceRepository.createCandidateExperience(
       requestBody,
       candidateProfile.id
     );
@@ -18,23 +25,23 @@ class CandidateExperienceService implements ICandidateExperienceService {
   }
 
   public async getAll(): Promise<CandidateExperience[]> {
-    const candidateExperiences = await candidateExperienceRepository.findAll();
+    const candidateExperiences = await this.candidateExperienceRepository.findAll();
 
     return candidateExperiences;
   }
 
   public async getMyExperiences(userId: number): Promise<CandidateExperience[]> {
-    const candidateProfile = await candidateProfileService.getOneByUserId(userId);
+    const candidateProfile = await this.candidateProfileService.getOneByUserId(userId);
 
-    const candidateExperiences = await candidateExperienceRepository.getMyExperiences(candidateProfile.id);
+    const candidateExperiences = await this.candidateExperienceRepository.getMyExperiences(candidateProfile.id);
 
     return candidateExperiences;
   }
 
   public async findOne(id: number, userId: number): Promise<CandidateExperience> {
-    const candidateProfile = await candidateProfileService.getOneByUserId(userId);
+    const candidateProfile = await this.candidateProfileService.getOneByUserId(userId);
 
-    const candidateExperience = await candidateExperienceRepository.getOne(id, candidateProfile.id);
+    const candidateExperience = await this.candidateExperienceRepository.getOne(id, candidateProfile.id);
 
     if (!candidateExperience) {
       throw new NotFoundException(`Not found candidate experience with ID: ${id}`);
@@ -50,9 +57,9 @@ class CandidateExperienceService implements ICandidateExperienceService {
   ): Promise<CandidateExperience> {
     await this.findOne(id, userId);
 
-    const candidateProfile = await candidateProfileService.getOneByUserId(userId);
+    const candidateProfile = await this.candidateProfileService.getOneByUserId(userId);
 
-    const candidateExperience = await candidateExperienceRepository.updateCandidateExperience(
+    const candidateExperience = await this.candidateExperienceRepository.updateCandidateExperience(
       id,
       requestBody,
       candidateProfile.id
@@ -63,10 +70,13 @@ class CandidateExperienceService implements ICandidateExperienceService {
 
   public async delete(id: number, userId: number): Promise<void> {
     await this.findOne(id, userId);
-    const candidateProfile = await candidateProfileService.getOneByUserId(userId);
+    const candidateProfile = await this.candidateProfileService.getOneByUserId(userId);
 
-    await candidateExperienceRepository.deleteExperience(id, candidateProfile.id);
+    await this.candidateExperienceRepository.deleteExperience(id, candidateProfile.id);
   }
 }
 
-export const candidateExperienceService: ICandidateExperienceService = new CandidateExperienceService();
+export const candidateExperienceService: ICandidateExperienceService = new CandidateExperienceService(
+  candidateExperienceRepository,
+  candidateProfileService
+);

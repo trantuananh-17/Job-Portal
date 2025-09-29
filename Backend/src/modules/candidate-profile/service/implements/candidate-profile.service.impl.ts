@@ -3,10 +3,13 @@ import { BadRequestException, NotFoundException } from '~/global/core/error.core
 import { ICandidateProfile } from '../../interfaces/candidate-profile.interface';
 import { candidateProfileRepository } from '../../repositories/implements/candidate-profile.repository.impl';
 import { ICandidateProfileService } from '../candidate-profile.service';
+import { ICandidateProfileRepository } from '../../repositories/candidate-profile.repository';
 
 class CandidateProfileService implements ICandidateProfileService {
+  constructor(private readonly candidateProfileRepository: ICandidateProfileRepository) {}
+
   public async getOneByUserId(userId: number): Promise<CandidateProfile> {
-    const candidateProfile: CandidateProfile | null = await candidateProfileRepository.getExistProfile(userId);
+    const candidateProfile: CandidateProfile | null = await this.candidateProfileRepository.getExistProfile(userId);
 
     if (!candidateProfile) {
       throw new NotFoundException('Không tìm thấy hồ sơ ứng viên');
@@ -16,25 +19,25 @@ class CandidateProfileService implements ICandidateProfileService {
   }
 
   public async create(requestBody: ICandidateProfile, userId: number): Promise<CandidateProfile> {
-    const existingProfile = await candidateProfileRepository.getExistProfile(userId);
+    const existingProfile = await this.candidateProfileRepository.getExistProfile(userId);
 
     if (existingProfile) {
       throw new BadRequestException('Hồ sơ đã tồn tại, không thể tạo mới');
     }
 
-    const candidateProfile = await candidateProfileRepository.createCandidateProfile(requestBody, userId);
+    const candidateProfile = await this.candidateProfileRepository.createCandidateProfile(requestBody, userId);
 
     return candidateProfile;
   }
 
   public async getAll(): Promise<CandidateProfile[] | []> {
-    const candidateProfiles: CandidateProfile[] = await candidateProfileRepository.findAll();
+    const candidateProfiles: CandidateProfile[] = await this.candidateProfileRepository.findAll();
 
     return candidateProfiles;
   }
 
   public async getOne(id: number): Promise<CandidateProfile> {
-    const candidateProfile: CandidateProfile | null = await candidateProfileRepository.findById(id);
+    const candidateProfile: CandidateProfile | null = await this.candidateProfileRepository.findById(id);
 
     if (!candidateProfile) {
       throw new NotFoundException('Không tìm thấy thông tin hồ sơ ứng viên');
@@ -54,7 +57,7 @@ class CandidateProfileService implements ICandidateProfileService {
       }).filter(([_, v]) => v !== undefined)
     );
 
-    const profileUpdated: CandidateProfile = await candidateProfileRepository.update(id, data);
+    const profileUpdated: CandidateProfile = await this.candidateProfileRepository.update(id, data);
 
     return profileUpdated;
   }
@@ -62,14 +65,16 @@ class CandidateProfileService implements ICandidateProfileService {
   public async changeOpenToWorkStatus(id: number): Promise<void> {
     const profile = await this.getOne(id);
 
-    await candidateProfileRepository.updateOpenToWorkStatus(id, profile.openToWork);
+    await this.candidateProfileRepository.updateOpenToWorkStatus(id, profile.openToWork);
   }
 
   public async delete(id: number): Promise<void> {
     await this.getOne(id);
 
-    await candidateProfileRepository.delete(id);
+    await this.candidateProfileRepository.delete(id);
   }
 }
 
-export const candidateProfileService: ICandidateProfileService = new CandidateProfileService();
+export const candidateProfileService: ICandidateProfileService = new CandidateProfileService(
+  candidateProfileRepository
+);

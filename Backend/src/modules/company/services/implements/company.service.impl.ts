@@ -2,24 +2,24 @@ import { Company } from '@prisma/client';
 import { ICompany } from '../../interfaces/company.interface';
 import { ICompanyService } from '../company.service';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
-import { companyRepository } from '../../repositories/implements/company.repository.impl';
 import { getPaginationAndFilters } from '~/global/helpers/pagination-filter.helper';
 import { NotFoundException } from '~/global/core/error.core';
+import { ICompanyRepository } from '../../repositories/company.repository';
+import { companyRepository } from '../../repositories/implements/company.repository.impl';
 
 class CompanyService implements ICompanyService {
-  public async create(requestBody: ICompany, userId: number): Promise<Company> {
-    const company = await companyRepository.createCompany(requestBody, userId);
+  constructor(private readonly companyRepository: ICompanyRepository) {}
 
-    return company;
+  public async create(requestBody: ICompany, userId: number): Promise<Company> {
+    return await this.companyRepository.createCompany(requestBody, userId);
   }
 
   public async getAll(): Promise<Company[]> {
-    const companies = companyRepository.getAll();
-    return companies;
+    return await this.companyRepository.getAll();
   }
 
   public async getOne(id: number): Promise<Company> {
-    const company = await companyRepository.findById(id);
+    const company = await this.companyRepository.findById(id);
 
     if (!company) {
       throw new NotFoundException(`Cannot find company with id: ${id}`);
@@ -67,16 +67,17 @@ class CompanyService implements ICompanyService {
   }
 
   public async getOneAdmin(id: number): Promise<Company> {
-    const company = await companyRepository.findById(id);
+    const company = await this.companyRepository.findById(id);
 
     if (!company) {
       throw new NotFoundException(`Cannot find company with id: ${id}`);
     }
+
     return company;
   }
 
   public async findOne(companyId: number, userId: number): Promise<Company> {
-    const company = await companyRepository.getOne(companyId, userId);
+    const company = await this.companyRepository.getOne(companyId, userId);
 
     if (!company) {
       throw new NotFoundException(`Cannot find company ${companyId} of user ${userId}`);
@@ -88,26 +89,20 @@ class CompanyService implements ICompanyService {
   public async update(id: number, requestBody: Partial<ICompany>, userId: number): Promise<Company> {
     await this.findOne(id, userId);
 
-    const company = await companyRepository.updateCompany(id, requestBody, userId);
-
-    console.log(company);
-
-    return company;
+    return await this.companyRepository.updateCompany(id, requestBody, userId);
   }
 
   public async approved(id: number, isApproved: boolean): Promise<Company> {
     await this.getOneAdmin(id);
 
-    const company = await companyRepository.updateApproved(id, isApproved);
-
-    return company;
+    return await this.companyRepository.updateApproved(id, isApproved);
   }
 
   public async delete(id: number, userId: number): Promise<void> {
     await this.getOneAdmin(id);
 
-    await companyRepository.deleteCompany(id, userId);
+    await this.companyRepository.deleteCompany(id, userId);
   }
 }
 
-export const companyService: ICompanyService = new CompanyService();
+export const companyService: ICompanyService = new CompanyService(companyRepository);

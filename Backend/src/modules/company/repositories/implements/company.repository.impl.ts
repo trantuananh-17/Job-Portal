@@ -1,20 +1,19 @@
-import { Company } from '@prisma/client';
+import { Company, PrismaClient } from '@prisma/client';
 import { ICompanyRepository } from '../company.repository';
 import prisma from '~/prisma';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import { ICompany } from '../../interfaces/company.interface';
-import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
 class CompanyRepository extends BaseRepository<Company> implements ICompanyRepository {
-  constructor() {
+  constructor(private readonly prisma: PrismaClient) {
     super(prisma.company);
   }
 
   async getOne(companyId: number, userId: number): Promise<Company | null> {
-    return await prisma.company.findFirst({ where: { id: companyId, userId } });
+    return await this.prisma.company.findFirst({ where: { id: companyId, userId } });
   }
 
   async getMyCompanies(userId: number): Promise<Company[]> {
-    return await prisma.company.findMany({
+    return await this.prisma.company.findMany({
       where: {
         userId
       }
@@ -22,7 +21,7 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
   }
 
   async getAll(): Promise<Company[]> {
-    return await prisma.company.findMany({
+    return await this.prisma.company.findMany({
       where: {
         isApproved: true
       }
@@ -30,7 +29,7 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
   }
 
   async createCompany(data: ICompany, userId: number): Promise<Company> {
-    return await prisma.company.create({
+    return await this.prisma.company.create({
       data: {
         name: data.name,
         description: data.description,
@@ -45,7 +44,7 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
   }
 
   async updateCompany(id: number, data: Partial<ICompany>, userId: number): Promise<Company> {
-    return await prisma.company.update({
+    return await this.prisma.company.update({
       where: { id, userId },
       data: {
         name: data.name,
@@ -60,14 +59,14 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
   }
 
   async updateApproved(id: number, isApproved: boolean): Promise<Company> {
-    return await prisma.company.update({
+    return await this.prisma.company.update({
       where: { id },
       data: { isApproved }
     });
   }
 
   async deleteCompany(id: number, userId: number): Promise<boolean> {
-    const deleted = await prisma.company.delete({
+    const deleted = await this.prisma.company.delete({
       where: {
         id,
         userId
@@ -78,4 +77,4 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
   }
 }
 
-export const companyRepository: ICompanyRepository = new CompanyRepository();
+export const companyRepository: ICompanyRepository = new CompanyRepository(prisma);

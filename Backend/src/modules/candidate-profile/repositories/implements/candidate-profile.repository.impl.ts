@@ -1,17 +1,17 @@
-import { CandidateProfile } from '@prisma/client';
+import { CandidateProfile, PrismaClient } from '@prisma/client';
 import prisma from '~/prisma';
 import { ICandidateProfileRepository } from '../candidate-profile.repository';
 import { ICandidateProfile } from '../../interfaces/candidate-profile.interface';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 
 class CandidateProfileRepository extends BaseRepository<CandidateProfile> implements ICandidateProfileRepository {
-  constructor() {
+  constructor(private readonly prisma: PrismaClient) {
     super(prisma.candidateProfile);
   }
 
   async createCandidateProfile(data: ICandidateProfile, userId: number): Promise<CandidateProfile> {
     const parsedDate = new Date(data.dateofbirth);
-    return await prisma.candidateProfile.create({
+    return await this.prisma.candidateProfile.create({
       data: {
         fullname: data.fullname,
         gender: data.gender,
@@ -25,16 +25,16 @@ class CandidateProfileRepository extends BaseRepository<CandidateProfile> implem
   }
 
   async getExistProfile(userId: number): Promise<CandidateProfile | null> {
-    return await prisma.candidateProfile.findUnique({ where: { userId } });
+    return await this.prisma.candidateProfile.findUnique({ where: { userId } });
   }
 
   async updateOpenToWorkStatus(id: number, openToWork: boolean): Promise<CandidateProfile> {
     const status = !openToWork;
-    return await prisma.candidateProfile.update({
+    return await this.prisma.candidateProfile.update({
       where: { id },
       data: { openToWork: status }
     });
   }
 }
 
-export const candidateProfileRepository: ICandidateProfileRepository = new CandidateProfileRepository();
+export const candidateProfileRepository: ICandidateProfileRepository = new CandidateProfileRepository(prisma);

@@ -1,4 +1,4 @@
-import { CandidateExperience } from '@prisma/client';
+import { CandidateExperience, PrismaClient } from '@prisma/client';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import { ICandidateExperienceRepository } from '../candidate-experience.repository';
 import prisma from '~/prisma';
@@ -8,12 +8,12 @@ class CandidateExperienceRepository
   extends BaseRepository<CandidateExperience>
   implements ICandidateExperienceRepository
 {
-  constructor() {
+  constructor(private readonly prisma: PrismaClient) {
     super(prisma.candidateExperience);
   }
 
   async deleteExperience(id: number, candidateProfileId: number): Promise<boolean> {
-    const deleted = await prisma.candidateExperience.delete({
+    const deleted = await this.prisma.candidateExperience.delete({
       where: { id, candidateProfileId }
     });
 
@@ -25,7 +25,7 @@ class CandidateExperienceRepository
     data: Partial<ICandidateExperience>,
     candidateProfileId: number
   ): Promise<CandidateExperience> {
-    return await prisma.candidateExperience.update({
+    return await this.prisma.candidateExperience.update({
       where: { id, candidateProfileId },
       data: {
         company: data.company,
@@ -38,13 +38,13 @@ class CandidateExperienceRepository
   }
 
   async getOne(id: number, candidateProfileId: number): Promise<CandidateExperience | null> {
-    return await prisma.candidateExperience.findUnique({
+    return await this.prisma.candidateExperience.findUnique({
       where: { id, candidateProfileId }
     });
   }
 
   async getMyExperiences(candidateProfileId: number): Promise<CandidateExperience[]> {
-    return await prisma.candidateExperience.findMany({
+    return await this.prisma.candidateExperience.findMany({
       where: {
         candidateProfileId
       }
@@ -55,7 +55,7 @@ class CandidateExperienceRepository
     data: ICandidateExperience,
     candidateProfileId: number
   ): Promise<CandidateExperience> {
-    return await prisma.candidateExperience.create({
+    return await this.prisma.candidateExperience.create({
       data: {
         company: data.company,
         department: data.department,
@@ -68,4 +68,4 @@ class CandidateExperienceRepository
   }
 }
 
-export const candidateExperienceRepository: ICandidateExperienceRepository = new CandidateExperienceRepository();
+export const candidateExperienceRepository: ICandidateExperienceRepository = new CandidateExperienceRepository(prisma);
