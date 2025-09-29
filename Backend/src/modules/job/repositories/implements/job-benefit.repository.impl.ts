@@ -1,15 +1,15 @@
-import { Benefit, JobBenefit } from '@prisma/client';
+import { Benefit, JobBenefit, PrismaClient } from '@prisma/client';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import prisma from '~/prisma';
 import { IJobBenefitRepository } from '../job-benefit.repository';
 
 class JobBenefitRepository extends BaseRepository<JobBenefit> implements IJobBenefitRepository {
-  constructor() {
+  constructor(private readonly prisma: PrismaClient) {
     super(prisma.jobBenefit);
   }
 
   async findBenefit(name: string): Promise<Benefit | null> {
-    return await prisma.benefit.findUnique({
+    return await this.prisma.benefit.findUnique({
       where: {
         name
       }
@@ -17,7 +17,7 @@ class JobBenefitRepository extends BaseRepository<JobBenefit> implements IJobBen
   }
 
   async getBenefitByJob(jobId: number): Promise<JobBenefit[]> {
-    return await prisma.jobBenefit.findMany({
+    return await this.prisma.jobBenefit.findMany({
       where: {
         jobId
       }
@@ -25,7 +25,7 @@ class JobBenefitRepository extends BaseRepository<JobBenefit> implements IJobBen
   }
 
   async deleteBenefit(jobId: number, benefitName: string): Promise<boolean> {
-    const deleted = await prisma.jobBenefit.delete({
+    const deleted = await this.prisma.jobBenefit.delete({
       where: {
         jobId_benefitName: {
           jobId,
@@ -38,7 +38,7 @@ class JobBenefitRepository extends BaseRepository<JobBenefit> implements IJobBen
   }
 
   async findOne(jobId: number, benefitName: string): Promise<JobBenefit | null> {
-    return await prisma.jobBenefit.findUnique({
+    return await this.prisma.jobBenefit.findUnique({
       where: {
         jobId_benefitName: {
           jobId,
@@ -49,4 +49,4 @@ class JobBenefitRepository extends BaseRepository<JobBenefit> implements IJobBen
   }
 }
 
-export const jobBenefitRepository: IJobBenefitRepository = new JobBenefitRepository();
+export const jobBenefitRepository: IJobBenefitRepository = new JobBenefitRepository(prisma);

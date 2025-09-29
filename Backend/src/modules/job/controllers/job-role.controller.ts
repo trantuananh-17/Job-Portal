@@ -1,8 +1,15 @@
 import { Request, Response } from 'express';
 import { jobRoleService } from '../services/implements/job-role.service.impl';
 import HttpStatus from '~/global/constants/http.constant';
+import { IJobRoleService } from '../services/job-role.service';
 
 class JobRoleController {
+  constructor(private readonly jobRoleService: IJobRoleService) {
+    this.create = this.create.bind(this);
+    this.getAll = this.getAll.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+
   async create(req: Request, res: Response) {
     const { name } = req.body;
 
@@ -46,4 +53,4 @@ class JobRoleController {
   }
 }
 
-export const jobRoleController: JobRoleController = new JobRoleController();
+export const jobRoleController: JobRoleController = new JobRoleController(jobRoleService);

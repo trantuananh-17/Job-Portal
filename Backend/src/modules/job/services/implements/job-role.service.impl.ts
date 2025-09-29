@@ -4,10 +4,13 @@ import { IJobRoleService } from '../job-role.service';
 import { jobRoleRepository } from '../../repositories/implements/job-role.repository.impl';
 import { getPaginationAndFilters } from '~/global/helpers/pagination-filter.helper';
 import { NotFoundException } from '~/global/core/error.core';
+import { IJobRoleRepository } from '../../repositories/job-role.repository';
 
 class JobRoleService implements IJobRoleService {
+  constructor(private readonly jobRoleRepository: IJobRoleRepository) {}
+
   async create(name: string): Promise<JobRole> {
-    const jobRole = await jobRoleRepository.create(name);
+    const jobRole = await this.jobRoleRepository.create(name);
 
     return jobRole;
   }
@@ -25,7 +28,7 @@ class JobRoleService implements IJobRoleService {
   }
 
   async findOne(name: string): Promise<JobRole> {
-    const jobRole = await jobRoleRepository.findOne(name);
+    const jobRole = await this.jobRoleRepository.findOne(name);
 
     if (!jobRole) {
       throw new NotFoundException(`Job Role: ${name} does not exist`);
@@ -37,8 +40,8 @@ class JobRoleService implements IJobRoleService {
   async delete(name: string): Promise<void> {
     await this.findOne(name);
 
-    await jobRoleRepository.delete(name);
+    await this.jobRoleRepository.delete(name);
   }
 }
 
-export const jobRoleService: IJobRoleService = new JobRoleService();
+export const jobRoleService: IJobRoleService = new JobRoleService(jobRoleRepository);

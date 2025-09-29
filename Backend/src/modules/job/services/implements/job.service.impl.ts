@@ -1,42 +1,52 @@
 import { Job, JobStatus } from '@prisma/client';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
-import { IJob } from '../../interfaces/job.interface';
-import { IJobService } from '../job.service';
-import { companyService } from '~/modules/company/services/implements/company.service.impl';
-import { jobRoleService } from './job-role.service.impl';
-import { userService } from '~/modules/user/services/user.service';
-import { jobRepository } from '../../repositories/implements/job.repository';
-import { packageService } from '~/modules/package/services/implements/package.service.impl';
 import { BadRequestException, NotFoundException } from '~/global/core/error.core';
-import { getPaginationAndFilters } from '~/global/helpers/pagination-filter.helper';
 import { excludeFields } from '~/global/helpers/excludeFields.helper';
+import { getPaginationAndFilters } from '~/global/helpers/pagination-filter.helper';
 import { serializeData } from '~/global/helpers/serialize.helper';
-import prisma from '~/prisma';
-import { JobSyncService } from '~/search/job/sync/job.sync';
+import { companyService } from '~/modules/company/services/implements/company.service.impl';
+import { userService } from '~/modules/user/services/user.service';
 import { JobDocument, mapJobToDocument } from '~/search/job/mapper/job.mapper';
+import { JobSyncService } from '~/search/job/sync/job.sync';
+import { IJob } from '../../interfaces/job.interface';
+import { jobRepository } from '../../repositories/implements/job.repository';
+import { IJobService } from '../job.service';
+import { jobRoleService } from './job-role.service.impl';
+import { ICompanyService } from '~/modules/company/services/company.service';
+import { IJobRoleService } from '../job-role.service';
+import { IJobRepository } from '../../repositories/job.repository';
+import { IPackageService } from '~/modules/package/services/package.service';
+import { packageService } from '~/modules/package/services/implements/package.service.impl';
 
 class JobService implements IJobService {
   private readonly jobSyncService = new JobSyncService();
 
+  constructor(
+    private readonly companyService: ICompanyService,
+    private readonly jobRoleService: IJobRoleService,
+    private readonly jobRepository: IJobRepository,
+    private readonly packageService: IPackageService
+  ) {}
+
   async create(requestBody: IJob, userId: number): Promise<Job> {
     const { companyId, jobRoleName } = requestBody;
 
-    await companyService.findOne(companyId, userId);
-    await jobRoleService.findOne(jobRoleName);
+    await this.companyService.findOne(companyId, userId);
+    await this.jobRoleService.findOne(jobRoleName);
 
     const user = await userService.findUserUnique(userId);
 
-    // const activePackage = await userService.checkActivePackage(user);
+    const activePackage = await userService.checkActivePackage(user);
 
-    // const jobsCount = await jobRepository.jobsCount(userId, activePackage);
+    const jobsCount = await this.jobRepository.jobsCount(userId, activePackage);
 
-    // const packageEntity = await packageService.readOne(activePackage.packageId, { isActive: true });
+    const packageEntity = await this.packageService.readOne(activePackage.packageId, { isActive: true });
 
-    // if (jobsCount >= packageEntity.jobPostLimit) {
-    //   throw new BadRequestException('You already reach the limit of current package');
-    // }
+    if (jobsCount >= packageEntity.jobPostLimit) {
+      throw new BadRequestException('You already reach the limit of current package');
+    }
 
-    const job = await jobRepository.createJob(requestBody, userId);
+    const job = await this.jobRepository.createJob(requestBody, userId);
 
     const jobIndex = await this.findIndex(job.id);
 
@@ -76,7 +86,7 @@ class JobService implements IJobService {
   }
 
   async getOne(id: number): Promise<Job> {
-    const job = await jobRepository.findUnique(id);
+    const job = await this.jobRepository.findUnique(id);
     if (!job) throw new NotFoundException(`Cannot find job: ${id}`);
 
     const dataConfig = {
@@ -95,7 +105,7 @@ class JobService implements IJobService {
   async update(id: number, companyId: number, requestBody: Partial<IJob>, userId: number): Promise<Job> {
     await this.findOne(id, companyId, userId);
 
-    const job = await jobRepository.updateJob(id, companyId, userId, requestBody);
+    const job = await this.jobRepository.updateJob(id, companyId, userId, requestBody);
 
     const jobIndex = await this.findIndex(job.id);
 
@@ -109,7 +119,7 @@ class JobService implements IJobService {
   async updateStatus(id: number, companyId: number, status: JobStatus, userId: number): Promise<Job> {
     await this.findOne(id, companyId, userId);
 
-    const job = await jobRepository.updateStatus(id, companyId, userId, status);
+    const job = await this.jobRepository.updateStatus(id, companyId, userId, status);
 
     const jobIndex = await this.findIndex(job.id);
 
@@ -123,13 +133,13 @@ class JobService implements IJobService {
   async delete(id: number, companyId: number, userId: number): Promise<void> {
     await this.findOne(id, companyId, userId);
 
-    await jobRepository.deleteJob(id, companyId, userId);
+    await this.jobRepository.deleteJob(id, companyId, userId);
 
     this.jobSyncService.deleteJob(id);
   }
 
   async findOne(id: number, companyId: number, userId: number): Promise<Job> {
-    const job = await jobRepository.findFirst(id, companyId, userId);
+    const job = await this.jobRepository.findFirst(id, companyId, userId);
 
     if (!job) throw new NotFoundException(`Cannot find company: ${companyId} belong to user: ${userId}`);
 
@@ -137,7 +147,7 @@ class JobService implements IJobService {
   }
 
   async findOneActive(jobId: number): Promise<Job> {
-    const job = await jobRepository.findOneActive(jobId);
+    const job = await this.jobRepository.findOneActive(jobId);
 
     if (!job) throw new NotFoundException('This job is no longer active');
 
@@ -145,7 +155,7 @@ class JobService implements IJobService {
   }
 
   async findJobByUser(id: number, userId: number): Promise<Job> {
-    const job = await jobRepository.findByUser(id, userId);
+    const job = await this.jobRepository.findByUser(id, userId);
 
     if (!job) throw new NotFoundException(`Cannot find job`);
 
@@ -153,7 +163,7 @@ class JobService implements IJobService {
   }
 
   async findIndex(id: number): Promise<JobDocument> {
-    const job = await jobRepository.findIndex(id);
+    const job = await this.jobRepository.findIndex(id);
 
     if (!job) {
       throw new NotFoundException('Job not found');
@@ -162,4 +172,4 @@ class JobService implements IJobService {
   }
 }
 
-export const jobService: IJobService = new JobService();
+export const jobService: IJobService = new JobService(companyService, jobRoleService, jobRepository, packageService);
