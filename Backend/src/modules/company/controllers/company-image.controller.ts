@@ -1,13 +1,20 @@
 import { Request, Response } from 'express';
+import { ICompanyImageService } from '../services/company-image.service';
 import { companyImageService } from '../services/implements/company-image.service.impl';
 import HttpStatus from '~/global/constants/http.constant';
 
 class CompanyImageController {
+  constructor(private readonly companyImageService: ICompanyImageService) {
+    this.create = this.create.bind(this);
+    this.getAll = this.getAll.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+
   public async create(req: Request, res: Response) {
     const companyId = +req.params.companyId;
     const userId = +req.user.id;
 
-    await companyImageService.addImages(companyId, userId, req.files as Express.Multer.File[]);
+    await this.companyImageService.addImages(companyId, userId, req.files as Express.Multer.File[]);
 
     res.status(HttpStatus.CREATED).json({
       message: 'Add image to company successfully'
@@ -17,7 +24,7 @@ class CompanyImageController {
   public async getAll(req: Request, res: Response) {
     const companyId = +req.params.companyId;
 
-    const companyImages = await companyImageService.getAll(companyId);
+    const companyImages = await this.companyImageService.getAll(companyId);
 
     res.status(HttpStatus.OK).json({
       message: 'Get all company images',
@@ -30,7 +37,7 @@ class CompanyImageController {
     const userId = +req.user.id;
     const companyImageId = +req.params.companyImageId;
 
-    await companyImageService.delete(companyId, userId, companyImageId);
+    await this.companyImageService.delete(companyId, userId, companyImageId);
 
     return res.status(HttpStatus.OK).json({
       message: 'Delete company image successfully'
@@ -38,4 +45,4 @@ class CompanyImageController {
   }
 }
 
-export const companyImageController: CompanyImageController = new CompanyImageController();
+export const companyImageController: CompanyImageController = new CompanyImageController(companyImageService);

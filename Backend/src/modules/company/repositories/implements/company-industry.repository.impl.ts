@@ -1,10 +1,12 @@
-import { CompanyIndustry } from '@prisma/client';
+import { CompanyIndustry, PrismaClient } from '@prisma/client';
 import prisma from '~/prisma';
 import { ICompanyIndustryRepository } from './../company-industry.repository';
 
 class CompanyIndustryRepository implements ICompanyIndustryRepository {
+  constructor(private readonly prisma: PrismaClient) {}
+
   async create(companyId: number, industryName: string): Promise<CompanyIndustry> {
-    return await prisma.companyIndustry.create({
+    return await this.prisma.companyIndustry.create({
       data: {
         companyId,
         industryName
@@ -13,11 +15,11 @@ class CompanyIndustryRepository implements ICompanyIndustryRepository {
   }
 
   async getByCompanyId(companyId: number): Promise<CompanyIndustry[]> {
-    return await prisma.companyIndustry.findMany({ where: { companyId } });
+    return await this.prisma.companyIndustry.findMany({ where: { companyId } });
   }
 
   async findCompanyIndustry(companyId: number, industryName: string): Promise<CompanyIndustry | null> {
-    return await prisma.companyIndustry.findUnique({
+    return await this.prisma.companyIndustry.findUnique({
       where: {
         companyId_industryName: {
           companyId,
@@ -28,7 +30,7 @@ class CompanyIndustryRepository implements ICompanyIndustryRepository {
   }
 
   async delete(companyId: number, industryName: string): Promise<boolean> {
-    const deleted = await prisma.companyIndustry.delete({
+    const deleted = await this.prisma.companyIndustry.delete({
       where: {
         companyId_industryName: {
           companyId,
@@ -41,4 +43,4 @@ class CompanyIndustryRepository implements ICompanyIndustryRepository {
   }
 }
 
-export const companyIndustryRepository: ICompanyIndustryRepository = new CompanyIndustryRepository();
+export const companyIndustryRepository: ICompanyIndustryRepository = new CompanyIndustryRepository(prisma);
