@@ -4,21 +4,30 @@ import { jobSkillRepository } from '../../repositories/implements/job-skill.repo
 import { skillService } from '~/modules/skill/services/implements/skill.service.impl';
 import { jobService } from './job.service.impl';
 import { JobSyncService } from '~/search/job/sync/job.sync';
+import { ISkillService } from '~/modules/skill/services/skill.service';
+import { IJobService } from '../job.service';
+import { IJobSkillRepository } from '../../repositories/job-skill.repository';
 
 class JobSkillService implements IJobSkillService {
   private readonly jobSyncService = new JobSyncService();
 
+  constructor(
+    private readonly skillService: ISkillService,
+    private readonly jobSkillRepository: IJobSkillRepository,
+    private readonly jobService: IJobService
+  ) {}
+
   async create(jobId: number, skillName: string, userId: number): Promise<JobSkill> {
-    await skillService.findSkill(skillName);
+    await this.skillService.findSkill(skillName);
 
     const data = {
       jobId,
       skillName
     };
 
-    const jobSkill = await jobSkillRepository.create(data);
+    const jobSkill = await this.jobSkillRepository.create(data);
 
-    const jobIndex = await jobService.findIndex(jobId);
+    const jobIndex = await this.jobService.findIndex(jobId);
 
     if (jobIndex) {
       this.jobSyncService.updateJob(jobIndex);
@@ -28,13 +37,13 @@ class JobSkillService implements IJobSkillService {
   }
 
   async getAllByJob(jobId: number): Promise<JobSkill[]> {
-    const jobSkills = await jobSkillRepository.getAllByJob(jobId);
+    const jobSkills = await this.jobSkillRepository.getAllByJob(jobId);
 
     return jobSkills;
   }
 
   async delete(jobId: number, skillName: string, userId: number): Promise<void> {
-    await jobSkillRepository.deleteJobSkill(jobId, skillName);
+    await this.jobSkillRepository.deleteJobSkill(jobId, skillName);
 
     const jobIndex = await jobService.findIndex(jobId);
 
@@ -44,4 +53,4 @@ class JobSkillService implements IJobSkillService {
   }
 }
 
-export const jobSkillService: IJobSkillService = new JobSkillService();
+export const jobSkillService: IJobSkillService = new JobSkillService(skillService, jobSkillRepository, jobService);

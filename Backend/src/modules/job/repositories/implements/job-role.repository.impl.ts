@@ -1,22 +1,24 @@
-import { JobRole } from '@prisma/client';
+import { JobRole, PrismaClient } from '@prisma/client';
 import { IJobRoleRepository } from '../job-role.repository';
 import prisma from '~/prisma';
 
 class JobRoleRepository implements IJobRoleRepository {
+  constructor(private readonly prisma: PrismaClient) {}
+
   async findOne(name: string): Promise<JobRole | null> {
-    return await prisma.jobRole.findUnique({
+    return await this.prisma.jobRole.findUnique({
       where: { name }
     });
   }
 
   async create(name: string): Promise<JobRole> {
-    return await prisma.jobRole.create({
+    return await this.prisma.jobRole.create({
       data: { name }
     });
   }
 
   async delete(name: string): Promise<boolean> {
-    const deleted = await prisma.jobRole.delete({
+    const deleted = await this.prisma.jobRole.delete({
       where: { name }
     });
 
@@ -24,4 +26,4 @@ class JobRoleRepository implements IJobRoleRepository {
   }
 }
 
-export const jobRoleRepository: IJobRoleRepository = new JobRoleRepository();
+export const jobRoleRepository: IJobRoleRepository = new JobRoleRepository(prisma);

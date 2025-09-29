@@ -4,12 +4,19 @@ import { jobBenefitRepository } from '../../repositories/implements/job-benefit.
 import { jobService } from './job.service.impl';
 import { NotFoundException } from '~/global/core/error.core';
 import { JobSyncService } from '~/search/job/sync/job.sync';
+import { IJobBenefitRepository } from '../../repositories/job-benefit.repository';
+import { IJobService } from '../job.service';
 
 class JobBenefitService implements IJobBenefitService {
   private readonly jobSyncService = new JobSyncService();
 
+  constructor(
+    private readonly jobBenefitRepository: IJobBenefitRepository,
+    private readonly jobService: IJobService
+  ) {}
+
   async create(jobId: number, benefitName: string, userId: number): Promise<JobBenefit> {
-    await jobService.findJobByUser(jobId, userId);
+    await this.jobService.findJobByUser(jobId, userId);
     await this.findBenefit(benefitName);
 
     const data = {
@@ -17,9 +24,9 @@ class JobBenefitService implements IJobBenefitService {
       benefitName
     };
 
-    const jobBenefit = await jobBenefitRepository.create(data);
+    const jobBenefit = await this.jobBenefitRepository.create(data);
 
-    const jobIndex = await jobService.findIndex(jobId);
+    const jobIndex = await this.jobService.findIndex(jobId);
 
     if (jobIndex) {
       this.jobSyncService.updateJob(jobIndex);
@@ -29,7 +36,7 @@ class JobBenefitService implements IJobBenefitService {
   }
 
   async findBenefit(name: string): Promise<Benefit> {
-    const benefit = await jobBenefitRepository.findBenefit(name);
+    const benefit = await this.jobBenefitRepository.findBenefit(name);
 
     if (!benefit) throw new NotFoundException(`Benefit: ${name} does not exist`);
 
@@ -37,19 +44,19 @@ class JobBenefitService implements IJobBenefitService {
   }
 
   async getAllByJobId(jobId: number): Promise<JobBenefit[]> {
-    const jobBenefits = await jobBenefitRepository.getBenefitByJob(jobId);
+    const jobBenefits = await this.jobBenefitRepository.getBenefitByJob(jobId);
 
     return jobBenefits;
   }
 
   async delete(jobId: number, benefitName: string, userId: number): Promise<void> {
-    await jobService.findJobByUser(jobId, userId);
+    await this.jobService.findJobByUser(jobId, userId);
     await this.findBenefit(benefitName);
     await this.findOne(jobId, benefitName);
 
-    await jobBenefitRepository.deleteBenefit(jobId, benefitName);
+    await this.jobBenefitRepository.deleteBenefit(jobId, benefitName);
 
-    const jobIndex = await jobService.findIndex(jobId);
+    const jobIndex = await this.jobService.findIndex(jobId);
 
     if (jobIndex) {
       this.jobSyncService.updateJob(jobIndex);
@@ -57,7 +64,7 @@ class JobBenefitService implements IJobBenefitService {
   }
 
   async findOne(jobId: number, benefitName: string): Promise<JobBenefit> {
-    const jobBenefit = await jobBenefitRepository.findOne(jobId, benefitName);
+    const jobBenefit = await this.jobBenefitRepository.findOne(jobId, benefitName);
 
     if (!jobBenefit) throw new NotFoundException(`Cannot find benefit: ${jobBenefit} in this job`);
 
@@ -65,4 +72,4 @@ class JobBenefitService implements IJobBenefitService {
   }
 }
 
-export const jobBenefitService: IJobBenefitService = new JobBenefitService();
+export const jobBenefitService: IJobBenefitService = new JobBenefitService(jobBenefitRepository, jobService);
