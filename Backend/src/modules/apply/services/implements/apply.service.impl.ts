@@ -34,7 +34,7 @@ class ApplyService implements IApplyService {
   }
 
   async getByMe({ page, limit }: any, userId: number): Promise<IPaginatedResult<Apply>> {
-    const candidateProfile = await candidateProfileService.getOneByUserId(userId);
+    const candidateProfile = await this.candidateProfileService.getOneByUserId(userId);
 
     const { data, totalCounts } = await getPaginationAndFilters({
       page,
@@ -78,7 +78,7 @@ class ApplyService implements IApplyService {
   async updateStatus(requestBody: IApply, userId: number): Promise<Apply> {
     const { candidateProfileId, jobId, status } = requestBody;
 
-    await jobService.findJobByUser(jobId, userId);
+    await this.jobService.findJobByUser(jobId, userId);
     const existApply = await this.getOne(candidateProfileId, jobId);
 
     if (!existApply) {

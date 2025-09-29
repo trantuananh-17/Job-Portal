@@ -57,7 +57,7 @@ class ApplyController {
         totalCounts,
         currentPage: parseInt(page as string)
       },
-      data: data
+      data
     });
   }
 
