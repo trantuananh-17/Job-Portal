@@ -1,4 +1,4 @@
-import { Job, JobSkill, JobBenefit, Company, User } from '@prisma/client';
+import { Job, JobSkill, JobBenefit, Company, User, JobRequirement } from '@prisma/client';
 
 export interface JobDocument {
   id: number;
@@ -12,6 +12,7 @@ export interface JobDocument {
   recruiter: string;
   skills: string[];
   benefits: string[];
+  requiments: string[];
   createdAt: string;
   isDeleted: boolean;
 }
@@ -22,6 +23,7 @@ export function mapJobToDocument(
     postBy: User;
     jobSkills: JobSkill[];
     jobBenefits: JobBenefit[];
+    jobRequirements: JobRequirement[];
   }
 ): JobDocument {
   return {
@@ -36,6 +38,7 @@ export function mapJobToDocument(
     recruiter: job.postBy?.name ?? '',
     skills: job.jobSkills.map((s) => s.skillName),
     benefits: job.jobBenefits.map((b) => b.benefitName),
+    requiments: job.jobRequirements.map((r) => r.requirementName),
     createdAt: job.createdAt.toISOString(),
     isDeleted: job.isDeleted
   };
