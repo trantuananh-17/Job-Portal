@@ -1,14 +1,15 @@
-import { CandidateSkill } from '@prisma/client';
+import { CandidateSkill, PrismaClient } from '@prisma/client';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
-import { ICandiateSkillRepository } from '../candidate-skill.repository';
+import { ICandidateSkillRepository } from '../candidate-skill.repository';
 import prisma from '~/prisma';
 
-class CandidateSkillRepository extends BaseRepository<CandidateSkill> implements ICandiateSkillRepository {
-  constructor() {
+class CandidateSkillRepository extends BaseRepository<CandidateSkill> implements ICandidateSkillRepository {
+  constructor(private readonly prisma: PrismaClient) {
     super(prisma.candidateSkill);
   }
+
   async findCandidateSkill(candidateProfileId: number, skillName: string): Promise<CandidateSkill | null> {
-    return await prisma.candidateSkill.findUnique({
+    return await this.prisma.candidateSkill.findUnique({
       where: {
         candidateProfileId_skillName: {
           candidateProfileId,
@@ -19,7 +20,7 @@ class CandidateSkillRepository extends BaseRepository<CandidateSkill> implements
   }
 
   async findMySkills(candidateProfileId: number): Promise<CandidateSkill[]> {
-    return await prisma.candidateSkill.findMany({
+    return await this.prisma.candidateSkill.findMany({
       where: {
         candidateProfileId
       }
@@ -27,7 +28,7 @@ class CandidateSkillRepository extends BaseRepository<CandidateSkill> implements
   }
 
   async createCandidateSkill(candidateProfileId: number, skillName: string): Promise<CandidateSkill> {
-    return await prisma.candidateSkill.create({
+    return await this.prisma.candidateSkill.create({
       data: {
         candidateProfileId,
         skillName
@@ -36,7 +37,7 @@ class CandidateSkillRepository extends BaseRepository<CandidateSkill> implements
   }
 
   async deleteCandidateSkill(candidateProfileId: number, skillName: string): Promise<boolean> {
-    const deleted = await prisma.candidateSkill.delete({
+    const deleted = await this.prisma.candidateSkill.delete({
       where: {
         candidateProfileId_skillName: {
           candidateProfileId,
@@ -49,4 +50,4 @@ class CandidateSkillRepository extends BaseRepository<CandidateSkill> implements
   }
 }
 
-export const candidateSkillRepository: ICandiateSkillRepository = new CandidateSkillRepository();
+export const candidateSkillRepository: ICandidateSkillRepository = new CandidateSkillRepository(prisma);

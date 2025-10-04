@@ -22,7 +22,7 @@ model User {
   status Boolean @default(true)
   candidateProfile CandidateProfile?
 
-  companies Company[]
+  company Company?
   jobs Job[]
   recruiterPackages RecruiterPackage[]
   orders Order[]
@@ -46,6 +46,7 @@ model CandidateProfile {
   candidateEducation CandidateEducation[]
   candidateSkill CandidateSkill[]
   candidateExperiences CandidateExperience[]
+  applies Apply[]
 }
 
 
@@ -57,10 +58,10 @@ model Language{
 
 // many-to-many
 model CandidateLanguages {
-  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
   candidateProfileId Int
 
-  language Language @relation(fields: [languageName], references: [name])
+  language Language @relation(fields: [languageName], references: [name], onDelete: Cascade)
   languageName String
 
   level Level @default(BEGINNER)
@@ -76,10 +77,10 @@ model Education {
 }
 
 model CandidateEducation{ 
-  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
   candidateProfileId Int
 
-  education Education @relation(fields: [educationId], references: [id]) 
+  education Education @relation(fields: [educationId], references: [id], onDelete: Cascade) 
   educationId Int
 
   major String
@@ -99,10 +100,10 @@ model Skill {
 }
 
 model CandidateSkill {
-  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
   candidateProfileId Int
 
-  skill Skill @relation(fields: [skillName], references: [name])
+  skill Skill @relation(fields: [skillName], references: [name], onDelete: Cascade)
   skillName String
 
   @@id([candidateProfileId, skillName])
@@ -117,7 +118,7 @@ model CandidateExperience {
     endDate DateTime? @db.Date
     responsibilities String
 
-    candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+    candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
     candidateProfileId Int
 }
 
@@ -132,9 +133,10 @@ model Company {
   isApproved Boolean @default(false)
   mapLink String?
   address String?
+  avatarUrl String?
 
   user User @relation(fields: [userId], references: [id])
-  userId Int
+  userId Int @unique
   
   companyImages CompanyImage[]
   companyIndustries CompanyIndustry[]
@@ -193,7 +195,23 @@ model Job {
 
   jobSkills JobSkill[]
   jobBenefits JobBenefit[]
+  jobRequirements  JobRequirement[]
+  applies Apply[]
+}
 
+model Requirement {
+  name            String           @id
+  jobRequirements JobRequirement[]
+}
+
+model JobRequirement {
+  job           Job         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId         Int
+
+  requirement   Requirement @relation(fields: [requirementName], references: [name], onDelete: Cascade)
+  requirementName String
+
+  @@id([jobId, requirementName])
 }
 
 model JobRole {
@@ -266,12 +284,32 @@ model Order {
   orderDate DateTime @db.Date @default(now())
 }
 
+model Apply {
+  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int
+
+  job Job @relation(fields: [jobId], references: [id])
+  jobId Int
+
+  cv String?
+
+  applyDate DateTime @default(now())
+  status ApplyStatus @default(PENDING)
+
+  @@id([candidateProfileId, jobId])
+}
+
+enum ApplyStatus {
+  PENDING
+  VIEWED
+  APPROVED
+}
+
 enum OrderStatus {
   PENDING 
   SUCCESS 
   FAILED
 }
-
 
 
 enum JobStatus {
@@ -280,7 +318,6 @@ enum JobStatus {
   EXPIRED
   REJECTED
 }
-
 
 
 enum Degree {

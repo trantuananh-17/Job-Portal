@@ -1,34 +1,43 @@
-import { Company, Job, JobBenefit, JobSkill, JobStatus, User } from '@prisma/client';
+import { Company, Job, JobBenefit, JobRequirement, JobSkill, JobStatus, PrismaClient, User } from '@prisma/client';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import { IJobRepository } from '../job.repository';
 import prisma from '~/prisma';
 import { IJob } from '../../interfaces/job.interface';
 
 class JobRepository extends BaseRepository<Job> implements IJobRepository {
-  constructor() {
+  constructor(private readonly prisma: PrismaClient) {
     super(prisma.job);
   }
-  async findIndex(
-    id: number
-  ): Promise<(Job & { company: Company; postBy: User; jobSkills: JobSkill[]; jobBenefits: JobBenefit[] }) | null> {
-    return prisma.job.findUnique({
+
+  async findIndex(id: number): Promise<
+    | (Job & {
+        company: Company;
+        postBy: User;
+        jobSkills: JobSkill[];
+        jobBenefits: JobBenefit[];
+        jobRequirements: JobRequirement[];
+      })
+    | null
+  > {
+    return this.prisma.job.findUnique({
       where: { id },
       include: {
         company: true,
         postBy: true,
         jobSkills: true,
-        jobBenefits: true
+        jobBenefits: true,
+        jobRequirements: true
       }
     });
   }
   async findByUser(id: number, userId: number): Promise<Job | null> {
-    return await prisma.job.findFirst({
+    return await this.prisma.job.findFirst({
       where: { id, postById: userId }
     });
   }
 
   async findOneActive(id: number): Promise<Job | null> {
-    return await prisma.job.findFirst({
+    return await this.prisma.job.findFirst({
       where: {
         id,
         status: 'ACTIVE'
@@ -37,7 +46,7 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
   }
 
   async findUnique(id: number): Promise<Job | null> {
-    return await prisma.job.findUnique({
+    return await this.prisma.job.findUnique({
       where: { id },
       include: {
         company: true,
@@ -48,7 +57,7 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
 
   async createJob(requestBody: IJob, userId: number): Promise<Job> {
     const { companyId, description, jobRoleName, maxSalary, minSalary, title } = requestBody;
-    return await prisma.job.create({
+    return await this.prisma.job.create({
       data: {
         companyId,
         jobRoleName,
@@ -62,7 +71,7 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
   }
 
   async jobsCount(userId: number, activePackage: any): Promise<number> {
-    return await prisma.job.count({
+    return await this.prisma.job.count({
       where: {
         postById: userId,
         createdAt: { gt: new Date(activePackage.startDate) },
@@ -73,21 +82,21 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
 
   async updateJob(id: number, companyId: number, userId: number, data: Partial<IJob>): Promise<Job> {
     const { title, description, minSalary, maxSalary } = data;
-    return await prisma.job.update({
+    return await this.prisma.job.update({
       where: { id, companyId, postById: userId },
       data: { title, description, minSalary, maxSalary }
     });
   }
 
   async updateStatus(id: number, companyId: number, userId: number, status: JobStatus): Promise<Job> {
-    return await prisma.job.update({
+    return await this.prisma.job.update({
       where: { id, companyId, postById: userId },
       data: { status }
     });
   }
 
   async deleteJob(id: number, companyId: number, userId: number): Promise<boolean> {
-    const deleted = await prisma.job.update({
+    const deleted = await this.prisma.job.update({
       where: { id, companyId, postById: userId },
       data: { isDeleted: true }
     });
@@ -96,10 +105,10 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
   }
 
   async findFirst(id: number, companyId: number, userId: number): Promise<Job | null> {
-    return await prisma.job.findFirst({
+    return await this.prisma.job.findFirst({
       where: { id, companyId, postById: userId }
     });
   }
 }
 
-export const jobRepository: IJobRepository = new JobRepository();
+export const jobRepository: IJobRepository = new JobRepository(prisma);

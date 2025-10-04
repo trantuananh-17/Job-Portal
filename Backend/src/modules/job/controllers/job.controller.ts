@@ -1,13 +1,27 @@
 import { Request, Response } from 'express';
 import HttpStatus from '~/global/constants/http.constant';
 import { jobService } from '../services/implements/job.service.impl';
+<<<<<<< HEAD
 import { jobQuery } from '~/search/job/queries/job.query';
 import { esClient } from '~/global/configs/elastic.config';
+=======
+import { IJobService } from '../services/job.service';
+>>>>>>> a500c70da7b3e9f3f9f39150fe35673db31133b4
 
 class JobController {
+  constructor(private readonly jobService: IJobService) {
+    this.create = this.create.bind(this);
+    this.getAll = this.getAll.bind(this);
+    this.getAllForRecruiter = this.getAllForRecruiter.bind(this);
+    this.getOne = this.getOne.bind(this);
+    this.update = this.update.bind(this);
+    this.updateStatus = this.updateStatus.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+
   public async create(req: Request, res: Response) {
     const userId = +req.user.id;
-    const job = await jobService.create(req.body, userId);
+    const job = await this.jobService.create(req.body, userId);
 
     return res.status(HttpStatus.CREATED).json({
       message: 'Created job successfully',
@@ -18,7 +32,7 @@ class JobController {
   public async getAll(req: Request, res: Response) {
     const { page = 1, limit = 5, filter = '', minSalary = 0 } = req.query;
 
-    const { data, totalCounts } = await jobService.getAll({
+    const { data, totalCounts } = await this.jobService.getAll({
       page: parseInt(page as string),
       limit: parseInt(limit as string),
       filter,
@@ -39,7 +53,7 @@ class JobController {
     const { page = 1, limit = 5, filter = '', minSalary = 0 } = req.query;
     const userId = +req.user.id;
 
-    const { data, totalCounts } = await jobService.getAllForRecruiter(
+    const { data, totalCounts } = await this.jobService.getAllForRecruiter(
       {
         page: parseInt(page as string),
         limit: parseInt(limit as string),
@@ -60,7 +74,7 @@ class JobController {
   }
 
   public async getOne(req: Request, res: Response) {
-    const job = await jobService.getOne(parseInt(req.params.id));
+    const job = await this.jobService.getOne(parseInt(req.params.id));
 
     return res.status(HttpStatus.OK).json({
       message: 'Get single job',
@@ -71,7 +85,7 @@ class JobController {
   public async update(req: Request, res: Response) {
     const userId = +req.user.id;
 
-    const job = await jobService.update(parseInt(req.params.id), parseInt(req.params.companyId), req.body, userId);
+    const job = await this.jobService.update(parseInt(req.params.id), parseInt(req.params.companyId), req.body, userId);
 
     return res.status(HttpStatus.OK).json({
       message: 'Update job successfully',
@@ -82,7 +96,7 @@ class JobController {
   public async updateStatus(req: Request, res: Response) {
     const userId = +req.user.id;
 
-    const job = await jobService.updateStatus(
+    const job = await this.jobService.updateStatus(
       parseInt(req.params.id),
       parseInt(req.params.companyId),
       req.body.status,
@@ -98,7 +112,7 @@ class JobController {
   public async delete(req: Request, res: Response) {
     const userId = +req.user.id;
 
-    await jobService.delete(parseInt(req.params.id), parseInt(req.params.companyId), userId);
+    await this.jobService.delete(parseInt(req.params.id), parseInt(req.params.companyId), userId);
 
     return res.status(HttpStatus.OK).json({
       message: 'Delete job successfully'
@@ -116,4 +130,4 @@ class JobController {
   }
 }
 
-export const jobController: JobController = new JobController();
+export const jobController: JobController = new JobController(jobService);

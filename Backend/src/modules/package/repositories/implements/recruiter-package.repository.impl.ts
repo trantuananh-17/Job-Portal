@@ -1,16 +1,16 @@
-import { RecruiterPackage } from '@prisma/client';
+import { PrismaClient, RecruiterPackage } from '@prisma/client';
 import { IRecruiterPackageRepository } from '../recruiter-package.repository';
 import prisma from '~/prisma';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import { IRecruiterPackage } from '../../interfaces/recruiter-package.interface';
 
 class RecruiterPackageRepository extends BaseRepository<RecruiterPackage> implements IRecruiterPackageRepository {
-  constructor() {
+  constructor(private readonly prisma: PrismaClient) {
     super(prisma.recruiterPackage);
   }
   async createRecruiterPackage(data: IRecruiterPackage, userId: number): Promise<RecruiterPackage> {
     const { endDate, packageId, startDate } = data;
-    return await prisma.recruiterPackage.create({
+    return await this.prisma.recruiterPackage.create({
       data: {
         packageId,
         recruiterId: userId,
@@ -21,7 +21,7 @@ class RecruiterPackageRepository extends BaseRepository<RecruiterPackage> implem
   }
 
   async findOne(recruiterId: number): Promise<RecruiterPackage | null> {
-    return await prisma.recruiterPackage.findFirst({
+    return await this.prisma.recruiterPackage.findFirst({
       where: {
         recruiterId
       }
@@ -29,4 +29,4 @@ class RecruiterPackageRepository extends BaseRepository<RecruiterPackage> implem
   }
 }
 
-export const recruiterPackageRepository: IRecruiterPackageRepository = new RecruiterPackageRepository();
+export const recruiterPackageRepository: IRecruiterPackageRepository = new RecruiterPackageRepository(prisma);

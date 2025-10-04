@@ -1,21 +1,21 @@
-import { JobSkill } from '@prisma/client';
+import { JobSkill, PrismaClient } from '@prisma/client';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import prisma from '~/prisma';
 import { IJobSkillRepository } from '../job-skill.repository';
 
 class JobSkillRepository extends BaseRepository<JobSkill> implements IJobSkillRepository {
-  constructor() {
+  constructor(private readonly prisma: PrismaClient) {
     super(prisma.jobSkill);
   }
 
   async getAllByJob(jobId: number): Promise<JobSkill[]> {
-    return await prisma.jobSkill.findMany({
+    return await this.prisma.jobSkill.findMany({
       where: { jobId }
     });
   }
 
   async deleteJobSkill(jobId: number, skillName: string): Promise<boolean> {
-    const deleted = await prisma.jobSkill.delete({
+    const deleted = await this.prisma.jobSkill.delete({
       where: {
         jobId_skillName: {
           jobId,
@@ -28,4 +28,4 @@ class JobSkillRepository extends BaseRepository<JobSkill> implements IJobSkillRe
   }
 }
 
-export const jobSkillRepository: IJobSkillRepository = new JobSkillRepository();
+export const jobSkillRepository: IJobSkillRepository = new JobSkillRepository(prisma);

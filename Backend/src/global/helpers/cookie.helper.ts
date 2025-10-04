@@ -5,6 +5,6 @@ export function sendTokenToCookie(res: Response, key: string, token: string, age
     maxAge: age,
     httpOnly: true,
     secure: false,
-    sameSite: 'none'
+    sameSite: 'lax'
   });
 }
