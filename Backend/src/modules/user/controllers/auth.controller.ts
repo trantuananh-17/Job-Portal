@@ -2,10 +2,16 @@ import { Request, Response } from 'express';
 import HttpStatus from '~/global/constants/http.constant';
 import { sendTokenToCookie } from '~/global/helpers/cookie.helper';
 import { authService } from '../services/implements/auth.service.impl';
+import { IAuthService } from '../services/auth.service';
 
 class AuthController {
+  constructor(private readonly authService: IAuthService) {
+    this.signUp = this.signUp.bind(this);
+    this.signIn = this.signIn.bind(this);
+    this.getProfileUser = this.getProfileUser.bind(this);
+  }
   public async signUp(req: Request, res: Response) {
-    const token = await authService.signUp(req.body);
+    const token = await this.authService.signUp(req.body);
 
     sendTokenToCookie(res, 'access_token', token.access_token, 1000 * 60 * 60);
 
@@ -18,7 +24,7 @@ class AuthController {
   }
 
   public async signIn(req: Request, res: Response) {
-    const token = await authService.signIn(req.body);
+    const token = await this.authService.signIn(req.body);
 
     sendTokenToCookie(res, 'access_token', token.access_token, 1000 * 60 * 60);
 
@@ -38,4 +44,4 @@ class AuthController {
   }
 }
 
-export const authController: AuthController = new AuthController();
+export const authController: AuthController = new AuthController(authService);
