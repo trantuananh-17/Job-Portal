@@ -11,7 +11,8 @@
       "@pages/*": ["pages/*"],
       "@routes/*": ["routes/*"],
       "@stores/*": ["stores/*"],
-      "@utils/*": ["utils/*"]
+      "@utils/*": ["utils/*"],
+      "@context/*": ["context/*"]
     }
   },
   "files": [],

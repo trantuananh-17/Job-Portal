@@ -11,19 +11,23 @@ const axiosInstance = axios.create({
   withCredentials: true
 });
 
-// Request Interceptor
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const accessToken = localStorage.getItem('token');
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// Refresh token
+// axiosInstance.interceptors.response.use(
+//   (res) => res,
+//   async (error) => {
+//     if (error.response?.status === 401) {
+//       try {
+//         // Gọi API refresh token
+//         await axiosInstance.get("/auth/refresh", { withCredentials: true });
+//         // Gửi lại request ban đầu
+//         return axiosInstance(error.config);
+//       } catch {
+//         window.location.href = "/login";
+//       }
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 // Response Interceptor
 axiosInstance.interceptors.response.use(
@@ -47,4 +51,4 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default axios;
+export default axiosInstance;

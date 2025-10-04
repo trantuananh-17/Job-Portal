@@ -33,7 +33,8 @@
       "@layouts/*": ["./src/layouts/*"],
       "@stores/*": ["./src/stores/*"],
       "@routes/*": ["./src/routes/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@utils/*": ["./src/utils/*"],
+      "@context/*": ["./src/context/*"]
     }
   },
   "include": ["src"]
