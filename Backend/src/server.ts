@@ -11,6 +11,7 @@ import path from 'path';
 import logger from './global/helpers/logger.helper';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import cors from 'cors';
 
 export class Server {
   private app: Application;
@@ -30,6 +31,14 @@ export class Server {
   private setupMiddleware(): void {
     this.app.use(express.json());
     this.app.use(cookieParser());
+    this.app.use(
+      cors({
+        origin: process.env.CLIENT_URLS,
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization']
+      })
+    );
     this.loggerMorgan();
     this.setupRateLimit();
   }
