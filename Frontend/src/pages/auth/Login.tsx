@@ -5,12 +5,13 @@ import type { IUserLogin } from '@apis/interfaces/user.interface';
 import { AlertCircle, CheckCircle, Eye, EyeOff, Loader, Lock, Mail } from 'lucide-react';
 import { loginSchema } from '@apis/schemas/auth.schema';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getCurrentUserApi, loginApi } from '@apis/auth.api';
 import { useAuth } from '@context/AuthContext';
 
 const Login = () => {
-  const { login, user } = useAuth();
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -27,27 +28,33 @@ const Login = () => {
   const onSubmit = async (data: IUserLogin) => {
     try {
       setLoading(true);
+      setErrorMsg(null);
 
       const response = await loginApi(data);
 
-      if (response.data) {
+      if (response.data.data) {
         const userData = await getCurrentUserApi();
-        login(userData);
 
-        //Redirect based on role
+        login(userData.data);
+
+        setSuccess(true);
         setTimeout(() => {
-          window.location.href = userData?.role === 'recruiter' ? '/recruiter' : '/';
+          switch (userData?.data?.role) {
+            case 'ADMIN':
+              navigate('/admin');
+              break;
+            case 'RECRUITER':
+              navigate('/recruiter');
+              break;
+            default:
+              navigate('/');
+          }
         }, 2000);
       }
-
-      setTimeout(() => {
-        window.location.href = user?.role === 'recruiter' ? '/recruiter' : '/';
-      }, 1500);
-
-      //Redirect baed on user role
-    } catch (error) {
+    } catch (error: any) {
+      setErrorMsg(error.response.data.message || 'Login failed');
+    } finally {
       setLoading(false);
-      setErrorMsg('Login failed');
     }
   };
 

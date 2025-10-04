@@ -1,6 +1,7 @@
 import { API_PATHS } from '@utils/apiPath';
 import axiosInstance from '@utils/axiosInstance';
 import type { IUserLogin } from './interfaces/user.interface';
+import axiosAuth from '@utils/axiosAuth';
 
 export const getCurrentUserApi = async () => {
   const response = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
@@ -8,6 +9,6 @@ export const getCurrentUserApi = async () => {
 };
 
 export const loginApi = async (data: IUserLogin) => {
-  const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, data);
+  const response = await axiosAuth.post(API_PATHS.AUTH.LOGIN, data);
   return response;
 };

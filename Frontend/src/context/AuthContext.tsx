@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { getCurrentUserApi } from '@apis/auth.api';
 import type { IUserResponse } from '@apis/interfaces/user.interface';
 
@@ -34,6 +34,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
       const res = await getCurrentUserApi();
       setUser(res.data);
       setIsAuthenticated(true);
+      setLoading(false);
     } catch (err) {
       setUser(null);
       setIsAuthenticated(false);

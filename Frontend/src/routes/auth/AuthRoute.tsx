@@ -1,10 +1,16 @@
 import Login from '@pages/auth/Login';
 import type { RouteObject } from 'react-router-dom';
+import PublicRoute from './PublicRoute';
 
 const AuthRoute: RouteObject[] = [
   {
-    path: '/login',
-    element: <Login />
+    element: <PublicRoute />,
+    children: [
+      {
+        path: '/login',
+        element: <Login />
+      }
+    ]
   }
 ];
 
