@@ -7,14 +7,17 @@ import { IAuthService } from '../auth.service';
 import { IUser, IUserSignUp } from '../../interfaces/user.interface';
 import { ITokenResponse } from '../../interfaces/auth.interface';
 import { userRepository } from '../../Repository/implements/user.repository.impl';
+import { IUserRepository } from '../../Repository/user.repository';
 
 class AuthService implements IAuthService {
+  constructor(private readonly userRepository: IUserRepository) {}
+
   public async signUp(requestBody: IUserSignUp): Promise<ITokenResponse> {
     const { name, email, password } = requestBody;
 
     const hash = await bcrypt.hash(password, 10);
 
-    const userByEmail = await userRepository.findUserByEmail(email);
+    const userByEmail = await this.userRepository.findUserByEmail(email);
 
     if (userByEmail) {
       throw new ConflictException('Email đã được đăng ký');
@@ -37,7 +40,7 @@ class AuthService implements IAuthService {
   public async signIn(requestBody: IUser): Promise<ITokenResponse> {
     const { email, password } = requestBody;
 
-    const userByEmail = await userRepository.findUserByEmail(email);
+    const userByEmail = await this.userRepository.findUserByEmail(email);
 
     if (!userByEmail) {
       throw new UnauthorizedException('Thông tin đăng nhập không chính xác');
@@ -56,4 +59,4 @@ class AuthService implements IAuthService {
   }
 }
 
-export const authService: IAuthService = new AuthService();
+export const authService: IAuthService = new AuthService(userRepository);
