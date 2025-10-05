@@ -11,11 +11,8 @@ import path from 'path';
 import logger from './global/helpers/logger.helper';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
-<<<<<<< HEAD
 import { checkElasticConnection } from './global/configs/elastic.config';
-=======
 import cors from 'cors';
->>>>>>> a500c70da7b3e9f3f9f39150fe35673db31133b4
 
 export class Server {
   private app: Application;

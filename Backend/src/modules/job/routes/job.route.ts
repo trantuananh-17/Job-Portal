@@ -8,15 +8,9 @@ import { jobCreateSchema, jobUpdateSchema } from '../schemas/job.schema';
 
 const jobRoute = Router();
 
-jobRoute.post(
-  '/',
-  verify,
-  allowRole('RECRUITER', 'ADMIN'),
-  validateSchema(jobCreateSchema),
-  asyncWrapper(jobController.create)
-);
+jobRoute.post('/', verify, allowRole('RECRUITER', 'ADMIN'), validateSchema(jobCreateSchema), jobController.create);
 
-jobRoute.get('/get/all', jobController.getES);
+jobRoute.get('/search', jobController.searchCompletion);
 
 jobRoute.get('/', asyncWrapper(jobController.getAll));
 jobRoute.get('/me', verify, allowRole('RECRUITER'), asyncWrapper(jobController.getAllForRecruiter));

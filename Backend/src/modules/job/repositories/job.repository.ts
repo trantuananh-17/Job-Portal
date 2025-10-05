@@ -12,14 +12,10 @@ export interface IJobRepository extends IBaseRepository<Job> {
   findFirst(id: number, companyId: number, userId: number): Promise<Job | null>;
   findOneActive(id: number): Promise<Job | null>;
   findByUser(id: number, userId: number): Promise<Job | null>;
-
   findIndex(id: number): Promise<
     | (Job & {
         company: Company;
         postBy: User;
-        jobSkills: JobSkill[];
-        jobBenefits: JobBenefit[];
-        jobRequirements: JobRequirement[];
       })
     | null
   >;

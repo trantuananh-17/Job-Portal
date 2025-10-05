@@ -24,26 +24,16 @@ export class JobSyncService {
       await esClient.indices.create({
         index: this.index,
         settings: {
-          index: {
-            number_of_shards: 1,
-            number_of_replicas: 0,
-            refresh_interval: '1s'
-          },
           analysis: {
+            filter: {
+              vn_ascii: { type: 'asciifolding', preserve_original: true }
+            },
             tokenizer: {
-              ngram_tokenizer: {
-                type: 'ngram',
-                min_gram: 3,
-                max_gram: 4,
-                token_chars: ['letter', 'digit']
-              }
+              mid_ngram_tok: { type: 'ngram', min_gram: 2, max_gram: 3, token_chars: ['letter', 'digit'] }
             },
             analyzer: {
-              ngram_analyzer: {
-                type: 'custom',
-                tokenizer: 'ngram_tokenizer',
-                filter: ['lowercase']
-              }
+              mid_ngram_an: { type: 'custom', tokenizer: 'mid_ngram_tok', filter: ['lowercase', 'vn_ascii'] },
+              std_fold: { type: 'custom', tokenizer: 'standard', filter: ['lowercase', 'vn_ascii'] }
             }
           }
         },
@@ -51,26 +41,24 @@ export class JobSyncService {
           properties: {
             id: { type: 'keyword' },
             title: {
-              type: 'text',
-              analyzer: 'standard',
+              type: 'search_as_you_type',
+              analyzer: 'std_fold',
+              search_analyzer: 'std_fold',
               fields: {
                 ngram: {
                   type: 'text',
-                  analyzer: 'ngram_analyzer',
-                  search_analyzer: 'ngram_analyzer'
-                },
-                raw: { type: 'keyword', ignore_above: 256 }
+                  analyzer: 'mid_ngram_an',
+                  search_analyzer: 'std_fold'
+                }
               }
             },
-            description: { type: 'text', analyzer: 'standard' },
+            description: { type: 'text', analyzer: 'std_fold' },
             status: { type: 'keyword' },
             jobRoleName: { type: 'keyword' },
             minSalary: { type: 'integer' },
             maxSalary: { type: 'integer' },
-            companyName: { type: 'keyword' },
+            companyName: { type: 'keyword', normalizer: 'lowercase' },
             recruiter: { type: 'keyword' },
-            skills: { type: 'keyword' },
-            benefits: { type: 'keyword' },
             createdAt: { type: 'date' },
             isDeleted: { type: 'boolean' }
           }

@@ -1,12 +1,7 @@
 import { Request, Response } from 'express';
 import HttpStatus from '~/global/constants/http.constant';
 import { jobService } from '../services/implements/job.service.impl';
-<<<<<<< HEAD
-import { jobQuery } from '~/search/job/queries/job.query';
-import { esClient } from '~/global/configs/elastic.config';
-=======
 import { IJobService } from '../services/job.service';
->>>>>>> a500c70da7b3e9f3f9f39150fe35673db31133b4
 
 class JobController {
   constructor(private readonly jobService: IJobService) {
@@ -17,6 +12,7 @@ class JobController {
     this.update = this.update.bind(this);
     this.updateStatus = this.updateStatus.bind(this);
     this.delete = this.delete.bind(this);
+    this.searchCompletion = this.searchCompletion.bind(this);
   }
 
   public async create(req: Request, res: Response) {
@@ -119,13 +115,14 @@ class JobController {
     });
   }
 
-  public async getES(req: Request, res: Response) {
-    const query = jobQuery.searchMany();
-    const jobs = await esClient.search(query);
+  public async searchCompletion(req: Request, res: Response) {
+    const { q = '', page = 1, limit = 10 } = req.query;
+
+    const data = await this.jobService.searchCompletion(Number(page), Number(limit), q as string);
 
     return res.status(HttpStatus.OK).json({
-      message: 'Delete job successfully',
-      data: jobs.hits.hits
+      message: 'Get title job successfully',
+      data
     });
   }
 }
