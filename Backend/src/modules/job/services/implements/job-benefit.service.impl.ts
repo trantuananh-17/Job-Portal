@@ -1,15 +1,12 @@
-import { JobBenefit, Benefit } from '@prisma/client';
-import { IJobBenefitService } from '../job-benefit.service';
-import { jobBenefitRepository } from '../../repositories/implements/job-benefit.repository.impl';
-import { jobService } from './job.service.impl';
+import { Benefit, JobBenefit } from '@prisma/client';
 import { NotFoundException } from '~/global/core/error.core';
-import { JobSyncService } from '~/search/job/sync/job.sync';
+import { jobBenefitRepository } from '../../repositories/implements/job-benefit.repository.impl';
 import { IJobBenefitRepository } from '../../repositories/job-benefit.repository';
+import { IJobBenefitService } from '../job-benefit.service';
 import { IJobService } from '../job.service';
+import { jobService } from './job.service.impl';
 
 class JobBenefitService implements IJobBenefitService {
-  private readonly jobSyncService = new JobSyncService();
-
   constructor(
     private readonly jobBenefitRepository: IJobBenefitRepository,
     private readonly jobService: IJobService
@@ -25,12 +22,6 @@ class JobBenefitService implements IJobBenefitService {
     };
 
     const jobBenefit = await this.jobBenefitRepository.create(data);
-
-    const jobIndex = await this.jobService.findIndex(jobId);
-
-    if (jobIndex) {
-      this.jobSyncService.updateJob(jobIndex);
-    }
 
     return jobBenefit;
   }
@@ -55,12 +46,6 @@ class JobBenefitService implements IJobBenefitService {
     await this.findOne(jobId, benefitName);
 
     await this.jobBenefitRepository.deleteBenefit(jobId, benefitName);
-
-    const jobIndex = await this.jobService.findIndex(jobId);
-
-    if (jobIndex) {
-      this.jobSyncService.updateJob(jobIndex);
-    }
   }
 
   async findOne(jobId: number, benefitName: string): Promise<JobBenefit> {
