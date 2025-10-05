@@ -15,32 +15,32 @@ const Carousel = () => {
     <div className='bg-black py-10'>
       <div className='group container flex space-x-16 overflow-hidden'>
         <div className='animate-carouselLoop flex space-x-12 group-hover:[animation-play-state:paused]'>
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={JS} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={TS} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={JAVA} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={PHP} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={CSHARP} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={PYTHON} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={MYSQL} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={POSTGRES} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={NODE} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={REACT} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={VUE} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={DOCKER} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={JS} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={TS} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={JAVA} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={PHP} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={CSHARP} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={PYTHON} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={MYSQL} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={POSTGRES} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={NODE} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={REACT} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={VUE} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={DOCKER} alt='' />
         </div>
         <div className='animate-carouselLoop aria-hidden:true flex space-x-12 group-hover:[animation-play-state:paused]'>
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={JS} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={TS} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={JAVA} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={PHP} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={CSHARP} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={PYTHON} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={MYSQL} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={POSTGRES} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={NODE} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={REACT} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={VUE} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={DOCKER} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={JS} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={TS} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={JAVA} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={PHP} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={CSHARP} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={PYTHON} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={MYSQL} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={POSTGRES} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={NODE} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={REACT} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={VUE} alt='' />
+          <img loading='lazy' className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' src={DOCKER} alt='' />
         </div>
       </div>
     </div>
