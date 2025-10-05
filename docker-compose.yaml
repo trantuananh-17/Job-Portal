@@ -1,44 +1,62 @@
 version: "3.9"
 
 services:
+  # Dịch vụ 'kibana-genkeys' chạy một lệnh duy nhất để tạo và
+  # in khóa mã hóa cho Kibana.
+  #
+  # Theo mặc định, nó bị loại trừ khỏi các dịch vụ được khởi động bởi 'docker compose up'
+  # do nó thuộc về cấu hình không mặc định. Để chạy nó, hãy cung cấp
+  # cờ CLI '--profile=setup' cho các lệnh Compose, hoặc "up" dịch vụ theo tên
+  # lệnh chạy 'docker compose up kibana-genkeys'.
+  kibana-genkeys:
+    profiles:
+      - setup
+    build:
+      context: kibana/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    command:
+      - bin/kibana-encryption-keys
+      - generate
+    network_mode: none
+
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.1.1
-    container_name: elasticsearch_container
-    restart: always
-    environment:
-      - ES_JAVA_OPTS=-Xmx1g -Xms1g
-      - discovery.type=single-node
-      - xpack.security.enabled=true
-      - ELASTIC_PASSWORD=admin1234
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+    build:
+      context: ./Backend/elasticsearch/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
-      - ./backend/volumes/elasticsearch-data:/usr/share/elasticsearch/data
+      - ./Backend/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+      - ./Backend/elasticsearch/data:/usr/share/elasticsearch/data:Z
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - 9200:9200
+      - 9300:9300
+    environment:
+      node.name: elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      discovery.type: single-node
     networks:
-      - elastic
+      - elk
+    restart: unless-stopped
 
   kibana:
-    container_name: kibana_container
-    image: docker.elastic.co/kibana/kibana:9.1.1
-    restart: always
-    environment:
-      - ELASTICSEARCH_HOSTS="http://elasticsearch_container:9200"
-      - ELASTICSEARCH_SERVICEACCOUNT_TOKEN=${KIBANA_SERVICE_TOKEN}
-      - XPACK_FLEET_AGENTS_ELASTICSEARCH_HOSTS=["http://elasticsearch_container:9200"]
+    build:
+      context: ./Backend/kibana/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./Backend/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
       - 5601:5601
+    environment:
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
     networks:
-      - elastic
-    volumes:
-      - ./kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+      - elk
     depends_on:
       - elasticsearch
+    restart: unless-stopped
 
 networks:
-  elastic:
-    name: elastic
+  elk:
+    driver: bridge
