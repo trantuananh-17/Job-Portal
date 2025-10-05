@@ -13,9 +13,6 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
     | (Job & {
         company: Company;
         postBy: User;
-        jobSkills: JobSkill[];
-        jobBenefits: JobBenefit[];
-        jobRequirements: JobRequirement[];
       })
     | null
   > {
@@ -23,13 +20,11 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
       where: { id },
       include: {
         company: true,
-        postBy: true,
-        jobSkills: true,
-        jobBenefits: true,
-        jobRequirements: true
+        postBy: true
       }
     });
   }
+
   async findByUser(id: number, userId: number): Promise<Job | null> {
     return await this.prisma.job.findFirst({
       where: { id, postById: userId }

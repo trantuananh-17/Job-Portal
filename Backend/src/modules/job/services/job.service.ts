@@ -20,4 +20,6 @@ export interface IJobService {
   findJobByUser(id: number, userId: number): Promise<Job>;
 
   findIndex(id: number): Promise<JobDocument>;
+
+  searchCompletion(page: number, limit: number, q: string): Promise<string[]>;
 }
