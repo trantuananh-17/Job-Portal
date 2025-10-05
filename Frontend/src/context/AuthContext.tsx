@@ -1,6 +1,6 @@
+import { getCurrentUserApi } from '@apis/auth/auth.api';
+import type { IUserResponse } from '@apis/auth/interfaces/user.interface';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getCurrentUserApi } from '@apis/auth.api';
-import type { IUserResponse } from '@apis/interfaces/user.interface';
 
 type AuthContextType = {
   user: IUserResponse | null;

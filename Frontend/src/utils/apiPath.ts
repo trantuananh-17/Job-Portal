@@ -5,5 +5,8 @@ export const API_PATHS = {
     REGISTER: '/api/v1/auth/register',
     LOGIN: '/api/v1/auth/login',
     GET_PROFILE: '/api/v1/auth/me'
+  },
+  JOBS: {
+    SEARCH_COMPLETE: 'api/v1/jobs/search'
   }
 };
