@@ -1,19 +1,20 @@
-import type { RouteObject } from 'react-router-dom';
+import { withSuspense } from '@utils/withSuspense';
+import { lazy } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import UserLayout from '../../layouts/UserLayout';
-import Landing from '@pages/user/Landing';
-import Jobs from '@pages/user/Jobs';
-import JobDetail from '@pages/user/JobDetail';
 
-const UserRoute: RouteObject[] = [
-  {
-    path: '',
-    element: <UserLayout />,
-    children: [
-      { index: true, element: <Landing /> },
-      { path: 'jobs', element: <Jobs /> },
-      { path: 'job-detail', element: <JobDetail /> }
-    ]
-  }
-];
+const Landing = lazy(() => import('@pages/user/Landing'));
+const Jobs = lazy(() => import('@pages/user/Jobs'));
+const JobDetail = lazy(() => import('@pages/user/JobDetail'));
 
-export default UserRoute;
+export default function UserRoute() {
+  return (
+    <Routes>
+      <Route path='/' element={<UserLayout />}>
+        <Route index element={withSuspense(Landing)} />
+        <Route path='jobs' element={withSuspense(Jobs)} />
+        <Route path='job-detail' element={withSuspense(JobDetail)} />
+      </Route>
+    </Routes>
+  );
+}

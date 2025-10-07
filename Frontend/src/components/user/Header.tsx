@@ -88,6 +88,13 @@ const Header = () => {
       .replace(/[^\w-]+/g, '');
   };
 
+  const capitalizeWords = (str: string) => str.replace(/\b\w/g, (char) => char.toUpperCase());
+
+  useEffect(() => {
+    const currentPath = location.pathname === '/' ? 'Home' : location.pathname.replace('/', '').replace('-', ' ');
+    setActive(capitalizeWords(currentPath));
+  }, [location]);
+
   return (
     <header className='fixed top-0 left-0 z-50 w-full bg-black text-white shadow-md'>
       <div className='mx-auto flex h-[70px] w-full max-w-7xl items-center justify-between px-6'>

@@ -7,6 +7,7 @@ import RecentJob from './components/RecentJob';
 import { useDebounce } from '@hooks/useDebounce';
 import { useEffect, useRef, useState } from 'react';
 import { searchJobCompletionApi } from '@apis/jobs/job.api';
+import JobCardSkeleton from '@components/common/JobCardSkeleton';
 
 const Landing = () => {
   const { user } = useAuth();
@@ -41,6 +42,12 @@ const Landing = () => {
       <RecentJob />
       <BetterFuture />
       <Career />
+
+      <div className='container flex flex-col gap-6'>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <JobCardSkeleton key={index} />
+        ))}
+      </div>
     </div>
   );
 };

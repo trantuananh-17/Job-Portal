@@ -1,23 +1,20 @@
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { lazy } from 'react';
+import { withSuspense } from '@utils/withSuspense';
 import DashboardLayout from '@layouts/DashboardLayout';
-import { Navigate, type RouteObject } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
-import RecruiterDashboard from '@pages/recruiter/recruiter-dashboard';
 
-const RecruiterRoute: RouteObject[] = [
-  {
-    path: '/recruiter',
-    element: <ProtectedRoute role='RECRUITER' />,
-    children: [
-      {
-        element: <DashboardLayout />,
-        children: [
-          { index: true, element: <Navigate to='recruiter-dashboard' replace /> },
-          { path: 'recruiter-dashboard', element: <RecruiterDashboard /> },
-          { path: 'post-job', element: <RecruiterDashboard /> }
-        ]
-      }
-    ]
-  }
-];
+const RecruiterDashboard = lazy(() => import('@pages/recruiter/recruiter-dashboard'));
 
-export default RecruiterRoute;
+export default function RecruiterRoute() {
+  return (
+    <Routes>
+      <Route path='/' element={<ProtectedRoute role='RECRUITER' />}>
+        <Route element={<DashboardLayout />}>
+          <Route index element={<Navigate to='recruiter-dashboard' replace />} />
+          <Route path='recruiter-dashboard' element={withSuspense(RecruiterDashboard)} />
+        </Route>
+      </Route>
+    </Routes>
+  );
+}
