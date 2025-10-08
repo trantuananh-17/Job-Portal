@@ -34,6 +34,10 @@ const Landing = () => {
 
     fetchData();
   }, [debouncedSearch]);
+  useEffect(() => {
+    console.log('Landing mounted');
+    return () => console.log('Landing unmounted');
+  }, []);
 
   return (
     <div>

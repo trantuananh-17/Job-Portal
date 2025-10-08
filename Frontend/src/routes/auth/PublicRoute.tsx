@@ -12,7 +12,7 @@ const PublicRoute = () => {
     return () => clearTimeout(timeout);
   }, []);
 
-  if (showLoading && isAuthenticated && user) {
+  if (showLoading) {
     return (
       <div>
         <LoadingSpinner />

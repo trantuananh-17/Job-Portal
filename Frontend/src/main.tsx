@@ -3,12 +3,14 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
+import ScrollToTop from './components/common/SrcollToTop.tsx';
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
+      <ScrollToTop />
       <App />
     </BrowserRouter>
   </QueryClientProvider>

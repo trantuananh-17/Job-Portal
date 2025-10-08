@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 import LOGO from '../../assets/images/img_logo.png';
 import { menuItems } from '../../constant/menuItem';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useAuth } from '@context/AuthContext';
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { user } = useAuth();
 
   const [active, setActive] = useState('Home');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -117,18 +121,17 @@ const Header = () => {
                       active === item ? 'opacity-100' : 'opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <NavLink to={item === 'Home' ? '/' : toSlug(item)} className='block'>
-                      {item}
-                    </NavLink>
+                    {item}
                   </li>
                 ))}
               </ul>
             </nav>
-
-            <div className='flex gap-5'>
-              <button className='font-semibold'>Login</button>
-              <button className='rounded-lg bg-[#309689] px-5 py-[10px] font-semibold'>Register</button>
-            </div>
+            {!user && (
+              <div className='flex gap-5'>
+                <button className='font-semibold'>Login</button>
+                <button className='rounded-lg bg-[#309689] px-5 py-[10px] font-semibold'>Register</button>
+              </div>
+            )}
           </>
         ) : (
           <button onClick={toggleSideBar} className='rounded-xl p-2 transition-colors duration-200 hover:bg-gray-900'>
@@ -163,9 +166,7 @@ const Header = () => {
                   onClick={() => handleNav(item)}
                   className={` ${active === item ? 'opacity-100' : 'opacity-70 hover:opacity-100'}`}
                 >
-                  <NavLink to={item === 'Home' ? '/' : toSlug(item)} className='block'>
-                    {item}
-                  </NavLink>
+                  {item}
                 </li>
               ))}
             </ul>

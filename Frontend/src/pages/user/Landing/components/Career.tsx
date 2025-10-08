@@ -1,13 +1,14 @@
-import CAREER from '@assets/images/img_career.png';
 import Button from './ui/Button';
 import CareerInfoItem from './ui/CareerInfoItem';
+
+const CAREER = '/images/img_career.webp';
 
 const Career = () => {
   return (
     <section className='container flex flex-col gap-[86px] pt-10 pb-30 lg:pt-15'>
       <div className='flex flex-col items-center gap-8 sm:flex-row sm:gap-15 lg:gap-[86px]'>
         <div className='bg-prmary bg-primary-light overflow-hidden rounded-[20px] lg:max-h-[520px] lg:max-w-[550px]'>
-          <img src={CAREER} alt='image career' className='image' />
+          <img src={CAREER} loading='lazy' alt='image career' className='image' />
         </div>
 
         <div className='flex flex-col gap-5 lg:gap-15'>

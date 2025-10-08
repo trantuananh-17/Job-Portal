@@ -1,5 +1,6 @@
-import BANNER from '@assets/images/img_better.png';
 import Button from './ui/Button';
+
+const BANNER = '/images/img_better.webp';
 
 const BetterFuture = () => {
   return (
@@ -7,6 +8,7 @@ const BetterFuture = () => {
       <div className='flex flex-col overflow-hidden rounded-[20px] bg-black md:relative'>
         {/* Background Image */}
         <img
+          loading='lazy'
           src={BANNER}
           alt='Banner image'
           className='h-full object-cover md:absolute md:left-[10%] lg:left-[20%] xl:left-[35%] 2xl:left-[40%]'

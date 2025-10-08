@@ -1,8 +1,11 @@
 import { BookmarkPlus, BriefcaseBusiness, MapPin, Wallet } from 'lucide-react';
 import LOGO_COMPANY from '@assets/images/logo_company_1.png';
 import Button from './Button';
+import { useNavigate } from 'react-router-dom';
 
 const JobItem = () => {
+  const navigate = useNavigate();
+
   return (
     <li className='flex flex-col gap-7 rounded-[20px] p-10 shadow-md'>
       <div className='flex flex-col gap-6'>
@@ -38,7 +41,7 @@ const JobItem = () => {
           </li>
         </ul>
         <div className='sm:self-end'>
-          <Button name='Job Details' full={false} />
+          <Button name='Job Details' full={false} onClick={() => navigate('/job-detail')} />
         </div>
       </div>
     </li>

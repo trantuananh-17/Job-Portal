@@ -32,9 +32,10 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     try {
       setLoading(true);
       const res = await getCurrentUserApi();
+      console.log(res.data);
+
       setUser(res.data);
       setIsAuthenticated(true);
-      setLoading(false);
     } catch (err) {
       setUser(null);
       setIsAuthenticated(false);
@@ -42,6 +43,16 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const path = location.pathname;
+
+    if (!path.startsWith('/auth')) {
+      checkAuthStatus();
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
   const login = (userData: IUserResponse) => {
     setUser(userData);
