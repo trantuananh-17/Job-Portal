@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import 'dotenv/config';
-import { ConflictException, UnauthorizedException } from '~/global/core/error.core';
+import { ConflictException, NotFoundException, UnauthorizedException } from '~/global/core/error.core';
 import prisma from '~/prisma';
 import { generateAccessToken, generateRefreshToken } from '~/global/helpers/token.helper';
 import { IAuthService } from '../auth.service';
@@ -8,9 +8,28 @@ import { IUser, IUserSignUp } from '../../interfaces/user.interface';
 import { ITokenResponse } from '../../interfaces/auth.interface';
 import { userRepository } from '../../Repository/implements/user.repository.impl';
 import { IUserRepository } from '../../Repository/user.repository';
+import jwt from 'jsonwebtoken';
 
 class AuthService implements IAuthService {
   constructor(private readonly userRepository: IUserRepository) {}
+
+  public async refreshToken(refreshToken: string): Promise<ITokenResponse> {
+    if (!refreshToken) {
+      throw new NotFoundException('Token không hợp lệ');
+    }
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET!) as { email: string };
+
+    const user = await this.userRepository.findUserByEmail(decoded.email);
+
+    if (!user) {
+      throw new UnauthorizedException('Thông tin đăng nhập không chính xác');
+    }
+
+    const accessToken = generateAccessToken(user);
+    const refressToken = generateRefreshToken(user);
+
+    return { access_token: accessToken, refresh_token: refressToken };
+  }
 
   public async signUp(requestBody: IUserSignUp): Promise<ITokenResponse> {
     const { name, email, password } = requestBody;
