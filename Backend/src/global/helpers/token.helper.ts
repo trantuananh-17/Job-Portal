@@ -1,4 +1,5 @@
 import { User } from '@prisma/client';
+import { Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 export function generateAccessToken(user: User) {
@@ -23,4 +24,12 @@ export function generateRefreshToken(user: User) {
   );
 
   return accessToken;
+}
+
+export function clearCookieToken(token: string, res: Response) {
+  return res.clearCookie(token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none'
+  });
 }
