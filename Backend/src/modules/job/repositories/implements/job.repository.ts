@@ -2,11 +2,35 @@ import { Company, Job, JobBenefit, JobRequirement, JobSkill, JobStatus, PrismaCl
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import { IJobRepository } from '../job.repository';
 import prisma from '~/prisma';
-import { IJob } from '../../interfaces/job.interface';
+import { IJob, IJobResponse } from '../../interfaces/job.interface';
 
 class JobRepository extends BaseRepository<Job> implements IJobRepository {
   constructor(private readonly prisma: PrismaClient) {
     super(prisma.job);
+  }
+
+  async getTotalJob(): Promise<number> {
+    return await this.prisma.job.count({
+      where: {
+        isDeleted: false,
+        status: 'ACTIVE'
+      }
+    });
+  }
+
+  async getAllByCandidate(page: number, limit: number): Promise<(Job & { company: Company })[]> {
+    return await this.prisma.job.findMany({
+      // where: {
+      //   isDeleted: false,
+      //   status: 'ACTIVE'
+      // },
+      include: {
+        company: true
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit
+    });
   }
 
   async findIndex(id: number): Promise<

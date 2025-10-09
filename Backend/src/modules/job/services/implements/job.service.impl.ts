@@ -1,4 +1,4 @@
-import { Job, JobStatus } from '@prisma/client';
+import { Company, Job, JobStatus } from '@prisma/client';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
 import { BadRequestException, NotFoundException } from '~/global/core/error.core';
 import { excludeFields } from '~/global/helpers/excludeFields.helper';
@@ -8,7 +8,7 @@ import { companyService } from '~/modules/company/services/implements/company.se
 import { userService } from '~/modules/user/services/user.service';
 import { JobDocument, mapJobToDocument } from '~/search/job/mapper/job.mapper';
 import { JobSyncService } from '~/search/job/sync/job.sync';
-import { IJob } from '../../interfaces/job.interface';
+import { IJob, IJobResponse } from '../../interfaces/job.interface';
 import { jobRepository } from '../../repositories/implements/job.repository';
 import { IJobService } from '../job.service';
 import { jobRoleService } from './job-role.service.impl';
@@ -20,6 +20,7 @@ import { packageService } from '~/modules/package/services/implements/package.se
 import { jobQuery } from '~/search/job/queries/job.query';
 import { esClient } from '~/global/configs/elastic.config';
 import logger from '~/global/helpers/logger.helper';
+import { jobMaper } from '../../mappers/job.mapper';
 
 class JobService implements IJobService {
   private readonly jobSyncService = new JobSyncService();
@@ -30,6 +31,33 @@ class JobService implements IJobService {
     private readonly jobRepository: IJobRepository,
     private readonly packageService: IPackageService
   ) {}
+
+  async getAllJob(
+    page: number,
+    limit: number
+  ): Promise<{
+    data: IJobResponse[];
+    totalDocs: number;
+    totalPages: number;
+    page: number;
+    limit: number;
+  }> {
+    const [jobs, totalDocs] = await Promise.all([
+      this.jobRepository.getAllByCandidate(page, limit),
+      this.jobRepository.getTotalJob()
+    ]);
+
+    const totalPages = Math.ceil(totalDocs / limit);
+    const data: IJobResponse[] = jobs.map((job) => jobMaper.toJobResponse(job));
+
+    return {
+      data,
+      totalDocs,
+      totalPages,
+      page,
+      limit
+    };
+  }
 
   async searchCompletion(page: number, limit: number, q: string): Promise<string[]> {
     const query = jobQuery.searchComplete(page, limit, q);
