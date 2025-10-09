@@ -1,4 +1,4 @@
-import { getCurrentUserApi } from '@apis/auth/auth.api';
+import { getCurrentUserApi, logoutApi, refreshTokenApi } from '@apis/auth/auth.api';
 import type { IUserResponse } from '@apis/auth/interfaces/user.interface';
 import { createContext, useContext, useEffect, useState } from 'react';
 
@@ -31,14 +31,26 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       setLoading(true);
-      const res = await getCurrentUserApi();
-      console.log(res.data);
 
+      const res = await getCurrentUserApi();
       setUser(res.data);
       setIsAuthenticated(true);
-    } catch (err) {
-      setUser(null);
-      setIsAuthenticated(false);
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        try {
+          await refreshTokenApi();
+          const retryRes = await getCurrentUserApi();
+          setUser(retryRes.data);
+          setIsAuthenticated(true);
+          return;
+        } catch {
+          setUser(null);
+          setIsAuthenticated(false);
+        }
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
     } finally {
       setLoading(false);
     }
@@ -46,7 +58,15 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     const path = location.pathname;
+    const sessionExpired = localStorage.getItem('session_expired');
 
+    if (sessionExpired) {
+      localStorage.removeItem('session_expired');
+      setLoading(false);
+      setUser(null);
+      setIsAuthenticated(false);
+      return;
+    }
     if (!path.startsWith('/auth')) {
       checkAuthStatus();
     } else {
@@ -60,12 +80,12 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   };
 
   const logout = async () => {
-    // try {
-    //   await logoutApi();
-    // } finally {
-    //   setUser(null);
-    //   setIsAuthenticated(false);
-    // }
+    try {
+      await logoutApi();
+    } finally {
+      setUser(null);
+      setIsAuthenticated(false);
+    }
   };
 
   const value: AuthContextType = {

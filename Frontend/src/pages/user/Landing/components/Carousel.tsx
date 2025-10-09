@@ -24,7 +24,6 @@ const Carousel = () => {
               key={i}
               src={src}
               alt={`logo-${i}`}
-              loading='lazy'
               decoding='async'
               className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20'
             />
@@ -41,7 +40,6 @@ const Carousel = () => {
               key={`clone-${i}`}
               src={src}
               alt=''
-              loading='lazy'
               decoding='async'
               className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20'
             />

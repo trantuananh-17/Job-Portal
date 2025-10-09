@@ -4,12 +4,13 @@ import { menuItems } from '../../constant/menuItem';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '@context/AuthContext';
+import ProfileDropdown from './ProfileDropdown';
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const [active, setActive] = useState('Home');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -67,20 +68,6 @@ const Header = () => {
     };
   }, [sidebarOpen]);
 
-  useEffect(() => {
-    const html = document.documentElement;
-
-    if (sidebarOpen) {
-      html.style.overflow = 'hidden';
-    } else {
-      html.style.overflow = '';
-    }
-
-    return () => {
-      html.style.overflow = '';
-    };
-  }, [sidebarOpen]);
-
   const toggleSideBar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -98,6 +85,11 @@ const Header = () => {
     const currentPath = location.pathname === '/' ? 'Home' : location.pathname.replace('/', '').replace('-', ' ');
     setActive(capitalizeWords(currentPath));
   }, [location]);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/auth/login');
+  };
 
   return (
     <header className='fixed top-0 left-0 z-50 w-full bg-black text-white shadow-md'>
@@ -126,17 +118,46 @@ const Header = () => {
                 ))}
               </ul>
             </nav>
-            {!user && (
+            {!user ? (
               <div className='flex gap-5'>
-                <button className='font-semibold'>Login</button>
+                <button className='font-semibold' onClick={() => navigate('/auth/login')}>
+                  Login
+                </button>
                 <button className='rounded-lg bg-[#309689] px-5 py-[10px] font-semibold'>Register</button>
               </div>
+            ) : (
+              <ProfileDropdown
+                isOpen={profileDropdownOpen}
+                name={user.name}
+                email={user.email}
+                avatar=''
+                onToggle={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  setProfileDropdownOpen(!profileDropdownOpen);
+                }}
+                onLogout={handleLogout}
+              />
             )}
           </>
         ) : (
-          <button onClick={toggleSideBar} className='rounded-xl p-2 transition-colors duration-200 hover:bg-gray-900'>
-            {sidebarOpen ? <X className='h-5 w-5 text-gray-200' /> : <Menu className='h-5 w-5 text-gray-200' />}
-          </button>
+          <div className='flex'>
+            {user && (
+              <ProfileDropdown
+                isOpen={profileDropdownOpen}
+                name={user.name}
+                email={user.email}
+                avatar=''
+                onToggle={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  setProfileDropdownOpen(!profileDropdownOpen);
+                }}
+                onLogout={handleLogout}
+              />
+            )}
+            <button onClick={toggleSideBar} className='rounded-xl p-2 transition-colors duration-200 hover:bg-gray-900'>
+              {sidebarOpen ? <X className='h-5 w-5 text-gray-200' /> : <Menu className='h-5 w-5 text-gray-200' />}
+            </button>
+          </div>
         )}
       </div>
 
@@ -170,13 +191,18 @@ const Header = () => {
                 </li>
               ))}
             </ul>
-
             {/* Auth buttons */}
-            <div className='flex flex-col gap-4'>
-              <button className='rounded-md border border-white py-4 font-semibold'>Login</button>
-              <button className='bg-primary rounded-md py-4 font-semibold text-white'>Register</button>
-            </div>
-          </div>{' '}
+            {!user ? (
+              <div className='flex flex-col gap-4'>
+                <button className='rounded-md border border-white py-4 font-semibold'>Login</button>
+                <button className='bg-primary rounded-md py-4 font-semibold text-white'>Register</button>
+              </div>
+            ) : (
+              <button onClick={handleLogout} className='bg-primary rounded-md py-4 font-semibold text-white'>
+                Logout
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

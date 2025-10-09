@@ -35,10 +35,11 @@ const Login = () => {
       if (response.data.data) {
         const userData = await getCurrentUserApi();
 
-        login(userData.data);
-
         setSuccess(true);
+
         setTimeout(() => {
+          login(userData.data);
+
           switch (userData?.data?.role) {
             case 'ADMIN':
               navigate('/admin');

@@ -1,14 +1,23 @@
 import { API_PATHS } from '@utils/apiPath';
-import axiosInstance from '@utils/axiosInstance';
 import type { IUserLogin } from './interfaces/user.interface';
 import axiosAuth from '@utils/axiosAuth';
 
 export const getCurrentUserApi = async () => {
-  const response = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
+  const response = await axiosAuth.get(API_PATHS.AUTH.GET_PROFILE);
   return response.data;
 };
 
 export const loginApi = async (data: IUserLogin) => {
   const response = await axiosAuth.post(API_PATHS.AUTH.LOGIN, data);
+  return response;
+};
+
+export const refreshTokenApi = async () => {
+  const response = await axiosAuth.post(API_PATHS.AUTH.REFRESH_TOKEN);
+  return response;
+};
+
+export const logoutApi = async () => {
+  const response = await axiosAuth.post(API_PATHS.AUTH.LOGOUT);
   return response;
 };

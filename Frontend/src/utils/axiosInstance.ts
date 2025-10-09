@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { BASE_URL } from './apiPath';
+import { refreshTokenApi } from '@apis/auth/auth.api';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -12,34 +13,28 @@ const axiosInstance = axios.create({
 });
 
 // Refresh token
-// axiosInstance.interceptors.response.use(
-//   (res) => res,
-//   async (error) => {
-//     if (error.response?.status === 401) {
-//       try {
-//         // Gọi API refresh token
-//         await axiosInstance.get("/auth/refresh", { withCredentials: true });
-//         // Gửi lại request ban đầu
-//         return axiosInstance(error.config);
-//       } catch {
-//         window.location.href = "/login";
-//       }
-//     }
-//     return Promise.reject(error);
-//   }
-// );
-
-// Response Interceptor
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    // Handle common errors globally
+  (res) => res,
+  async (error) => {
+    if (error.response?.status === 401) {
+      try {
+        await refreshTokenApi();
+
+        return axiosInstance(error.config);
+      } catch {
+        window.location.href = '/auth/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Global error handler
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
     if (error.response) {
-      if (error.response.status === 401) {
-        // Redirect to login page
-      } else if (error.response.status === 500) {
+      if (error.response.status === 500) {
         console.error('Server error. Please try again later.');
       }
     } else if (error.code === 'ECONNABORTED') {
