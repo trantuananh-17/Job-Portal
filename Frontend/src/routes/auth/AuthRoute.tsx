@@ -1,17 +1,18 @@
-import Login from '@pages/auth/Login';
-import type { RouteObject } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import { lazy } from 'react';
+import { withSuspense } from '@utils/withSuspense';
 import PublicRoute from './PublicRoute';
 
-const AuthRoute: RouteObject[] = [
-  {
-    element: <PublicRoute />,
-    children: [
-      {
-        path: '/login',
-        element: <Login />
-      }
-    ]
-  }
-];
+const Login = lazy(() => import('@pages/auth/Login'));
 
-export default AuthRoute;
+const LoginWithSuspense = withSuspense(Login);
+
+export default function AuthRoute() {
+  return (
+    <Routes>
+      <Route path='/' element={<PublicRoute />}>
+        <Route path='login' element={<LoginWithSuspense />} />
+      </Route>
+    </Routes>
+  );
+}
