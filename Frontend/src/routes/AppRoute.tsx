@@ -1,8 +1,18 @@
-import type { RouteObject } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './auth/ProtectedRoute';
+import AuthRoute from './auth/AuthRoute';
 import UserRoute from './user/UserRoute';
 import RecruiterRoute from './recruiter/RecruiterRoute';
-import AuthRoute from './auth/AuthRoute';
 
-const AppRoute: RouteObject[] = [...AuthRoute, ...UserRoute, ...RecruiterRoute];
+export default function AppRoute() {
+  return (
+    <Routes>
+      <Route path='/auth/*' element={<AuthRoute />} />
 
-export default AppRoute;
+      <Route path='/*' element={<UserRoute />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path='/recruiter/*' element={<RecruiterRoute />} />
+      </Route>
+    </Routes>
+  );
+}

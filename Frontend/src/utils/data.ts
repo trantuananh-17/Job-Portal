@@ -1,10 +1,9 @@
-import { Building2, FileCheck, LayoutDashboard, Package, Plus, User, Users } from 'lucide-react';
+import { Building2, LayoutDashboard, Package, Plus, User, Users } from 'lucide-react';
 
 const NAVIGATION_MENU = [
   { id: 'recruiter/recruiter-dashboard', name: 'Dashboard', icon: LayoutDashboard },
   { id: 'recruiter/post-job', name: 'Post Job', icon: Plus },
   { id: 'recruiter/manage-jobs', name: 'Manage Jobs', icon: LayoutDashboard },
-  { id: 'recruiter/manage-applicants', name: 'Applicant', icon: FileCheck },
   { id: 'recruiter/manage-company-profile', name: 'Company Profile ', icon: Building2 },
   { id: 'recruiter/manage-package', name: 'Package', icon: Package },
   { id: 'recruiter/candidates', name: 'Candidate', icon: User }

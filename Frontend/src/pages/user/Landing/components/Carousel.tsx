@@ -1,46 +1,49 @@
-import CSHARP from '@assets/images/logo_c-sharp.png';
-import JAVA from '@assets/images/logo_java.png';
-import JS from '@assets/images/logo_js.png';
-import MYSQL from '@assets/images/logo_mysql-database.png';
-import NODE from '@assets/images/logo_nodejs.png';
-import POSTGRES from '@assets/images/logo_postgres.png';
-import PHP from '@assets/images/logo_php.png';
-import REACT from '@assets/images/logo_react.png';
-import VUE from '@assets/images/logo_vue.png';
-import TS from '@assets/images/logo_typescript.png';
-import DOCKER from '@assets/images/logo_social.png';
-import PYTHON from '@assets/images/logo_python.png';
+const logos = [
+  '/images/logo_js.webp',
+  '/images/logo_typescript.webp',
+  '/images/logo_java.webp',
+  '/images/logo_php.webp',
+  '/images/logo_c-sharp.webp',
+  '/images/logo_python.webp',
+  '/images/logo_mysql-database.webp',
+  '/images/logo_postgres.webp',
+  '/images/logo_nodejs.webp',
+  '/images/logo_react.webp',
+  '/images/logo_vue.webp',
+  '/images/logo_social.webp'
+];
+
 const Carousel = () => {
   return (
     <div className='bg-black py-10'>
       <div className='group container flex space-x-16 overflow-hidden'>
+        {/* Dãy chính */}
         <div className='animate-carouselLoop flex space-x-12 group-hover:[animation-play-state:paused]'>
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={JS} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={TS} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={JAVA} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={PHP} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={CSHARP} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={PYTHON} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={MYSQL} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={POSTGRES} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={NODE} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={REACT} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={VUE} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={DOCKER} alt='' />
+          {logos.map((src, i) => (
+            <img
+              key={i}
+              src={src}
+              alt={`logo-${i}`}
+              decoding='async'
+              className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20'
+            />
+          ))}
         </div>
-        <div className='animate-carouselLoop aria-hidden:true flex space-x-12 group-hover:[animation-play-state:paused]'>
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={JS} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={TS} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={JAVA} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={PHP} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={CSHARP} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={PYTHON} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={MYSQL} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={POSTGRES} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={NODE} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={REACT} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={VUE} alt='' />
-          <img loading='lazy' className='h-20 w-20 max-w-none' src={DOCKER} alt='' />
+
+        {/* Dãy nhân bản để loop liên tục */}
+        <div
+          aria-hidden='true'
+          className='animate-carouselLoop flex space-x-12 group-hover:[animation-play-state:paused]'
+        >
+          {logos.map((src, i) => (
+            <img
+              key={`clone-${i}`}
+              src={src}
+              alt=''
+              decoding='async'
+              className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20'
+            />
+          ))}
         </div>
       </div>
     </div>

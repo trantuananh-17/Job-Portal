@@ -10,5 +10,7 @@ const authRoute = express.Router();
 authRoute.post('/signup', validateSchema(authSignUpSchema), asyncWrapper(authController.signUp));
 authRoute.post('/login', validateSchema(authSignInSchema), asyncWrapper(authController.signIn));
 authRoute.get('/me', verify, asyncWrapper(authController.getProfileUser));
+authRoute.post('/logout', asyncWrapper(authController.logOut));
+authRoute.post('/refresh', asyncWrapper(authController.refreshToken));
 
 export default authRoute;

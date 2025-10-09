@@ -4,7 +4,7 @@ export function sendTokenToCookie(res: Response, key: string, token: string, age
   res.cookie(key, token, {
     maxAge: age,
     httpOnly: true,
-    secure: false,
-    sameSite: 'lax'
+    secure: true,
+    sameSite: 'none'
   });
 }
