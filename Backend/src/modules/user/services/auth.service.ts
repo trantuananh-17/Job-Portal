@@ -4,4 +4,5 @@ import { IUser, IUserSignUp } from '../interfaces/user.interface';
 export interface IAuthService {
   signUp(requestBody: IUserSignUp): Promise<ITokenResponse>;
   signIn(requestBody: IUser): Promise<ITokenResponse>;
+  refreshToken(refreshToken: string): Promise<ITokenResponse>;
 }

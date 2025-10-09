@@ -17,6 +17,9 @@ import { IJobRoleService } from '../job-role.service';
 import { IJobRepository } from '../../repositories/job.repository';
 import { IPackageService } from '~/modules/package/services/package.service';
 import { packageService } from '~/modules/package/services/implements/package.service.impl';
+import { jobQuery } from '~/search/job/queries/job.query';
+import { esClient } from '~/global/configs/elastic.config';
+import logger from '~/global/helpers/logger.helper';
 
 class JobService implements IJobService {
   private readonly jobSyncService = new JobSyncService();
@@ -28,6 +31,21 @@ class JobService implements IJobService {
     private readonly packageService: IPackageService
   ) {}
 
+  async searchCompletion(page: number, limit: number, q: string): Promise<string[]> {
+    const query = jobQuery.searchComplete(page, limit, q);
+
+    const response = await esClient.search(query);
+
+    logger.info(response);
+
+    const results = response.hits.hits.map((job: any) => job._source.title) ?? [];
+    logger.info(results);
+
+    const uniqueResults = [...new Set(results.filter(Boolean))];
+
+    return uniqueResults;
+  }
+
   async create(requestBody: IJob, userId: number): Promise<Job> {
     const { companyId, jobRoleName } = requestBody;
 
@@ -36,22 +54,23 @@ class JobService implements IJobService {
 
     const user = await userService.findUserUnique(userId);
 
-    const activePackage = await userService.checkActivePackage(user);
+    // const activePackage = await userService.checkActivePackage(user);
 
-    const jobsCount = await this.jobRepository.jobsCount(userId, activePackage);
+    // const jobsCount = await this.jobRepository.jobsCount(userId, activePackage);
 
-    const packageEntity = await this.packageService.readOne(activePackage.packageId, { isActive: true });
+    // const packageEntity = await this.packageService.readOne(activePackage.packageId, { isActive: true });
 
-    if (jobsCount >= packageEntity.jobPostLimit) {
-      throw new BadRequestException('You already reach the limit of current package');
-    }
+    // if (jobsCount >= packageEntity.jobPostLimit) {
+    //   throw new BadRequestException('You already reach the limit of current package');
+    // }
 
     const job = await this.jobRepository.createJob(requestBody, userId);
 
     const jobIndex = await this.findIndex(job.id);
 
     if (jobIndex) {
-      this.jobSyncService.indexJob(jobIndex);
+      await this.jobSyncService.createIndex();
+      await this.jobSyncService.indexJob(jobIndex);
     }
 
     return job;
@@ -110,7 +129,7 @@ class JobService implements IJobService {
     const jobIndex = await this.findIndex(job.id);
 
     if (jobIndex) {
-      this.jobSyncService.updateJob(jobIndex);
+      await this.jobSyncService.updateJob(jobIndex);
     }
 
     return job;
@@ -124,7 +143,7 @@ class JobService implements IJobService {
     const jobIndex = await this.findIndex(job.id);
 
     if (jobIndex) {
-      this.jobSyncService.updateJob(jobIndex);
+      await this.jobSyncService.updateJob(jobIndex);
     }
 
     return job;
@@ -135,7 +154,7 @@ class JobService implements IJobService {
 
     await this.jobRepository.deleteJob(id, companyId, userId);
 
-    this.jobSyncService.deleteJob(id);
+    await this.jobSyncService.deleteJob(id);
   }
 
   async findOne(id: number, companyId: number, userId: number): Promise<Job> {

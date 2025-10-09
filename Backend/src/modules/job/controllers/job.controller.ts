@@ -12,6 +12,7 @@ class JobController {
     this.update = this.update.bind(this);
     this.updateStatus = this.updateStatus.bind(this);
     this.delete = this.delete.bind(this);
+    this.searchCompletion = this.searchCompletion.bind(this);
   }
 
   public async create(req: Request, res: Response) {
@@ -111,6 +112,17 @@ class JobController {
 
     return res.status(HttpStatus.OK).json({
       message: 'Delete job successfully'
+    });
+  }
+
+  public async searchCompletion(req: Request, res: Response) {
+    const { q = '', page = 1, limit = 10 } = req.query;
+
+    const data = await this.jobService.searchCompletion(Number(page), Number(limit), q as string);
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Get title job successfully',
+      data
     });
   }
 }

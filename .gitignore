@@ -2,3 +2,10 @@ volumes/
 node_modules/
 dist/
 .env
+Backend/elasticsearch/data/
+
+# Elasticsearch runtime data
+**/elasticsearch/data/
+**/elasticsearch/logs/
+**/elasticsearch/tmp/
+**/elasticsearch/*.lock

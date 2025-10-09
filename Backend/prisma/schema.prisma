@@ -22,7 +22,7 @@ model User {
   status Boolean @default(true)
   candidateProfile CandidateProfile?
 
-  companies Company[]
+  company Company?
   jobs Job[]
   recruiterPackages RecruiterPackage[]
   orders Order[]
@@ -133,9 +133,10 @@ model Company {
   isApproved Boolean @default(false)
   mapLink String?
   address String?
+  avatarUrl String?
 
   user User @relation(fields: [userId], references: [id])
-  userId Int
+  userId Int @unique
   
   companyImages CompanyImage[]
   companyIndustries CompanyIndustry[]
@@ -194,7 +195,23 @@ model Job {
 
   jobSkills JobSkill[]
   jobBenefits JobBenefit[]
+  jobRequirements  JobRequirement[]
   applies Apply[]
+}
+
+model Requirement {
+  name            String           @id
+  jobRequirements JobRequirement[]
+}
+
+model JobRequirement {
+  job           Job         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId         Int
+
+  requirement   Requirement @relation(fields: [requirementName], references: [name], onDelete: Cascade)
+  requirementName String
+
+  @@id([jobId, requirementName])
 }
 
 model JobRole {

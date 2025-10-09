@@ -1,20 +1,14 @@
 import { JobSkill } from '@prisma/client';
-import { IJobSkillService } from '../job-skill.service';
-import { jobSkillRepository } from '../../repositories/implements/job-skill.repository.impl';
 import { skillService } from '~/modules/skill/services/implements/skill.service.impl';
-import { jobService } from './job.service.impl';
-import { JobSyncService } from '~/search/job/sync/job.sync';
 import { ISkillService } from '~/modules/skill/services/skill.service';
-import { IJobService } from '../job.service';
+import { jobSkillRepository } from '../../repositories/implements/job-skill.repository.impl';
 import { IJobSkillRepository } from '../../repositories/job-skill.repository';
+import { IJobSkillService } from '../job-skill.service';
 
 class JobSkillService implements IJobSkillService {
-  private readonly jobSyncService = new JobSyncService();
-
   constructor(
     private readonly skillService: ISkillService,
-    private readonly jobSkillRepository: IJobSkillRepository,
-    private readonly jobService: IJobService
+    private readonly jobSkillRepository: IJobSkillRepository
   ) {}
 
   async create(jobId: number, skillName: string, userId: number): Promise<JobSkill> {
@@ -27,12 +21,6 @@ class JobSkillService implements IJobSkillService {
 
     const jobSkill = await this.jobSkillRepository.create(data);
 
-    const jobIndex = await this.jobService.findIndex(jobId);
-
-    if (jobIndex) {
-      this.jobSyncService.updateJob(jobIndex);
-    }
-
     return jobSkill;
   }
 
@@ -44,13 +32,7 @@ class JobSkillService implements IJobSkillService {
 
   async delete(jobId: number, skillName: string, userId: number): Promise<void> {
     await this.jobSkillRepository.deleteJobSkill(jobId, skillName);
-
-    const jobIndex = await jobService.findIndex(jobId);
-
-    if (jobIndex) {
-      this.jobSyncService.updateJob(jobIndex);
-    }
   }
 }
 
-export const jobSkillService: IJobSkillService = new JobSkillService(skillService, jobSkillRepository, jobService);
+export const jobSkillService: IJobSkillService = new JobSkillService(skillService, jobSkillRepository);
