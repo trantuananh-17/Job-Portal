@@ -1,6 +1,6 @@
+import { getCurrentUserApi, logoutApi, refreshTokenApi } from '@apis/auth/auth.api';
+import type { IUserResponse } from '@apis/auth/interfaces/user.interface';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getCurrentUserApi } from '@apis/auth.api';
-import type { IUserResponse } from '@apis/interfaces/user.interface';
 
 type AuthContextType = {
   user: IUserResponse | null;
@@ -31,17 +31,48 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       setLoading(true);
+
       const res = await getCurrentUserApi();
       setUser(res.data);
       setIsAuthenticated(true);
-      setLoading(false);
-    } catch (err) {
-      setUser(null);
-      setIsAuthenticated(false);
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        try {
+          await refreshTokenApi();
+          const retryRes = await getCurrentUserApi();
+          setUser(retryRes.data);
+          setIsAuthenticated(true);
+          return;
+        } catch {
+          setUser(null);
+          setIsAuthenticated(false);
+        }
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const path = location.pathname;
+    const sessionExpired = localStorage.getItem('session_expired');
+
+    if (sessionExpired) {
+      localStorage.removeItem('session_expired');
+      setLoading(false);
+      setUser(null);
+      setIsAuthenticated(false);
+      return;
+    }
+    if (!path.startsWith('/auth')) {
+      checkAuthStatus();
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
   const login = (userData: IUserResponse) => {
     setUser(userData);
@@ -49,12 +80,12 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   };
 
   const logout = async () => {
-    // try {
-    //   await logoutApi();
-    // } finally {
-    //   setUser(null);
-    //   setIsAuthenticated(false);
-    // }
+    try {
+      await logoutApi();
+    } finally {
+      setUser(null);
+      setIsAuthenticated(false);
+    }
   };
 
   const value: AuthContextType = {

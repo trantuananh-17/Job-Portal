@@ -124,7 +124,7 @@ const RecruiterDashboard = () => {
               headerAction={
                 <button
                   className='text-sm font-medium text-blue-600 hover:text-blue-700'
-                  onClick={() => navigate('/recruiter/manage-applicants')}
+                  onClick={() => navigate('/recruiter/manage-jobs')}
                 >
                   View all
                 </button>

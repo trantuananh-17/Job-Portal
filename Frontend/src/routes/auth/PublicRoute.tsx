@@ -5,20 +5,20 @@ import { useEffect, useState } from 'react';
 
 const PublicRoute = () => {
   const { isAuthenticated, user } = useAuth();
-  const [showLoading, setShowLoading] = useState(true);
+  // const [showLoading, setShowLoading] = useState(true);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => setShowLoading(false), 2000);
-    return () => clearTimeout(timeout);
-  }, []);
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => setShowLoading(false), 2000);
+  //   return () => clearTimeout(timeout);
+  // }, []);
 
-  if (showLoading && isAuthenticated && user) {
-    return (
-      <div>
-        <LoadingSpinner />
-      </div>
-    );
-  }
+  // if (showLoading) {
+  //   return (
+  //     <div>
+  //       <LoadingSpinner />
+  //     </div>
+  //   );
+  // }
 
   if (isAuthenticated && user) {
     switch (user.role) {

@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import type { IUserLogin } from '@apis/interfaces/user.interface';
 import { AlertCircle, CheckCircle, Eye, EyeOff, Loader, Lock, Mail } from 'lucide-react';
-import { loginSchema } from '@apis/schemas/auth.schema';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getCurrentUserApi, loginApi } from '@apis/auth.api';
 import { useAuth } from '@context/AuthContext';
+import type { IUserLogin } from '@apis/auth/interfaces/user.interface';
+import { loginSchema } from '@apis/auth/schemas/auth.schema';
+import { getCurrentUserApi, loginApi } from '@apis/auth/auth.api';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -35,10 +35,11 @@ const Login = () => {
       if (response.data.data) {
         const userData = await getCurrentUserApi();
 
-        login(userData.data);
-
         setSuccess(true);
+
         setTimeout(() => {
+          login(userData.data);
+
           switch (userData?.data?.role) {
             case 'ADMIN':
               navigate('/admin');

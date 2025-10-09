@@ -1,19 +1,37 @@
-import type { RouteObject } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import UserLayout from '../../layouts/UserLayout';
-import Landing from '@pages/user/Landing';
-import Jobs from '@pages/user/Jobs';
-import JobDetail from '@pages/user/JobDetail';
+import { withSuspense } from '@utils/withSuspense';
+import { lazy } from 'react';
+import { useAuth } from '@context/AuthContext';
+import LoadingSpinner from '@components/common/LoadingSpinner';
 
-const UserRoute: RouteObject[] = [
-  {
-    path: '',
-    element: <UserLayout />,
-    children: [
-      { index: true, element: <Landing /> },
-      { path: 'jobs', element: <Jobs /> },
-      { path: 'job-detail', element: <JobDetail /> }
-    ]
+const Landing = lazy(() => import('@pages/user/Landing'));
+const Jobs = lazy(() => import('@pages/user/Jobs'));
+const JobDetail = lazy(() => import('@pages/user/JobDetail'));
+
+const LandingWithSuspense = withSuspense(Landing);
+const JobsWithSuspense = withSuspense(Jobs);
+const JobDetailWithSuspense = withSuspense(JobDetail);
+
+export default function UserRoute() {
+  const { user, loading } = useAuth();
+
+  if (loading) return <LoadingSpinner />;
+
+  if (user?.role === 'RECRUITER') {
+    return <Navigate to='/recruiter' replace />;
   }
-];
 
-export default UserRoute;
+  if (user?.role === 'ADMIN') {
+    return <Navigate to='/admin' replace />;
+  }
+  return (
+    <Routes>
+      <Route path='/' element={<UserLayout />}>
+        <Route index element={<LandingWithSuspense />} />
+        <Route path='jobs' element={<JobsWithSuspense />} />
+        <Route path='job-detail' element={<JobDetailWithSuspense />} />
+      </Route>
+    </Routes>
+  );
+}
