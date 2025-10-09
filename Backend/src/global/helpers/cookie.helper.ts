@@ -1,10 +1,12 @@
 import { Response } from 'express';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export function sendTokenToCookie(res: Response, key: string, token: string, age: number) {
   res.cookie(key, token, {
     maxAge: age,
     httpOnly: true,
-    secure: true,
-    sameSite: 'none'
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   });
 }
