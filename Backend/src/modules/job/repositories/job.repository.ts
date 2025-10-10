@@ -1,6 +1,6 @@
 import { Company, Job, JobBenefit, JobRequirement, JobSkill, JobStatus, User } from '@prisma/client';
 import { IBaseRepository } from '~/global/base/repositories/base.repository';
-import { IJob } from '../interfaces/job.interface';
+import { IJob, IJobResponse } from '../interfaces/job.interface';
 
 export interface IJobRepository extends IBaseRepository<Job> {
   jobsCount(userId: number, activePackage: any): Promise<number>;
@@ -19,4 +19,7 @@ export interface IJobRepository extends IBaseRepository<Job> {
       })
     | null
   >;
+  getAllByCandidate(page: number, limit: number): Promise<(Job & { company: Company })[]>;
+
+  getTotalJob(): Promise<number>;
 }

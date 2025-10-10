@@ -26,23 +26,25 @@ class JobController {
   }
 
   public async getAll(req: Request, res: Response) {
-    const { page = 1, limit = 5, filter = '', minSalary = 0 } = req.query;
+    try {
+      const { page = '1', limit = '5' } = req.query;
 
-    const { data, totalCounts } = await this.jobService.getAll({
-      page: parseInt(page as string),
-      limit: parseInt(limit as string),
-      filter,
-      minSalary: parseFloat(minSalary as string)
-    });
+      const result = await this.jobService.getAllJob(+page, +limit);
 
-    return res.status(HttpStatus.OK).json({
-      message: 'Get all jobs',
-      pagination: {
-        totalCounts,
-        currentPage: parseInt(page as string)
-      },
-      data
-    });
+      return res.status(HttpStatus.OK).json({
+        message: 'Get all jobs successfully',
+        pagination: {
+          totalDocs: result.totalDocs,
+          totalPages: result.totalPages,
+          currentPage: result.page,
+          limit: result.limit
+        },
+        data: result.data
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Failed to get jobs' });
+    }
   }
 
   public async getAllForRecruiter(req: Request, res: Response) {

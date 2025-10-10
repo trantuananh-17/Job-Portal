@@ -1,3 +1,5 @@
+import { JobStatus } from '@prisma/client';
+
 export interface IJob {
   companyId: number;
   title: string;
@@ -13,4 +15,22 @@ export interface IJobFilters {
   dateRange?: string[];
   minSalary?: number;
   maxSalary?: number;
+}
+export interface IJobResponse {
+  id: number;
+  title: string;
+  description: string;
+  status: JobStatus;
+  jobRole: string;
+  minSalary: number;
+  maxSalary: number | null;
+  totalViews: number;
+  createdAt: Date;
+  isDeleted: boolean;
+  company: {
+    id: number;
+    name: string;
+    logo: string | null;
+    address: string | null;
+  };
 }
