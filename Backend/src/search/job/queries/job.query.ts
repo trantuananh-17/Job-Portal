@@ -89,15 +89,17 @@ class JobQuery {
     filter.push({ term: { isDeleted: false } });
     filter.push({ term: { status: 'PENDING' } });
 
-    if (filters?.company) {
+    if (filters?.location) {
       filter.push({
-        term: { companyName: filters.company.toLowerCase() }
+        term: { address: filters.location.toLowerCase() }
       });
     }
 
     if (filters?.jobRoles?.length) {
       filter.push({
-        terms: { jobRoleName: filters.jobRoles }
+        terms: {
+          jobRoleName: filters.jobRoles
+        }
       });
     }
 
@@ -120,33 +122,36 @@ class JobQuery {
         }
       });
     }
-    return {
-      index: 'jobs',
-      from: (page - 1) * limit,
-      size: limit,
-      query: {
-        bool: {
-          must: {
-            dis_max: {
-              queries: [
-                {
-                  multi_match: {
-                    query: q,
-                    type: 'bool_prefix',
-                    fields: ['title^3', 'title._2gram', 'title._3gram']
+
+    const mustQueries: any[] =
+      q && q.trim().length > 0
+        ? [
+            {
+              dis_max: {
+                queries: [
+                  {
+                    multi_match: {
+                      query: q,
+                      type: 'bool_prefix',
+                      fields: ['title^3', 'title._2gram', 'title._3gram']
+                    }
+                  },
+                  {
+                    multi_match: {
+                      query: q,
+                      fields: ['title.ngram^2']
+                    }
                   }
-                },
-                {
-                  multi_match: {
-                    query: q,
-                    fields: ['title.ngram^2']
-                  }
-                }
-              ],
-              tie_breaker: 0.1
+                ],
+                tie_breaker: 0.1
+              }
             }
-          },
-          should: [
+          ]
+        : [{ match_all: {} }];
+
+    const shouldQueries =
+      q && q.trim().length > 0
+        ? [
             {
               match_phrase_prefix: {
                 title: {
@@ -156,11 +161,20 @@ class JobQuery {
                 }
               }
             }
-          ],
+          ]
+        : [];
+    return {
+      index: 'jobs',
+      from: (page - 1) * limit,
+      size: limit,
+      query: {
+        bool: {
+          must: mustQueries,
+          should: shouldQueries,
           filter
         }
       },
-      sort: [{ createdAt: { order: 'desc' } }]
+      sort: [{ createdAt: 'desc' as const }]
     };
   }
 }

@@ -10,9 +10,9 @@ export interface IJob {
 }
 
 export interface IJobFilters {
-  company?: string;
+  location?: string;
   jobRoles?: string[];
-  dateRange?: string[];
+  dateRange?: ('Last Hour' | 'Last 24 Hours' | 'Last 7 Days' | 'Last 30 Days')[];
   minSalary?: number;
   maxSalary?: number;
 }

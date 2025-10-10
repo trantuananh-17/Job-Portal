@@ -10,7 +10,7 @@ export const dateRangeMap: Record<DateRangeOption, string> = {
 };
 
 export interface IJobFilters {
-  company?: string;
+  location?: string;
   jobRoles?: string[];
   dateRange?: DateRangeOption;
   minSalary?: number;

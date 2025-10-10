@@ -11,6 +11,7 @@ export interface JobDocument {
   jobRoleName: string;
   minSalary: number;
   maxSalary?: number;
+  companyId: number;
   companyName: string;
   logo: string;
   address: string;
@@ -36,6 +37,7 @@ export function mapJobToDocument(
     status: job.status,
     minSalary: job.minSalary,
     maxSalary: job.maxSalary ?? undefined,
+    companyId: job.company.id,
     companyName: job.company?.name,
     logo: job.company?.avatarUrl ?? '',
     address: job.company.address ?? '',
