@@ -1,6 +1,6 @@
 import { BookmarkPlus, BriefcaseBusiness, MapPin, Wallet } from 'lucide-react';
 import LOGO_COMPANY from '@assets/images/logo_company_1.png';
-import Button from './Button';
+import Button from '../Landing/components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import type { IJobByCandidateResponse } from '@apis/jobs/interfaces/job.interface';
 

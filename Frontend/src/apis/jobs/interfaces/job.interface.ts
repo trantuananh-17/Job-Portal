@@ -2,6 +2,14 @@ export interface IJobSearch {
   search: string;
 }
 
+export interface IJobFilter {
+  search: string;
+  location: string;
+  roles: string[];
+  datePosted: string[];
+  salaryRange: number[];
+}
+
 export interface IJobByCandidateResponse {
   id: number;
   title: string;

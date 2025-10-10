@@ -12,7 +12,7 @@ function usePagination(
     totalDocs: 0,
     totalPages: 0,
     currentPage: 1,
-    limit: 10
+    limit: 6
   }
 ) {
   const [pagination, setPagination] = useState<Pagination>(initialPagination);

@@ -3,7 +3,7 @@ import EmptyState from '@components/common/EmptyState';
 import ErrorState from '@components/common/ErrorState';
 import JobCardSkeleton from '@components/common/JobCardSkeleton';
 import { Inbox } from 'lucide-react';
-import JobItem from './ui/JobItem';
+import JobItem from '../../common/JobItem';
 import ViewAll from './ui/ViewAll';
 
 interface Props {
