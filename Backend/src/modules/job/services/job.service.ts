@@ -1,5 +1,5 @@
-import { Job, JobStatus } from '@prisma/client';
-import { IJob } from '../interfaces/job.interface';
+import { Company, Job, JobStatus } from '@prisma/client';
+import { IJob, IJobResponse } from '../interfaces/job.interface';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
 import { JobDocument } from '~/search/job/mapper/job.mapper';
 
@@ -22,4 +22,15 @@ export interface IJobService {
   findIndex(id: number): Promise<JobDocument>;
 
   searchCompletion(page: number, limit: number, q: string): Promise<string[]>;
+
+  getAllJob(
+    page: number,
+    limit: number
+  ): Promise<{
+    data: IJobResponse[];
+    totalDocs: number;
+    totalPages: number;
+    page: number;
+    limit: number;
+  }>;
 }
