@@ -2,8 +2,13 @@ import { BookmarkPlus, BriefcaseBusiness, MapPin, Wallet } from 'lucide-react';
 import LOGO_COMPANY from '@assets/images/logo_company_1.png';
 import Button from './Button';
 import { useNavigate } from 'react-router-dom';
+import type { IJobByCandidateResponse } from '@apis/jobs/interfaces/job.interface';
 
-const JobItem = () => {
+interface Props {
+  job: IJobByCandidateResponse;
+}
+
+const JobItem: React.FC<Props> = ({ job }) => {
   const navigate = useNavigate();
 
   return (
@@ -19,25 +24,27 @@ const JobItem = () => {
           <img src={LOGO_COMPANY} alt='logo company' className='image h-10 w-10' />
 
           <div className='flex flex-col gap-2'>
-            <h3 className='text-xl font-semibold md:text-[28px]'>Forward Security Director</h3>
-            <p className='sm:text-md text-xs lg:text-lg'>Bauch, Schuppe and Schulist Co</p>
+            <h3 className='text-xl font-semibold md:text-[28px]'>{job.title}</h3>
+            <p className='sm:text-md text-sm lg:text-lg'>{job.company.name}</p>
           </div>
         </div>
       </div>
 
       <div className='text-primary flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between'>
         <ul className='flex flex-col gap-6 md:flex-row'>
-          <li className='flex items-center gap-3'>
+          <li className='flex items-center gap-2'>
             <BriefcaseBusiness />
-            <p>Backend</p>
+            <p className='text-md sm:text-lg'>{job.jobRole}</p>
           </li>
-          <li className='flex items-center gap-3'>
+          <li className='flex items-center gap-2'>
             <Wallet />
-            <p>$1000 - $2000</p>
+            <p className='text-sm sm:text-lg'>
+              {job.minSalary} - {job.maxSalary}
+            </p>
           </li>
-          <li className='flex items-center gap-3'>
+          <li className='flex items-center gap-2'>
             <MapPin />
-            <p>New-York, USA</p>
+            <p className='text-md sm:text-lg'>{job.company.address}</p>
           </li>
         </ul>
         <div className='sm:self-end'>

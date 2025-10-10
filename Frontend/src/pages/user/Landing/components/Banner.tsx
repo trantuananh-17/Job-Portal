@@ -45,7 +45,6 @@ const Banner: React.FC<Props> = ({ search, setSearch, data, setSkipSearch }) => 
       setShowData(false);
     }
   }, [q]);
-  console.log(showData);
 
   return (
     <section className='bg-black/90 py-[120px] text-center text-white md:py-[160px] xl:py-[200px]'>

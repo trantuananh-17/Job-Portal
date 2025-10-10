@@ -64,10 +64,7 @@ class JobService implements IJobService {
 
     const response = await esClient.search(query);
 
-    logger.info(response);
-
     const results = response.hits.hits.map((job: any) => job._source.title) ?? [];
-    logger.info(results);
 
     const uniqueResults = [...new Set(results.filter(Boolean))];
 

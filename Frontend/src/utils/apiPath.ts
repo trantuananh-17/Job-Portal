@@ -9,6 +9,7 @@ export const API_PATHS = {
     LOGOUT: '/api/v1/auth/logout'
   },
   JOBS: {
-    SEARCH_COMPLETE: 'api/v1/jobs/search'
+    SEARCH_COMPLETE: 'api/v1/jobs/search',
+    GET_JOBS_BY_CANDIDATE: 'api/v1/jobs'
   }
 };

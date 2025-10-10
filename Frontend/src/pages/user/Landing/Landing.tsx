@@ -1,13 +1,15 @@
+import { getJobsByCandidateApi, searchJobCompletionApi } from '@apis/jobs/job.api';
+import JobCardSkeleton from '@components/common/JobCardSkeleton';
 import { useAuth } from '@context/AuthContext';
+import { useDebounce } from '@hooks/useDebounce';
+import usePagination from '@hooks/usePagination';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import Banner from './components/Banner';
 import BetterFuture from './components/BetterFuture';
 import Career from './components/Career';
 import Carousel from './components/Carousel';
 import RecentJob from './components/RecentJob';
-import { useDebounce } from '@hooks/useDebounce';
-import { useEffect, useRef, useState } from 'react';
-import { searchJobCompletionApi } from '@apis/jobs/job.api';
-import JobCardSkeleton from '@components/common/JobCardSkeleton';
 
 const Landing = () => {
   const { user } = useAuth();
@@ -16,6 +18,19 @@ const Landing = () => {
   const [skipSearch, setSkipSearch] = useState(false);
 
   const debouncedSearch = useDebounce(search, 500);
+
+  const {
+    data: jobs,
+    isLoading,
+    isError,
+    isSuccess
+  } = useQuery({
+    queryKey: ['jobsByCandidate'],
+    queryFn: () => getJobsByCandidateApi(),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 60,
+    select: (res) => res.data
+  });
 
   useEffect(() => {
     if (skipSearch) {
@@ -34,24 +49,14 @@ const Landing = () => {
 
     fetchData();
   }, [debouncedSearch]);
-  useEffect(() => {
-    console.log('Landing mounted');
-    return () => console.log('Landing unmounted');
-  }, []);
 
   return (
     <div>
       <Banner data={data} search={search} setSearch={setSearch} setSkipSearch={setSkipSearch} />
       <Carousel />
-      <RecentJob />
+      <RecentJob jobs={jobs?.data ?? []} isSuccess={isSuccess} isError={isError} isLoading={isLoading} />
       <BetterFuture />
       <Career />
-
-      <div className='container flex flex-col gap-6'>
-        {Array.from({ length: 4 }).map((_, index) => (
-          <JobCardSkeleton key={index} />
-        ))}
-      </div>
     </div>
   );
 };
