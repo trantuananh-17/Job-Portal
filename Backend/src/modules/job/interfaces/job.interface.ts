@@ -6,3 +6,11 @@ export interface IJob {
   maxSalary: number;
   jobRoleName: string;
 }
+
+export interface IJobFilters {
+  company?: string;
+  jobRoles?: string[];
+  dateRange?: string[];
+  minSalary?: number;
+  maxSalary?: number;
+}

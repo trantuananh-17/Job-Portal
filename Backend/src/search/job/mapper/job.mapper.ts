@@ -12,6 +12,8 @@ export interface JobDocument {
   minSalary: number;
   maxSalary?: number;
   companyName: string;
+  logo: string;
+  address: string;
   recruiter: string;
   createdAt: string;
   isDeleted: boolean;
@@ -35,6 +37,8 @@ export function mapJobToDocument(
     minSalary: job.minSalary,
     maxSalary: job.maxSalary ?? undefined,
     companyName: job.company?.name,
+    logo: job.company?.avatarUrl ?? '',
+    address: job.company.address ?? '',
     recruiter: job.postBy?.name ?? '',
     createdAt: job.createdAt.toISOString(),
     isDeleted: job.isDeleted

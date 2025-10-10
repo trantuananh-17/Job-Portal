@@ -58,6 +58,8 @@ export class JobSyncService {
             minSalary: { type: 'integer' },
             maxSalary: { type: 'integer' },
             companyName: { type: 'keyword', normalizer: 'lowercase' },
+            address: { type: 'keyword', normalizer: 'lowercase' },
+            jobRoles: { type: 'keyword', normalizer: 'lowercase' },
             recruiter: { type: 'keyword' },
             createdAt: { type: 'date' },
             isDeleted: { type: 'boolean' }

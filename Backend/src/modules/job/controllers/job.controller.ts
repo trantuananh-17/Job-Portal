@@ -125,6 +125,10 @@ class JobController {
       data
     });
   }
+
+  public async searchJobFilter(req: Request, res: Response) {
+    const { page = 1, limit = 6, search = '', location = '', roles = [], dates = [], min, max } = req.params;
+  }
 }
 
 export const jobController: JobController = new JobController(jobService);
