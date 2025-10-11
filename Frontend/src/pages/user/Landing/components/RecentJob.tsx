@@ -31,7 +31,7 @@ const RecentJob: React.FC<Props> = ({ jobs, isLoading, isSuccess, isError }) => 
         <div>
           {isLoading && (
             <ul className='flex flex-col gap-5'>
-              {Array.from({ length: 8 }).map((_, idx) => (
+              {Array.from({ length: 6 }).map((_, idx) => (
                 <JobCardSkeleton key={idx} />
               ))}
             </ul>

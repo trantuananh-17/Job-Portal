@@ -12,12 +12,13 @@ import Carousel from './components/Carousel';
 import RecentJob from './components/RecentJob';
 
 const Landing = () => {
-  const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [data, setData] = useState<string[]>([]);
   const [skipSearch, setSkipSearch] = useState(false);
 
   const debouncedSearch = useDebounce(search, 500);
+  const page = 1;
+  const limit = 6;
 
   const {
     data: jobs,
@@ -26,7 +27,7 @@ const Landing = () => {
     isSuccess
   } = useQuery({
     queryKey: ['jobsByCandidate'],
-    queryFn: () => getJobsByCandidateApi(),
+    queryFn: () => getJobsByCandidateApi(page, limit),
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 60,
     select: (res) => res.data

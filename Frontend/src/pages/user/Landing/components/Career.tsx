@@ -1,4 +1,4 @@
-import Button from './ui/Button';
+import Button from '../../common/Button';
 import CareerInfoItem from './ui/CareerInfoItem';
 
 const CAREER = '/images/img_career.webp';
@@ -24,7 +24,7 @@ const Career = () => {
           </div>
 
           <div className='flex gap-6'>
-            <Button name='Search Job' full={true} />
+            <Button name='Search Job' full={true} className='bg-primary' />
             <div className={`text-primary hidden cursor-pointer text-2xl font-semibold underline lg:inline`}>
               Learn More!
             </div>

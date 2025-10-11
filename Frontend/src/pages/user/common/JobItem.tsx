@@ -1,8 +1,9 @@
 import { BookmarkPlus, BriefcaseBusiness, MapPin, Wallet } from 'lucide-react';
 import LOGO_COMPANY from '@assets/images/logo_company_1.png';
-import Button from '../Landing/components/ui/Button';
+// import Button from '../Landing/components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import type { IJobByCandidateResponse } from '@apis/jobs/interfaces/job.interface';
+import Button from './Button';
 
 interface Props {
   job: IJobByCandidateResponse;
@@ -48,7 +49,7 @@ const JobItem: React.FC<Props> = ({ job }) => {
           </li>
         </ul>
         <div className='sm:self-end'>
-          <Button name='Job Details' full={false} onClick={() => navigate('/job-detail')} />
+          <Button name='Job Details' className='bg-primary' full={false} onClick={() => navigate('/job-detail')} />
         </div>
       </div>
     </li>

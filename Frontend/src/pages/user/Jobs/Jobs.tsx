@@ -1,35 +1,51 @@
-import { datePostItem, jobRoleItem } from '@constant/menuItem';
-import RangeSliderMUI from './components/RangeSliderMUI';
-import { ChevronDown, MapPin, Search } from 'lucide-react';
+import type { IJobByCandidateResponse, IJobFilter } from '@apis/jobs/interfaces/job.interface';
+import { getJobsByCandidateApi, searchJobsFilterApi } from '@apis/jobs/job.api';
+import EmptyState from '@components/common/EmptyState';
+import ErrorState from '@components/common/ErrorState';
 import JobCardSkeleton from '@components/common/JobCardSkeleton';
-import { Pagination, useMediaQuery } from '@mui/material';
-import { useEffect, useState } from 'react';
-import usePagination from '@hooks/usePagination';
-import { useSearchParams } from 'react-router-dom';
-import { Controller, useForm } from 'react-hook-form';
-import type { IJobFilter } from '@apis/jobs/interfaces/job.interface';
-import { ADDRESS_LOCATION } from '@utils/data';
+import { datePostItem, jobRoleItem } from '@constant/menuItem';
 import { SALARY_VALUE } from '@constant/rangeValue';
+import usePagination from '@hooks/usePagination';
+import { Pagination, useMediaQuery } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import { ADDRESS_LOCATION } from '@utils/data';
+import { ChevronDown, Inbox, MapPin, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
+import JobItem from '../common/JobItem';
+import Button from './components/ButtonForm';
+import RangeSliderMUI from './components/RangeSliderMUI';
 
 const Jobs = () => {
   const isMobile = useMediaQuery('(max-width:640px)');
   const [searchParams, setSearchParams] = useSearchParams();
   const [isCityOpen, setIsCityOpen] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
-  const { register, handleSubmit, watch, control, setValue } = useForm<IJobFilter>({
-    defaultValues: { search: '' }
+  const { register, handleSubmit, watch, control, setValue, reset } = useForm<IJobFilter>({
+    defaultValues: {
+      search: '',
+      location: '',
+      roles: [],
+      datePosted: [],
+      salaryRange: [SALARY_VALUE.MIN, SALARY_VALUE.MAX]
+    }
   });
 
   const [location, setLocation] = useState('');
-  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
-  const [selectedDates, setSelectedDates] = useState<string[]>([]);
 
-  const { pagination, jumpToPage } = usePagination({
-    totalDocs: 100,
-    totalPages: 20,
+  const { pagination, jumpToPage, setPagination } = usePagination({
+    totalDocs: 0,
+    totalPages: 1,
     currentPage: 1,
-    limit: 5
+    limit: 6
   });
+
+  //get params url
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const search = searchParams.get('search') || '';
+  const limit = 6;
 
   // Change pagination
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -39,20 +55,22 @@ const Jobs = () => {
     setSearchParams(params);
   };
 
-  // Set default page on load
-  useEffect(() => {
-    if (!searchParams.get('page')) {
-      setSearchParams({ page: '1' });
-    }
-  }, [searchParams, setSearchParams]);
+  const hasFilters = Array.from(searchParams.keys()).some((key) => key !== 'page');
+  const searchKey = searchParams.toString();
 
-  //get params url
-  const currentPage = Number(searchParams.get('page')) || 1;
-  const search = searchParams.get('search') || '';
-
-  useEffect(() => {
-    setValue('search', search);
-  }, [search]);
+  const {
+    data: jobsData,
+    isLoading,
+    isError,
+    isSuccess
+  } = useQuery({
+    queryKey: ['jobs', hasFilters, currentPage, searchKey],
+    queryFn: () => (hasFilters ? searchJobsFilterApi(limit, searchParams) : getJobsByCandidateApi(currentPage, limit)),
+    select: (res) => res.data,
+    enabled: isReady,
+    // placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5
+  });
 
   const handleApplyFilter = handleSubmit((data) => {
     const params = new URLSearchParams(searchParams);
@@ -63,23 +81,92 @@ const Jobs = () => {
       params.delete('search');
     }
 
-    if (data.location) params.set('location', data.location);
-    else params.delete('location');
+    if (data.location) {
+      params.set('location', data.location);
+    } else {
+      params.delete('location');
+    }
 
-    if (data.roles.length > 0) params.set('roles', data.roles.join(','));
-    else params.delete('roles');
+    if (data.roles.length > 0) {
+      params.set('roles', data.roles.map((role) => role.toLowerCase()).join(','));
+    } else {
+      params.delete('roles');
+    }
 
-    if (data.datePosted.length > 0) params.set('dates', data.datePosted.join(','));
-    else params.delete('dates');
+    if (data.datePosted.length > 0) {
+      params.set('dates', data.datePosted.reverse().join(','));
+    } else {
+      params.delete('dates');
+    }
 
     if (data.salaryRange?.length === 2) {
       params.set('min', String(data.salaryRange[0]));
       params.set('max', String(data.salaryRange[1]));
     }
 
-    params.set('page', '1');
     setSearchParams(params);
   });
+
+  const handleResetFilter = () => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', '1');
+    params.delete('search');
+    params.delete('location');
+    params.delete('roles');
+    params.delete('dates');
+    params.delete('min');
+    params.delete('max');
+    params.set('page', '1');
+
+    reset({
+      search: '',
+      location: '',
+      roles: [],
+      datePosted: [],
+      salaryRange: [SALARY_VALUE.MIN, SALARY_VALUE.MAX]
+    });
+
+    setSearchParams(params);
+  };
+
+  // Set default page on load
+
+  useEffect(() => {
+    if (!searchParams.get('page')) {
+      setSearchParams({ page: '1' }, { replace: true });
+    } else {
+      setIsReady(true);
+    }
+  }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    setValue('search', search);
+  }, [search]);
+
+  useEffect(() => {
+    if (jobsData?.pagination) {
+      setPagination(jobsData.pagination);
+    }
+  }, [jobsData]);
+
+  useEffect(() => {
+    const searchValue = searchParams.get('search') || '';
+    const locationValue = searchParams.get('location') || '';
+    const rolesValue = searchParams.get('roles')?.split(',') || [];
+    const datePostedValue = searchParams.get('dates')?.split(',').reverse() || [];
+    const minSalary = Number(searchParams.get('min')) || SALARY_VALUE.MIN;
+    const maxSalary = Number(searchParams.get('max')) || SALARY_VALUE.MAX;
+
+    reset({
+      search: searchValue,
+      location: locationValue,
+      roles: rolesValue,
+      datePosted: datePostedValue,
+      salaryRange: [minSalary, maxSalary]
+    });
+
+    setLocation(locationValue);
+  }, [searchParams, reset]);
 
   return (
     <>
@@ -144,7 +231,12 @@ const Jobs = () => {
             <ul className='flex flex-col gap-3'>
               {jobRoleItem.map((item) => (
                 <li key={item} className='flex items-center gap-2'>
-                  <input {...register('roles')} value={item} type='checkbox' className='h-4 w-4 rounded-[4px]' />
+                  <input
+                    {...register('roles')}
+                    value={item.toLowerCase()}
+                    type='checkbox'
+                    className='h-4 w-4 rounded-[4px]'
+                  />
                   <p>{item}</p>
                 </li>
               ))}
@@ -172,30 +264,59 @@ const Jobs = () => {
             render={({ field }) => <RangeSliderMUI value={field.value} onChange={field.onChange} />}
           />
 
-          <button type='submit' className='bg-primary cursor-pointer rounded-sm px-4 py-3'>
-            <p className='text-md font-semibold text-white'>Apply</p>
-          </button>
+          <div className='flex flex-col gap-2'>
+            <Button type='submit' className='bg-primary'>
+              <p className='text-md font-semibold text-white'>Apply</p>
+            </Button>
+
+            <Button type='button' onClick={handleResetFilter} className='border border-gray-200 bg-white'>
+              <p className='text-md font-semibold text-gray-800'>Reset</p>
+            </Button>
+          </div>
         </form>
 
         {/* list jobs */}
         <div className='jobs flex flex-1 flex-col gap-10'>
-          <div className='sort flex flex-col-reverse items-center justify-between gap-10 lg:flex-row'>
-            <h3>
-              Showing {pagination.currentPage * pagination.limit - pagination.limit + 1} -{' '}
-              {pagination.limit * pagination.currentPage} of {pagination.totalDocs} results
-            </h3>
-            <div className='flex shrink-0 items-center justify-between gap-2 rounded-[6px] border-[1.5px] border-gray-500 px-2 py-3'>
-              <p className='text-md font-semibold text-gray-500 sm:text-lg'>Sort by latest</p>
-              <ChevronDown className='h-6 w-6 text-gray-500' />
-            </div>
+          <div className='sort mt-5 flex flex-col-reverse items-center justify-between gap-10 lg:flex-row'>
+            {isSuccess && pagination.totalDocs > 0 ? (
+              <h3>
+                Showing {(pagination.currentPage - 1) * pagination.limit + 1} -{' '}
+                {Math.min(pagination.currentPage * pagination.limit, pagination.totalDocs)} of {pagination.totalDocs}{' '}
+                results
+              </h3>
+            ) : (
+              <h3>Loading results...</h3>
+            )}
           </div>
 
           <div className='jobs-list'>
-            <ul className='flex flex-col gap-5'>
-              {Array.from({ length: 6 }).map((_, idx) => (
-                <JobCardSkeleton key={idx} />
-              ))}
-            </ul>
+            <div>
+              {isLoading && (
+                <ul className='flex flex-col gap-5'>
+                  {Array.from({ length: 8 }).map((_, idx) => (
+                    <JobCardSkeleton key={idx} />
+                  ))}
+                </ul>
+              )}
+
+              {isError && <ErrorState title='Đã xảy ra lỗi' description='Không thể kết nối tới server.' icon={Inbox} />}
+
+              {isSuccess && jobsData.data.length > 0 && (
+                <ul className='flex flex-col gap-5'>
+                  {jobsData.data.map((job: IJobByCandidateResponse) => (
+                    <JobItem job={job} key={job.id} />
+                  ))}
+                </ul>
+              )}
+
+              {isSuccess && jobsData.length === 0 && !isLoading && (
+                <EmptyState
+                  title='Không có việc làm gần đây'
+                  description='Hiện tại chưa có việc làm nào để hiển thị.'
+                  icon={Inbox}
+                />
+              )}
+            </div>
           </div>
 
           <div className='navigation flex justify-center'>
