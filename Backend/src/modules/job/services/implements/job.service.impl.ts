@@ -21,6 +21,7 @@ import { jobQuery } from '~/search/job/queries/job.query';
 import { esClient } from '~/global/configs/elastic.config';
 import logger from '~/global/helpers/logger.helper';
 import { jobMaper } from '../../mappers/job.mapper';
+import { IJobFilters } from '~/search/job/interface/job.interface';
 
 class JobService implements IJobService {
   private readonly jobSyncService = new JobSyncService();
@@ -31,6 +32,59 @@ class JobService implements IJobService {
     private readonly jobRepository: IJobRepository,
     private readonly packageService: IPackageService
   ) {}
+
+  async searchJobsFilter(
+    page: number,
+    limit: number,
+    search: string,
+    filter: IJobFilters
+  ): Promise<{
+    data: IJobResponse[];
+    totalDocs: number;
+    totalPages: number;
+    page: number;
+    limit: number;
+  }> {
+    const query = jobQuery.searchJobFilter(page, limit, search, filter);
+
+    const response = await esClient.search(query);
+
+    const data: IJobResponse[] = response.hits.hits.map((hit: any) => {
+      const job = hit._source!;
+
+      return {
+        id: hit._id,
+        title: job.title,
+        description: job.description,
+        status: job.status,
+        jobRole: job.jobRoleName,
+        minSalary: job.minSalary,
+        maxSalary: job.maxSalary ?? null,
+        totalViews: job.totalViews ?? 0,
+        createdAt: new Date(job.createdAt),
+        isDeleted: job.isDeleted ?? false,
+        company: {
+          id: job.companyId ?? 0,
+          name: job.companyName ?? '',
+          logo: job.companyLogo ?? null,
+          address: job.address ?? null
+        }
+      };
+    });
+
+    const totalDocs =
+      typeof response.hits.total === 'object' ? response.hits.total.value : (response.hits.total as number);
+
+    const totalPages = Math.ceil(totalDocs / limit);
+
+    return {
+      data,
+      totalDocs,
+      totalPages,
+      page,
+      limit
+    };
+  }
 
   async getAllJob(
     page: number,

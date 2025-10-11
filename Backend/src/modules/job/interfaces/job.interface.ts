@@ -9,6 +9,13 @@ export interface IJob {
   jobRoleName: string;
 }
 
+export interface IJobFilters {
+  location?: string;
+  jobRoles?: string[];
+  dateRange?: ('Last Hour' | 'Last 24 Hours' | 'Last 7 Days' | 'Last 30 Days')[];
+  minSalary?: number;
+  maxSalary?: number;
+}
 export interface IJobResponse {
   id: number;
   title: string;

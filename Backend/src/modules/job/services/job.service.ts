@@ -2,6 +2,7 @@ import { Company, Job, JobStatus } from '@prisma/client';
 import { IJob, IJobResponse } from '../interfaces/job.interface';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
 import { JobDocument } from '~/search/job/mapper/job.mapper';
+import { IJobFilters } from '~/search/job/interface/job.interface';
 
 export interface IJobService {
   create(requestBody: IJob, userId: number): Promise<Job>;
@@ -26,6 +27,19 @@ export interface IJobService {
   getAllJob(
     page: number,
     limit: number
+  ): Promise<{
+    data: IJobResponse[];
+    totalDocs: number;
+    totalPages: number;
+    page: number;
+    limit: number;
+  }>;
+
+  searchJobsFilter(
+    page: number,
+    limit: number,
+    search: string,
+    filter: IJobFilters
   ): Promise<{
     data: IJobResponse[];
     totalDocs: number;

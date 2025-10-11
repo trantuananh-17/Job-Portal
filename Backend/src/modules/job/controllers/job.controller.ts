@@ -13,6 +13,7 @@ class JobController {
     this.updateStatus = this.updateStatus.bind(this);
     this.delete = this.delete.bind(this);
     this.searchCompletion = this.searchCompletion.bind(this);
+    this.searchJobsFilter = this.searchJobsFilter.bind(this);
   }
 
   public async create(req: Request, res: Response) {
@@ -125,6 +126,34 @@ class JobController {
     return res.status(HttpStatus.OK).json({
       message: 'Get title job successfully',
       data
+    });
+  }
+
+  public async searchJobsFilter(req: Request, res: Response) {
+    const { page = 1, limit = 6, search = '', location = '', roles = [], dates = [], min, max } = req.query;
+
+    const filter = {
+      location: location as string,
+      jobRoles: typeof roles === 'string' && roles.length > 0 ? roles.split(',') : [],
+      dateRange:
+        typeof dates === 'string' && dates.length > 0
+          ? (dates.split(',')[0] as 'Last Hour' | 'Last 24 Hours' | 'Last 7 Days' | 'Last 30 Days')
+          : undefined,
+      minSalary: min ? Number(min) : undefined,
+      maxSalary: max ? Number(max) : undefined
+    };
+
+    const data = await this.jobService.searchJobsFilter(+page, +limit, search as string, filter);
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Get jobs filter successfully',
+      pagination: {
+        totalDocs: data.totalDocs,
+        totalPages: data.totalPages,
+        currentPage: data.page,
+        limit: data.limit
+      },
+      data: data.data
     });
   }
 }

@@ -11,6 +11,7 @@ const jobRoute = Router();
 jobRoute.post('/', verify, allowRole('RECRUITER', 'ADMIN'), validateSchema(jobCreateSchema), jobController.create);
 
 jobRoute.get('/search', jobController.searchCompletion);
+jobRoute.get('/es/search', jobController.searchJobsFilter);
 
 jobRoute.get('/', asyncWrapper(jobController.getAll));
 jobRoute.get('/me', verify, allowRole('RECRUITER'), asyncWrapper(jobController.getAllForRecruiter));
