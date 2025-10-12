@@ -28,3 +28,14 @@ export interface IJobByCandidateResponse {
     address: string | null;
   };
 }
+
+export interface IJobCreate {
+  title: string;
+  location: string;
+  description: string;
+  role: string;
+  minSalary: number;
+  maxSalary: number;
+  requirements: string;
+  skills: string[];
+}

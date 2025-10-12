@@ -278,7 +278,7 @@ const Jobs = () => {
         {/* list jobs */}
         <div className='jobs flex flex-1 flex-col gap-10'>
           <div className='sort mt-5 flex flex-col-reverse items-center justify-between gap-10 lg:flex-row'>
-            {isSuccess && pagination.totalDocs > 0 ? (
+            {!isLoading && pagination.totalDocs > 0 ? (
               <h3>
                 Showing {(pagination.currentPage - 1) * pagination.limit + 1} -{' '}
                 {Math.min(pagination.currentPage * pagination.limit, pagination.totalDocs)} of {pagination.totalDocs}{' '}
@@ -321,7 +321,7 @@ const Jobs = () => {
 
           <div className='navigation flex justify-center'>
             <Pagination
-              count={pagination.totalPages}
+              count={Math.max(pagination.totalPages, 1)}
               onChange={handlePageChange}
               page={currentPage}
               size={isMobile ? 'medium' : 'large'}

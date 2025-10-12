@@ -1,22 +1,27 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { RecruiterAuthProvider } from '@context/RecruiterContext';
+// import DashboardLayout from '@layouts/DashboardLayout';
+import { withSuspense, withSuspenseDashboard } from '@utils/withSuspense';
 import { lazy } from 'react';
-import { withSuspense } from '@utils/withSuspense';
-import DashboardLayout from '@layouts/DashboardLayout';
-import ProtectedRoute from '../auth/ProtectedRoute';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
+const DashboardLayout = lazy(() => import('@layouts/DashboardLayout'));
 const RecruiterDashboard = lazy(() => import('@pages/recruiter/recruiter-dashboard'));
+const PostJob = lazy(() => import('@pages/recruiter/post-job'));
 
-const RecruiterDashboardWithSuspense = withSuspense(RecruiterDashboard);
+const DashboardLayoutWithSuspense = withSuspense(DashboardLayout);
+const RecruiterDashboardWithSuspense = withSuspenseDashboard(RecruiterDashboard);
+const PostJobWithSuspense = withSuspenseDashboard(PostJob);
 
 export default function RecruiterRoute() {
   return (
-    <Routes>
-      <Route path='/' element={<ProtectedRoute role='RECRUITER' />}>
-        <Route element={<DashboardLayout />}>
+    <RecruiterAuthProvider>
+      <Routes>
+        <Route element={<DashboardLayoutWithSuspense />}>
           <Route index element={<Navigate to='recruiter-dashboard' replace />} />
           <Route path='recruiter-dashboard' element={<RecruiterDashboardWithSuspense />} />
+          <Route path='post-job' element={<PostJobWithSuspense />} />
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
+    </RecruiterAuthProvider>
   );
 }

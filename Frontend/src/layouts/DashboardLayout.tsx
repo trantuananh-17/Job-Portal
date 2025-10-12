@@ -13,7 +13,7 @@ const DashboardLayout: React.FC<Props> = ({}) => {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
 
   // Handle responsive behavior
   useEffect(() => {
@@ -35,6 +35,8 @@ const DashboardLayout: React.FC<Props> = ({}) => {
 
   // Close dropdowns when clicking outside
   useEffect(() => {
+    if (!profileDropdownOpen) return;
+
     const handleClickOutside = () => {
       if (profileDropdownOpen) {
         setProfileDropdownOpen(false);

@@ -14,21 +14,28 @@ const RECRUITER_DASHBOARD_ACTION = [
     title: 'Post New Job',
     icon: Plus,
     color: 'bg-blue-50 text-blue-700',
-    path: '/recuiter/post-job'
+    path: '/recruiter/post-job'
   },
   {
     title: 'Review Applications',
     icon: Users,
     color: 'bg-green-50 text-green-700',
-    path: '/recuiter/manage-jobs'
+    path: '/recruiter/manage-jobs'
   },
   {
     title: 'Company Settings',
     icon: Building2,
     color: 'bg-orange-100 text-orange-700',
-    path: '/recuiter/compnay-profile'
+    path: '/recruiter/compnay-profile'
   }
 ];
+
+const FORM_TAB = [
+  { id: 'job-info', label: 'Thông tin công việc' },
+  { id: 'requirement', label: 'Yêu cầu' }
+];
+
+const JOB_LEVEL_ITEM = ['Internship', 'Fresher', 'Junior', 'Mid-level', 'Senior', 'Tech Lead'];
 
 const ADDRESS_LOCATION = [
   'Hà Nội',
@@ -96,4 +103,4 @@ const ADDRESS_LOCATION = [
   'Cà Mau'
 ];
 
-export { NAVIGATION_MENU, RECRUITER_DASHBOARD_ACTION, ADDRESS_LOCATION };
+export { NAVIGATION_MENU, RECRUITER_DASHBOARD_ACTION, ADDRESS_LOCATION, FORM_TAB, JOB_LEVEL_ITEM };

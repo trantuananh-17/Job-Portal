@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import LOGO from '../../assets/images/img_logo.png';
 import { menuItems } from '../../constant/menuItem';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { BriefcaseBusiness, Menu, X } from 'lucide-react';
 import { useAuth } from '@context/AuthContext';
 import ProfileDropdown from './ProfileDropdown';
 
@@ -95,10 +95,10 @@ const Header = () => {
     <header className='fixed top-0 left-0 z-50 w-full bg-black text-white shadow-md'>
       <div className='mx-auto flex h-[70px] w-full max-w-7xl items-center justify-between px-6'>
         {/* Logo */}
-        <div className='flex items-center gap-2'>
-          <img src={LOGO} className='h-7 w-7' alt='LOGO ICON' />
+        <NavLink to='/' className='flex items-center gap-2'>
+          <BriefcaseBusiness className='h-7 w-7' />
           <p className='text-xl font-semibold'>Job Portal</p>
-        </div>
+        </NavLink>
 
         {/* Navigation */}
         {!isMobile ? (

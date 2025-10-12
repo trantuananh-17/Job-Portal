@@ -13,3 +13,16 @@ export const withSuspense = (
     );
   };
 };
+
+export const withSuspenseDashboard = (
+  Component: React.LazyExoticComponent<React.ComponentType<any>>,
+  fallback: React.ReactNode = <LoadingSuspenseSpinner />
+) => {
+  return function WrappedWithSuspense(props: any) {
+    return (
+      <Suspense fallback={fallback}>
+        <Component {...props} />
+      </Suspense>
+    );
+  };
+};
