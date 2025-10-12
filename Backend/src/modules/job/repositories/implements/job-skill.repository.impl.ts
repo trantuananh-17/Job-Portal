@@ -8,6 +8,18 @@ class JobSkillRepository extends BaseRepository<JobSkill> implements IJobSkillRe
     super(prisma.jobSkill);
   }
 
+  async createMany(jobId: number, skills: string[]): Promise<number> {
+    const result = await prisma.jobSkill.createMany({
+      data: skills.map((skill) => ({
+        jobId,
+        skillName: skill
+      })),
+      skipDuplicates: true
+    });
+
+    return result.count;
+  }
+
   async getAllByJob(jobId: number): Promise<JobSkill[]> {
     return await this.prisma.jobSkill.findMany({
       where: { jobId }

@@ -170,49 +170,33 @@ model CompanyIndustry {
 }
 
 model Job {
-  id    Int     @id @default(autoincrement())
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId Int
-
-  postBy User @relation(fields: [postById], references: [id])
-  postById Int
-
-  jobRole JobRole @relation(fields: [jobRoleName], references: [name], onDelete: Cascade)
+  id          Int       @id @default(autoincrement())
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   Int
+  postBy      User      @relation(fields: [postById], references: [id])
+  postById    Int
+  jobRole     JobRole   @relation(fields: [jobRoleName], references: [name], onDelete: Cascade)
   jobRoleName String
 
-  title String
+  title       String
   description String
-  status JobStatus @default(PENDING)
-  minSalary Float
-  maxSalary Float?
+  status      JobStatus @default(PENDING)
+  minSalary   Float
+  maxSalary   Float?
+  totalViews  Int       @default(0)
 
-  totalViews Int @default(0)
+  benefits     String
+  requirements String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime? @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  isDeleted   Boolean   @default(false)
 
-  isDeleted Boolean @default(false)
-
-  jobSkills JobSkill[]
-  jobBenefits JobBenefit[]
-  jobRequirements  JobRequirement[]
-  applies Apply[]
+  jobSkills   JobSkill[]
+  applies     Apply[]
 }
 
-model Requirement {
-  name            String           @id
-  jobRequirements JobRequirement[]
-}
 
-model JobRequirement {
-  job           Job         @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  jobId         Int
-
-  requirement   Requirement @relation(fields: [requirementName], references: [name], onDelete: Cascade)
-  requirementName String
-
-  @@id([jobId, requirementName])
-}
 
 model JobRole {
   name String @id
@@ -231,21 +215,6 @@ model JobSkill {
   @@id([jobId, skillName])
 }
 
-model Benefit {
-  name String @id
-
-  jobBenefits JobBenefit[]
-}
-
-model JobBenefit {
-  job Job @relation(fields: [jobId], references: [id])
-  jobId Int
-
-  benefit Benefit @relation(fields: [benefitName], references: [name], onDelete: Cascade)
-  benefitName String
-
-  @@id([jobId, benefitName])
-}
 
 model Package {
   id    Int     @id @default(autoincrement())

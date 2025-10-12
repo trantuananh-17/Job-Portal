@@ -1,4 +1,4 @@
-import { Benefit, Education, Industry, JobRole, Language, PrismaClient, Skill } from '@prisma/client';
+import { Education, Industry, JobRole, Language, PrismaClient, Skill } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -81,37 +81,6 @@ class SeedData {
     await prisma.jobRole.createMany({ data });
   }
 
-  async seedBenefits() {
-    const data: Benefit[] = [
-      { name: 'medical coverage' },
-      { name: 'dental insurance' },
-      { name: 'vision insurance' },
-      { name: 'life insurance policies' },
-      { name: 'mental health coverage' },
-      { name: 'retirement savings plan' },
-      { name: 'paid time off' },
-      { name: 'parental leave' },
-      { name: 'professional development allowance' },
-      { name: 'remote work flexibility' },
-      { name: 'gym membership' },
-      { name: 'commuter benefits' },
-      { name: 'stock options' },
-      { name: 'annual performance bonus' },
-      { name: 'company-provided meals' },
-      { name: 'wellness programs' },
-      { name: 'childcare assistance' },
-      { name: 'housing allowance' },
-      { name: 'internet reimbursement' },
-      { name: 'travel allowance' },
-      { name: 'team building retreats' },
-      { name: 'on-site medical clinic' },
-      { name: 'employee discount programs' },
-      { name: 'tuition reimbursement' },
-      { name: 'career coaching' }
-    ];
-    await prisma.benefit.createMany({ data });
-  }
-
   async run() {
     try {
       console.log('Seeding data...');
@@ -120,7 +89,6 @@ class SeedData {
       await this.seedSkills();
       await this.seedIndustries();
       await this.seedJobRoles();
-      await this.seedBenefits();
       console.log('All data seeded successfully!');
     } catch (err) {
       console.error('Error seeding data:', err);

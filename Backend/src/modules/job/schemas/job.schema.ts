@@ -24,6 +24,18 @@ export const jobCreateSchema = Joi.object({
   jobRoleName: Joi.string().required().messages({
     'any.required': 'Job role name is required',
     'string.base': 'Job role name must be a string'
+  }),
+  benefits: Joi.string().required().messages({
+    'any.required': 'Benefits are required',
+    'string.base': 'Benefits must be a string'
+  }),
+  requirements: Joi.string().required().messages({
+    'any.required': 'Requirements are required',
+    'string.base': 'Requirements must be a string'
+  }),
+  skills: Joi.array().items(Joi.string()).default([]).messages({
+    'array.base': 'Skills must be an array',
+    'string.base': 'Each skill must be a string'
   })
 });
 
@@ -42,5 +54,15 @@ export const jobUpdateSchema = Joi.object({
   }),
   maxSalary: Joi.number().optional().messages({
     'number.base': 'Maximum salary must be a number'
+  }),
+  benefits: Joi.string().optional().messages({
+    'string.base': 'Benefits must be a string'
+  }),
+  requirements: Joi.string().optional().messages({
+    'string.base': 'Requirements must be a string'
+  }),
+  skills: Joi.array().items(Joi.string()).optional().messages({
+    'array.base': 'Skills must be an array',
+    'string.base': 'Each skill must be a string'
   })
 });

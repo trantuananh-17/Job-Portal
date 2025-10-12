@@ -5,7 +5,7 @@ import { JobDocument } from '~/search/job/mapper/job.mapper';
 import { IJobFilters } from '~/search/job/interface/job.interface';
 
 export interface IJobService {
-  create(requestBody: IJob, userId: number): Promise<Job>;
+  create(requestBody: IJob, skills: string[], userId: number): Promise<Job>;
 
   getAll({ page, limit, filter, minSalary }: any): Promise<IPaginatedResult<Job>>;
   getAllForRecruiter({ page, limit, filter, minSalary }: any, userId: number): Promise<IPaginatedResult<Job>>;

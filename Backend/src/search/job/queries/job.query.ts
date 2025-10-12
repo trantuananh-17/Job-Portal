@@ -91,7 +91,13 @@ class JobQuery {
 
     if (filters?.location) {
       filter.push({
-        term: { address: filters.location.toLowerCase() }
+        match_phrase_prefix: {
+          address: {
+            query: filters.location,
+            slop: 3,
+            boost: 2
+          }
+        }
       });
     }
 

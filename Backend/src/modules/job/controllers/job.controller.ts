@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import HttpStatus from '~/global/constants/http.constant';
 import { jobService } from '../services/implements/job.service.impl';
 import { IJobService } from '../services/job.service';
+import { IJob } from '../interfaces/job.interface';
 
 class JobController {
   constructor(private readonly jobService: IJobService) {
@@ -18,7 +19,12 @@ class JobController {
 
   public async create(req: Request, res: Response) {
     const userId = +req.user.id;
-    const job = await this.jobService.create(req.body, userId);
+    const { companyId, title, description, benefits, jobRoleName, requirements, minSalary, maxSalary, skills } =
+      req.body;
+
+    const payload: IJob = { companyId, title, description, benefits, jobRoleName, requirements, minSalary, maxSalary };
+
+    const job = await this.jobService.create(payload, skills, userId);
 
     return res.status(HttpStatus.CREATED).json({
       message: 'Created job successfully',
