@@ -7,6 +7,8 @@ export interface IJob {
   minSalary: number;
   maxSalary: number;
   jobRoleName: string;
+  benefits: string;
+  requirements: string;
 }
 
 export interface IJobFilters {
