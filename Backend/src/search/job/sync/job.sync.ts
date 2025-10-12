@@ -25,6 +25,12 @@ export class JobSyncService {
         index: this.index,
         settings: {
           analysis: {
+            normalizer: {
+              lowercase: {
+                type: 'custom',
+                filter: ['lowercase']
+              }
+            },
             filter: {
               vn_ascii: { type: 'asciifolding', preserve_original: true }
             },
@@ -57,7 +63,17 @@ export class JobSyncService {
             jobRoleName: { type: 'keyword' },
             minSalary: { type: 'integer' },
             maxSalary: { type: 'integer' },
+            companyId: { type: 'keyword' },
             companyName: { type: 'keyword', normalizer: 'lowercase' },
+            address: {
+              type: 'text',
+              analyzer: 'std_fold',
+              fields: {
+                ngram: { type: 'text', analyzer: 'mid_ngram_an' },
+                keyword: { type: 'keyword', normalizer: 'lowercase' }
+              }
+            },
+            jobRoles: { type: 'keyword', normalizer: 'lowercase' },
             recruiter: { type: 'keyword' },
             createdAt: { type: 'date' },
             isDeleted: { type: 'boolean' }

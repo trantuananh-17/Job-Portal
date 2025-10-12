@@ -13,7 +13,6 @@ import packageRoute from '~/modules/package/routes/package.route';
 import authRoute from '~/modules/user/routes/auth.route';
 import userRoute from '~/modules/user/routes/user.route';
 import jobRoleRoute from '../../modules/job/routes/job-role.route';
-import jobBenefitRoute from '~/modules/job/routes/job-benefit.route';
 import orderRoute from '~/modules/order/routes/order.route';
 import recruiterPackageRoute from '~/modules/package/routes/recruiter-package.route';
 import applyRoute from '~/modules/apply/routes/apply.route';
@@ -32,7 +31,6 @@ function appRoutes(app: Application) {
   app.use('/api/v1/jobs', jobRoute);
   app.use('/api/v1/job-skills', jobSkillRoute);
   app.use('/api/v1/job-roles', jobRoleRoute);
-  app.use('/api/v1/job-benefits', jobBenefitRoute);
   app.use('/api/v1/packages', packageRoute);
   app.use('/api/v1/recruiter-packages', recruiterPackageRoute);
   app.use('/api/v1/orders', orderRoute);

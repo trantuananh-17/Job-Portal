@@ -1,4 +1,4 @@
-import { Company, Job, JobBenefit, JobRequirement, JobSkill, JobStatus, PrismaClient, User } from '@prisma/client';
+import { Company, Job, JobSkill, JobStatus, PrismaClient, User } from '@prisma/client';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import { IJobRepository } from '../job.repository';
 import prisma from '~/prisma';
@@ -75,7 +75,7 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
   }
 
   async createJob(requestBody: IJob, userId: number): Promise<Job> {
-    const { companyId, description, jobRoleName, maxSalary, minSalary, title } = requestBody;
+    const { companyId, description, jobRoleName, maxSalary, minSalary, title, benefits, requirements } = requestBody;
     return await this.prisma.job.create({
       data: {
         companyId,
@@ -84,6 +84,8 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
         description,
         minSalary,
         maxSalary,
+        benefits,
+        requirements,
         postById: userId
       }
     });

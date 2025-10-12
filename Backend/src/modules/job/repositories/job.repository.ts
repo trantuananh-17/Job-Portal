@@ -1,4 +1,4 @@
-import { Company, Job, JobBenefit, JobRequirement, JobSkill, JobStatus, User } from '@prisma/client';
+import { Company, Job, JobSkill, JobStatus, User } from '@prisma/client';
 import { IBaseRepository } from '~/global/base/repositories/base.repository';
 import { IJob, IJobResponse } from '../interfaces/job.interface';
 
