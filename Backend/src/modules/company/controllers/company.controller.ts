@@ -8,6 +8,7 @@ class CompanyController {
     this.create = this.create.bind(this);
     this.getAll = this.getAll.bind(this);
     this.getMyCompanies = this.getMyCompanies.bind(this);
+    this.getMyCompany = this.getMyCompany.bind(this);
     this.getAllForAdmin = this.getAllForAdmin.bind(this);
     this.getOne = this.getOne.bind(this);
     this.updateApproved = this.updateApproved.bind(this);
@@ -65,6 +66,17 @@ class CompanyController {
           currentPage: parseInt(page as string)
         }
       }
+    });
+  }
+
+  public async getMyCompany(req: Request, res: Response) {
+    const userId = req.user.id;
+
+    const company = await this.companyService.getMyCompany(+userId);
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Get company info successfully.',
+      data: company
     });
   }
 

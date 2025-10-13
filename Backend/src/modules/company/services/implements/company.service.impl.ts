@@ -10,6 +10,16 @@ import { companyRepository } from '../../repositories/implements/company.reposit
 class CompanyService implements ICompanyService {
   constructor(private readonly companyRepository: ICompanyRepository) {}
 
+  public async getMyCompany(userId: number): Promise<Company | null> {
+    const company = await this.companyRepository.getMyCompany(userId);
+
+    if (!company) {
+      throw new NotFoundException('Your company could not be found.');
+    }
+
+    return company;
+  }
+
   public async create(requestBody: ICompany, userId: number): Promise<Company> {
     return await this.companyRepository.createCompany(requestBody, userId);
   }

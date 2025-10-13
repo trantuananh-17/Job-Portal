@@ -9,6 +9,7 @@ export interface ICompanyService {
   getAllPagination({ page, limit, filter }: any): Promise<IPaginatedResult<Company>>;
   getAllPaginationForAdmin({ page, limit, filter }: any): Promise<IPaginatedResult<Company>>;
   getMyCompanies({ page, limit, filter }: any, userId: number): Promise<IPaginatedResult<Company>>;
+  getMyCompany(userId: number): Promise<Company | null>;
   getOneAdmin(id: number): Promise<Company>;
   findOne(companyId: number, userId: number): Promise<Company>;
   update(id: number, requestBody: Partial<ICompany>, userId: number): Promise<Company>;
