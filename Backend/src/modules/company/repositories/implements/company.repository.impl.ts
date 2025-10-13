@@ -8,6 +8,14 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
     super(prisma.company);
   }
 
+  async getMyCompany(userId: number): Promise<Company | null> {
+    return await this.prisma.company.findUnique({
+      where: {
+        userId
+      }
+    });
+  }
+
   async getOne(companyId: number, userId: number): Promise<Company | null> {
     return await this.prisma.company.findFirst({ where: { id: companyId, userId } });
   }

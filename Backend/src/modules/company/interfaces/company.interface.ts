@@ -9,3 +9,15 @@ export interface ICompany {
   mapLink: string;
   address: string;
 }
+
+export interface ICompanyresposne {
+  id: string;
+  name: string;
+  logo?: string;
+  description: string;
+  teamSize: number;
+  establishmentDate: string;
+  websiteUrl: string;
+  mapLink: string;
+  address: string;
+}
