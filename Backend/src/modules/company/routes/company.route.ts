@@ -11,6 +11,7 @@ const companyRoute = Router();
 companyRoute.get('/', asyncWrapper(companyController.getAll));
 
 companyRoute.get('/me/get-all', verify, allowRole('RECRUITER'), asyncWrapper(companyController.getMyCompanies));
+companyRoute.get('/auth/me', verify, allowRole('RECRUITER'), asyncWrapper(companyController.getMyCompany));
 companyRoute.post(
   '/',
   verify,
