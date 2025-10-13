@@ -1,5 +1,7 @@
 import { API_PATHS } from '@utils/apiPath';
 import axiosAuth from '@utils/axiosAuth';
+import type { IJobCreate, IJobPayloadCreate } from './interfaces/job.interface';
+import axiosInstance from '@utils/axiosInstance';
 
 export const searchJobCompletionApi = async (q: string) => {
   const response = await axiosAuth.get(`${API_PATHS.JOBS.SEARCH_COMPLETE}?q=${encodeURIComponent(q)}`);
@@ -20,4 +22,12 @@ export const searchJobsFilterApi = async (limit: number = 6, params: URLSearchPa
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   return data;
+};
+
+export const createJobApi = async (payload: IJobPayloadCreate) => {
+  const response = await axiosInstance.post(`${API_PATHS.JOBS.CREATE_JOB}`, payload);
+
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  return response;
 };

@@ -11,9 +11,10 @@ export const API_PATHS = {
   JOBS: {
     SEARCH_COMPLETE: 'api/v1/jobs/search',
     GET_JOBS_BY_CANDIDATE: 'api/v1/jobs',
-    SEARCH_JOBS_FILTER: 'api/v1/jobs/es/search'
+    SEARCH_JOBS_FILTER: 'api/v1/jobs/es/search',
+    CREATE_JOB: 'api/v1/jobs'
   },
   COMPANIES: {
-    GET_COMPANY_PROFILE: 'api/v1/companies/me'
+    GET_COMPANY_PROFILE: 'api/v1/companies/auth/me'
   }
 };

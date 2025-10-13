@@ -31,11 +31,23 @@ export interface IJobByCandidateResponse {
 
 export interface IJobCreate {
   title: string;
-  location: string;
   description: string;
-  role: string;
+  jobRoleName: string;
   minSalary: number;
   maxSalary: number;
+  benefits: string;
+  requirements: string;
+  skills: string[];
+}
+
+export interface IJobPayloadCreate {
+  companyId: number;
+  title: string;
+  description: string;
+  jobRoleName: string;
+  minSalary: number;
+  maxSalary: number;
+  benefits: string;
   requirements: string;
   skills: string[];
 }

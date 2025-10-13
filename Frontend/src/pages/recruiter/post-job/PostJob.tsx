@@ -1,4 +1,4 @@
-import type { IJobCreate } from '@apis/jobs/interfaces/job.interface';
+import type { IJobCreate, IJobPayloadCreate } from '@apis/jobs/interfaces/job.interface';
 import { createJobSchema, type CreateJobSchema } from '@apis/jobs/schemas/job.schema';
 import { useRecruiterAuth } from '@context/RecruiterContext';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,17 +11,14 @@ import InputAreaField from './components/InputAreaField';
 import InputField from './components/InputField';
 import SelectField from './components/SelectField';
 import TagSkill from './components/TagSkill';
+import { createJobApi } from '@apis/jobs/job.api';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const SKILL_LIST = ['ReactJS', 'TypeScript', 'NodeJS', 'NestJS', 'NextJS', 'TailwindCSS'];
 
-const JOB_INFO_FIELDS: (keyof CreateJobSchema)[] = [
-  'title',
-  'location',
-  'description',
-  'role',
-  'minSalary',
-  'maxSalary'
-];
+const JOB_INFO_FIELDS: (keyof CreateJobSchema)[] = ['title', 'description', 'jobRoleName', 'minSalary', 'maxSalary'];
 
 const REQUIREMENT_FIELDS: (keyof CreateJobSchema)[] = ['requirements', 'skills'];
 
@@ -29,21 +26,23 @@ const PostJob = () => {
   const [activeTab, setActiveTab] = useState('job-info');
   const { company } = useRecruiterAuth();
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const {
     control,
     trigger,
     handleSubmit,
     formState: { errors },
     getValues,
-    setError
+    setError,
+    reset
   } = useForm<CreateJobSchema>({
     resolver: zodResolver(createJobSchema),
     mode: 'onSubmit',
     defaultValues: {
       title: '',
-      location: '',
       description: '',
-      role: '',
+      jobRoleName: '',
       minSalary: 0,
       maxSalary: 0,
       benefits: '',
@@ -81,16 +80,36 @@ const PostJob = () => {
     }
   };
 
-  const onSubmit = (data: IJobCreate) => {
-    try {
-      const payload = {
-        companyId: company?.id,
-        ...data
-      };
-      console.log('Form data:', payload);
-    } catch (error) {
-      console.log(error);
+  const { mutate, isPending } = useMutation({
+    mutationFn: (data: IJobPayloadCreate) => createJobApi(data),
+    onSuccess: (res) => {
+      toast.success(res.data.message);
+      setActiveTab('job-info');
+      reset();
+    },
+    onError: (err) => {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data.message || 'Đã xảy ra lỗi!');
+      } else {
+        toast.error('Lỗi không xác định!');
+      }
     }
+  });
+
+  const onSubmit = async (data: IJobCreate) => {
+    const companyId = Number(company?.id);
+
+    if (!companyId) {
+      toast.error('Không tìm thấy công ty. Hãy đăng nhập lại!');
+      return;
+    }
+
+    const payload: IJobPayloadCreate = {
+      ...data,
+      companyId
+    };
+
+    mutate(payload);
   };
 
   return (
@@ -99,10 +118,11 @@ const PostJob = () => {
       <div className='mb-6 flex border-b border-gray-200'>
         {FORM_TAB.map((tab) => (
           <button
+            disabled={isPending}
             key={tab.id}
             onClick={() => handleTabClick(tab.id)}
             // onClick={() => setActiveTab(tab.id)}
-            className={`border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
+            className={`cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === tab.id
                 ? 'border-blue-600 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -136,23 +156,6 @@ const PostJob = () => {
                 )}
               />
 
-              {/* Location */}
-              <Controller
-                name='location'
-                control={control}
-                render={({ field }) => (
-                  <InputField
-                    label='Location'
-                    placeholder='e.g., 132/12, Nguyên Xá, Hà Nội'
-                    icon={MapPin}
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={errors.location?.message as string}
-                    type='text'
-                  />
-                )}
-              />
-
               {/* Description */}
               <Controller
                 name='description'
@@ -173,14 +176,14 @@ const PostJob = () => {
 
               {/* Level || Role*/}
               <Controller
-                name='role'
+                name='jobRoleName'
                 control={control}
                 render={({ field }) => (
                   <SelectField
                     menu={JOB_LEVEL_ITEM}
                     onChange={field.onChange}
                     value={field.value}
-                    error={errors.role?.message as string}
+                    error={errors.jobRoleName?.message as string}
                   />
                 )}
               />
@@ -232,6 +235,7 @@ const PostJob = () => {
                 onClick={() => handleNext()}
                 clasName='bg-blue-600 hover:bg-blue-700'
                 type='button'
+                isPending={isPending}
               />
             </div>
           </>
@@ -315,12 +319,14 @@ const PostJob = () => {
                 onClick={() => setActiveTab('job-info')}
                 clasName='bg-gray-600 hover:bg-gray-700'
                 type='button'
+                isPending={isPending}
               />
               <ButtonForm
                 name='Create Job'
                 onClick={() => handleSubmit(onSubmit)}
                 clasName='bg-blue-600 hover:bg-blue-700'
                 type='submit'
+                isPending={isPending}
               />
             </div>
           </div>

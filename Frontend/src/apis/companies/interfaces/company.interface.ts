@@ -1,13 +1,15 @@
 export interface ICompanyResponse {
   id: string;
   name: string;
-  logo?: string;
+  avatarUrl?: string;
   description: string;
   teamSize: number;
   establishmentDate: string;
   websiteUrl: string;
   mapLink: string;
   address: string;
+  views?: number;
+  userId?: number;
 }
 
 export interface IUpdateCompanyPayload {
@@ -23,7 +25,7 @@ export interface IUpdateCompanyPayload {
 export interface INewCompanyData {
   id: string;
   name: string;
-  logo: string;
+  avatarUrl: string;
   description: string;
   teamSize: number;
   establishmentDate: string;

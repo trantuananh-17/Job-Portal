@@ -12,7 +12,7 @@ const SelectField: React.FC<Props> = ({ value, onChange, menu, error }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className='relative'>
+    <div className='relative cursor-pointer'>
       <label className='block text-sm font-medium text-gray-700'>
         Job Role<span className='text-lg text-red-500'>*</span>
       </label>

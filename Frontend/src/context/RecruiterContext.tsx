@@ -25,7 +25,8 @@ export const RecruiterAuthProvider: React.FC<Props> = ({ children }) => {
   const checkProfileCompany = async () => {
     try {
       const res = await getProfileCompany();
-      setCompany(res.data);
+
+      setCompany(res.data.data);
     } catch (error) {
       setCompany(null);
     }
