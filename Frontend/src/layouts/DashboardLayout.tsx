@@ -148,7 +148,7 @@ const DashboardLayout: React.FC<Props> = ({}) => {
         </header>
 
         {/*Main Content Area*/}
-        <main className='h-6 flex-1 overflow-auto p-6'>
+        <main className=''>
           <Outlet />
         </main>
       </div>
