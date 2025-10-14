@@ -16,7 +16,7 @@ import { IJobFilters } from '~/search/job/interface/job.interface';
 import { JobDocument, mapJobToDocument } from '~/search/job/mapper/job.mapper';
 import { jobQuery } from '~/search/job/queries/job.query';
 import { JobSyncService } from '~/search/job/sync/job.sync';
-import { IJob, IJobResponse } from '../../interfaces/job.interface';
+import { IJob, IJobByRecruiterResponse, IJobResponse } from '../../interfaces/job.interface';
 import { jobMaper } from '../../mappers/job.mapper';
 import { jobRepository } from '../../repositories/implements/job.repository';
 import { IJobRepository } from '../../repositories/job.repository';
@@ -35,6 +35,29 @@ class JobService implements IJobService {
     private readonly jobSkillService: IJobSkillService,
     private readonly packageService: IPackageService
   ) {}
+
+  async getAllJobByRecruiter(
+    page: number,
+    limit: number,
+    userId: number,
+    status?: JobStatus
+  ): Promise<{ data: IJobByRecruiterResponse[]; totalDocs: number; totalPages: number; page: number; limit: number }> {
+    const [jobs, totalDocs] = await Promise.all([
+      this.jobRepository.getAllByRecruiter(page, limit, userId, status),
+      this.jobRepository.getTotalJobByReruiter(userId, status)
+    ]);
+
+    const totalPages = Math.ceil(totalDocs / limit);
+    const data: IJobByRecruiterResponse[] = jobs;
+
+    return {
+      data,
+      totalDocs,
+      totalPages,
+      page,
+      limit
+    };
+  }
 
   async searchJobsFilter(
     page: number,
@@ -132,7 +155,8 @@ class JobService implements IJobService {
   }
 
   async create(requestBody: IJob, skills: string[], userId: number): Promise<Job> {
-    const { companyId, jobRoleName, title, benefits, description, maxSalary, minSalary, requirements } = requestBody;
+    const { companyId, jobRoleName, title, benefits, description, maxSalary, minSalary, requirements, activeDays } =
+      requestBody;
 
     const jobRoleToLower = jobRoleName.toLowerCase();
 
@@ -159,6 +183,7 @@ class JobService implements IJobService {
       maxSalary,
       jobRoleName: jobRoleToLower,
       benefits,
+      activeDays,
       requirements
     };
 
@@ -237,18 +262,25 @@ class JobService implements IJobService {
     return job;
   }
 
-  async updateStatus(id: number, companyId: number, status: JobStatus, userId: number): Promise<Job> {
-    await this.findOne(id, companyId, userId);
+  async updateStatus(id: number, status: JobStatus): Promise<Job> {
+    const job = await this.jobRepository.updateStatus(id, status);
 
-    const job = await this.jobRepository.updateStatus(id, companyId, userId, status);
+    let updatedJob = job;
 
-    const jobIndex = await this.findIndex(job.id);
+    if (status === JobStatus.ACTIVE) {
+      const activeDays = job.activeDays ?? 30;
+      const newExpiration = new Date();
+      newExpiration.setDate(newExpiration.getDate() + activeDays);
 
+      updatedJob = await this.jobRepository.updateExpirationDate(job.id, newExpiration);
+    }
+
+    const jobIndex = await this.findIndex(id);
     if (jobIndex) {
       await this.jobSyncService.updateJob(jobIndex);
     }
 
-    return job;
+    return updatedJob;
   }
 
   async delete(id: number, companyId: number, userId: number): Promise<void> {

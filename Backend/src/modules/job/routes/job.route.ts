@@ -8,13 +8,7 @@ import { jobCreateSchema, jobUpdateSchema } from '../schemas/job.schema';
 
 const jobRoute = Router();
 
-jobRoute.post(
-  '/',
-  verify,
-  allowRole('RECRUITER', 'ADMIN'),
-  validateSchema(jobCreateSchema),
-  asyncWrapper(jobController.create)
-);
+jobRoute.post('/', verify, allowRole('RECRUITER', 'ADMIN'), validateSchema(jobCreateSchema), jobController.create);
 
 jobRoute.get('/search', asyncWrapper(jobController.searchCompletion));
 jobRoute.get('/es/search', asyncWrapper(jobController.searchJobsFilter));
@@ -25,9 +19,9 @@ jobRoute.get('/me', verify, allowRole('RECRUITER'), asyncWrapper(jobController.g
 jobRoute.get('/:id', verifyUserOrNot, asyncWrapper(jobController.getOne));
 
 jobRoute.patch(
-  '/:id/:companyId/status',
+  '/:id/status',
   verify,
-  allowRole('RECRUITER'),
+  allowRole('ADMIN'),
   // validateSchema(jobUpdateSchema),
   asyncWrapper(jobController.updateStatus)
 );
