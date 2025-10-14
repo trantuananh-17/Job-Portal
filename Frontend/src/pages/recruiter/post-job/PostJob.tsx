@@ -15,6 +15,7 @@ import { createJobApi } from '@apis/jobs/job.api';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import JobPreview from '../job-preview';
 
 const SKILL_LIST = ['ReactJS', 'TypeScript', 'NodeJS', 'NestJS', 'NextJS', 'TailwindCSS'];
 
@@ -25,8 +26,8 @@ const REQUIREMENT_FIELDS: (keyof CreateJobSchema)[] = ['requirements', 'skills']
 const PostJob = () => {
   const [activeTab, setActiveTab] = useState('job-info');
   const { company } = useRecruiterAuth();
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPreview, setIsPreview] = useState<boolean>(false);
+  const [previewData, setPreviewData] = useState<CreateJobSchema | null>(null);
 
   const {
     control,
@@ -113,225 +114,243 @@ const PostJob = () => {
   };
 
   return (
-    <div className='mx-auto max-w-4xl rounded-2xl bg-white p-6 shadow'>
-      {/*Tabs Header*/}
-      <div className='mb-6 flex border-b border-gray-200'>
-        {FORM_TAB.map((tab) => (
-          <button
-            disabled={isPending}
-            key={tab.id}
-            onClick={() => handleTabClick(tab.id)}
-            // onClick={() => setActiveTab(tab.id)}
-            className={`cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
-              activeTab === tab.id
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+    <div className={`${!isPreview ? 'p-6' : ''}`}>
+      {!isPreview && (
+        <div className='mx-auto max-w-4xl rounded-2xl bg-white p-6 shadow'>
+          {/*Tabs Header*/}
+          <div className='mb-6 flex border-b border-gray-200'>
+            {FORM_TAB.map((tab) => (
+              <button
+                disabled={isPending}
+                key={tab.id}
+                onClick={() => handleTabClick(tab.id)}
+                // onClick={() => setActiveTab(tab.id)}
+                className={`cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
+                  activeTab === tab.id
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-      {/*Form Content */}
-      <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
-        {/* Tab Info */}
-        {activeTab === 'job-info' && (
-          <>
-            <div className='space-y-4'>
-              {/* Title */}
-              <Controller
-                name='title'
-                control={control}
-                render={({ field }) => (
-                  <InputField
-                    label='Job Title'
-                    placeholder='e.g., Senior Frontend Developer'
-                    icon={Briefcase}
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={errors.title?.message as string}
-                    type='text'
-                  />
-                )}
-              />
-
-              {/* Description */}
-              <Controller
-                name='description'
-                control={control}
-                render={({ field }) => (
-                  <InputAreaField
-                    label='Job Description'
-                    icon={MapPin}
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={errors.description?.message as string}
-                    row={6}
-                    placeholder='Description the role and responsibilities...'
-                    helperText='Include key responsibilities, day-to-day tasks, and what makes this role exciting.'
-                  />
-                )}
-              />
-
-              {/* Level || Role*/}
-              <Controller
-                name='jobRoleName'
-                control={control}
-                render={({ field }) => (
-                  <SelectField
-                    menu={JOB_LEVEL_ITEM}
-                    onChange={field.onChange}
-                    value={field.value}
-                    error={errors.jobRoleName?.message as string}
-                  />
-                )}
-              />
-
-              <div className='grid grid-cols-2 gap-5 sm:grid-cols-2'>
-                {/* Min salary */}
-                <div className=''>
+          {/*Form Content */}
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
+            {/* Tab Info */}
+            {activeTab === 'job-info' && (
+              <>
+                <div className='space-y-4'>
+                  {/* Title */}
                   <Controller
-                    name='minSalary'
+                    name='title'
                     control={control}
                     render={({ field }) => (
                       <InputField
-                        label='Min Salary'
-                        placeholder='e.g., 100'
-                        icon={CircleDollarSign}
-                        value={field.value as number}
+                        label='Job Title'
+                        placeholder='e.g., Senior Frontend Developer'
+                        icon={Briefcase}
+                        value={field.value}
                         onChange={field.onChange}
-                        error={errors.minSalary?.message as string}
-                        type='number'
+                        error={errors.title?.message as string}
+                        type='text'
                       />
                     )}
                   />
+
+                  {/* Description */}
+                  <Controller
+                    name='description'
+                    control={control}
+                    render={({ field }) => (
+                      <InputAreaField
+                        label='Job Description'
+                        icon={MapPin}
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={errors.description?.message as string}
+                        row={6}
+                        placeholder='Description the role and responsibilities...'
+                        helperText='Include key responsibilities, day-to-day tasks, and what makes this role exciting.'
+                      />
+                    )}
+                  />
+
+                  {/* Level || Role*/}
+                  <Controller
+                    name='jobRoleName'
+                    control={control}
+                    render={({ field }) => (
+                      <SelectField
+                        menu={JOB_LEVEL_ITEM}
+                        onChange={field.onChange}
+                        value={field.value}
+                        error={errors.jobRoleName?.message as string}
+                      />
+                    )}
+                  />
+
+                  <div className='grid grid-cols-2 gap-5 sm:grid-cols-2'>
+                    {/* Min salary */}
+                    <div className=''>
+                      <Controller
+                        name='minSalary'
+                        control={control}
+                        render={({ field }) => (
+                          <InputField
+                            label='Min Salary'
+                            placeholder='e.g., 100'
+                            icon={CircleDollarSign}
+                            value={field.value as number}
+                            onChange={field.onChange}
+                            error={errors.minSalary?.message as string}
+                            type='number'
+                          />
+                        )}
+                      />
+                    </div>
+
+                    {/* Max salary */}
+                    <div className=''>
+                      <Controller
+                        name='maxSalary'
+                        control={control}
+                        render={({ field }) => (
+                          <InputField
+                            label='Max Salary'
+                            placeholder='e.g., 10000'
+                            icon={CircleDollarSign}
+                            value={field.value as number}
+                            onChange={field.onChange}
+                            error={errors.maxSalary?.message as string}
+                            type='number'
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                {/* Max salary */}
-                <div className=''>
-                  <Controller
-                    name='maxSalary'
-                    control={control}
-                    render={({ field }) => (
-                      <InputField
-                        label='Max Salary'
-                        placeholder='e.g., 10000'
-                        icon={CircleDollarSign}
-                        value={field.value as number}
-                        onChange={field.onChange}
-                        error={errors.maxSalary?.message as string}
-                        type='number'
-                      />
-                    )}
+                <div className='text-end'>
+                  <ButtonForm
+                    name='Next Page'
+                    onClick={() => handleNext()}
+                    clasName='bg-blue-600 hover:bg-blue-700'
+                    type='button'
+                    isPending={isPending}
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Tab requirement */}
+            {activeTab === 'requirement' && (
+              <div className='space-y-4'>
+                {/* Skills Section */}
+                <Controller
+                  name='skills'
+                  control={control}
+                  render={({ field }) => {
+                    const availableSkills = SKILL_LIST.filter((skill) => !field.value.includes(skill));
+
+                    const handleAddSkill = (skill: string) => {
+                      if (skill && !field.value.includes(skill)) {
+                        field.onChange([...field.value, skill]);
+                      }
+                    };
+
+                    const handleRemoveSkill = (skill: string) => {
+                      field.onChange(field.value.filter((s: string) => s !== skill));
+                    };
+
+                    return (
+                      <div>
+                        <SelectField value='' menu={availableSkills} onChange={(skill) => handleAddSkill(skill)} />
+
+                        <div className='mt-3 flex flex-wrap gap-2'>
+                          {field.value.map((skill: string) => (
+                            <TagSkill skill={skill} key={skill} onClick={handleRemoveSkill} />
+                          ))}
+                        </div>
+
+                        {errors.skills && (
+                          <p className='mt-1 text-sm text-red-500'>{errors.skills.message as string}</p>
+                        )}
+                      </div>
+                    );
+                  }}
+                />
+
+                {/* Requirements section */}
+                <Controller
+                  name='requirements'
+                  control={control}
+                  render={({ field }) => (
+                    <InputAreaField
+                      label='Job Requirements'
+                      icon={MapPin}
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={errors.description?.message as string}
+                      row={6}
+                      placeholder='e.g., Qualifications, experience, required skills...'
+                      helperText='Include required skills, experience level, education, and any preferred qualifications. Separate each requirement with a period. (e.g., Proficient in ReactJS. 3+ years of experience. Bachelor’s degree in Computer Science.).'
+                    />
+                  )}
+                />
+
+                {/* Benefits section */}
+                <Controller
+                  name='benefits'
+                  control={control}
+                  render={({ field }) => (
+                    <InputAreaField
+                      label='Job Benefits'
+                      icon={MapPin}
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={errors.description?.message as string}
+                      row={6}
+                      placeholder='e.g., Salary, bonuses, welfare policies, career advancement opportunities...'
+                      helperText='Include Salary, bonuses, welfare policies, career advancement opportunities. Separate each benefit with a period. (e.g., Competitive salary. Annual bonus. Health insurance. Promotion opportunities.)'
+                    />
+                  )}
+                />
+
+                <div className='xs:flex-col-reverse flex justify-between gap-3 sm:flex-row'>
+                  {/* <ButtonForm
+                    name='Return To Page'
+                    onClick={() => setActiveTab('job-info')}
+                    clasName='bg-gray-600 hover:bg-gray-700'
+                    type='button'
+                    isPending={isPending}
+                  /> */}
+                  <ButtonForm
+                    name='Preview'
+                    onClick={() => {
+                      const formData = getValues();
+                      setPreviewData(formData);
+                      setIsPreview(true);
+                    }}
+                    clasName='bg-gray-500 hover:bg-gray-600'
+                    type='submit'
+                    isPending={isPending}
+                  />
+                  <ButtonForm
+                    name='Create Job'
+                    onClick={() => handleSubmit(onSubmit)}
+                    clasName='bg-blue-600 hover:bg-blue-700'
+                    type='submit'
+                    isPending={isPending}
                   />
                 </div>
               </div>
-            </div>
-
-            <div className='text-end'>
-              <ButtonForm
-                name='Next Page'
-                onClick={() => handleNext()}
-                clasName='bg-blue-600 hover:bg-blue-700'
-                type='button'
-                isPending={isPending}
-              />
-            </div>
-          </>
-        )}
-
-        {/* Tab requirement */}
-        {activeTab === 'requirement' && (
-          <div className='space-y-4'>
-            {/* Skills Section */}
-            <Controller
-              name='skills'
-              control={control}
-              render={({ field }) => {
-                const availableSkills = SKILL_LIST.filter((skill) => !field.value.includes(skill));
-
-                const handleAddSkill = (skill: string) => {
-                  if (skill && !field.value.includes(skill)) {
-                    field.onChange([...field.value, skill]);
-                  }
-                };
-
-                const handleRemoveSkill = (skill: string) => {
-                  field.onChange(field.value.filter((s: string) => s !== skill));
-                };
-
-                return (
-                  <div>
-                    <SelectField value='' menu={availableSkills} onChange={(skill) => handleAddSkill(skill)} />
-
-                    <div className='mt-3 flex flex-wrap gap-2'>
-                      {field.value.map((skill: string) => (
-                        <TagSkill skill={skill} key={skill} onClick={handleRemoveSkill} />
-                      ))}
-                    </div>
-
-                    {errors.skills && <p className='mt-1 text-sm text-red-500'>{errors.skills.message as string}</p>}
-                  </div>
-                );
-              }}
-            />
-
-            {/* Requirements section */}
-            <Controller
-              name='requirements'
-              control={control}
-              render={({ field }) => (
-                <InputAreaField
-                  label='Job Requirements'
-                  icon={MapPin}
-                  value={field.value}
-                  onChange={field.onChange}
-                  error={errors.description?.message as string}
-                  row={6}
-                  placeholder='e.g., Qualifications, experience, required skills...'
-                  helperText='Include required skills, experience level, education, and any preferred qualifications. Separate each requirement with a period. (e.g., Proficient in ReactJS. 3+ years of experience. Bachelor’s degree in Computer Science.).'
-                />
-              )}
-            />
-
-            {/* Benefits section */}
-            <Controller
-              name='benefits'
-              control={control}
-              render={({ field }) => (
-                <InputAreaField
-                  label='Job Benefits'
-                  icon={MapPin}
-                  value={field.value}
-                  onChange={field.onChange}
-                  error={errors.description?.message as string}
-                  row={6}
-                  placeholder='e.g., Salary, bonuses, welfare policies, career advancement opportunities...'
-                  helperText='Include Salary, bonuses, welfare policies, career advancement opportunities. Separate each benefit with a period. (e.g., Competitive salary. Annual bonus. Health insurance. Promotion opportunities.)'
-                />
-              )}
-            />
-
-            <div className='xs:flex-col-reverse flex justify-between gap-3 md:flex-row'>
-              <ButtonForm
-                name='Return To Page'
-                onClick={() => setActiveTab('job-info')}
-                clasName='bg-gray-600 hover:bg-gray-700'
-                type='button'
-                isPending={isPending}
-              />
-              <ButtonForm
-                name='Create Job'
-                onClick={() => handleSubmit(onSubmit)}
-                clasName='bg-blue-600 hover:bg-blue-700'
-                type='submit'
-                isPending={isPending}
-              />
-            </div>
-          </div>
-        )}
-      </form>
+            )}
+          </form>
+        </div>
+      )}
+      {isPreview && previewData && <JobPreview formData={previewData} onClick={() => setIsPreview(false)} />}
     </div>
   );
 };
