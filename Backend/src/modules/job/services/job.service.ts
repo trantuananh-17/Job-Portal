@@ -1,5 +1,5 @@
 import { Company, Job, JobStatus } from '@prisma/client';
-import { IJob, IJobResponse } from '../interfaces/job.interface';
+import { IJob, IJobByRecruiterResponse, IJobResponse } from '../interfaces/job.interface';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
 import { JobDocument } from '~/search/job/mapper/job.mapper';
 import { IJobFilters } from '~/search/job/interface/job.interface';
@@ -12,7 +12,7 @@ export interface IJobService {
   getOne(id: number): Promise<Job>;
 
   update(id: number, companyId: number, requestBody: Partial<IJob>, userId: number): Promise<Job>;
-  updateStatus(id: number, companyId: number, status: JobStatus, userId: number): Promise<Job>;
+  updateStatus(id: number, status: JobStatus): Promise<Job>;
 
   delete(id: number, companyId: number, userId: number): Promise<void>;
 
@@ -47,4 +47,11 @@ export interface IJobService {
     page: number;
     limit: number;
   }>;
+
+  getAllJobByRecruiter(
+    page: number,
+    limit: number,
+    userId: number,
+    status?: JobStatus
+  ): Promise<{ data: IJobByRecruiterResponse[]; totalDocs: number; totalPages: number; page: number; limit: number }>;
 }

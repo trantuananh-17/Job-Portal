@@ -9,6 +9,7 @@ export interface IJob {
   jobRoleName: string;
   benefits: string;
   requirements: string;
+  activeDays: number;
 }
 
 export interface IJobFilters {
@@ -35,4 +36,12 @@ export interface IJobResponse {
     logo: string | null;
     address: string | null;
   };
+}
+
+export interface IJobByRecruiterResponse {
+  id: number;
+  title: string;
+  status: JobStatus;
+  isDeleted: boolean;
+  totalApply: number;
 }

@@ -63,6 +63,8 @@ export class JobSyncService {
             jobRoleName: { type: 'keyword' },
             minSalary: { type: 'integer' },
             maxSalary: { type: 'integer' },
+            activeDays: { type: 'integer' },
+            expirationDate: { type: 'date' },
             companyId: { type: 'keyword' },
             companyName: { type: 'keyword', normalizer: 'lowercase' },
             address: {

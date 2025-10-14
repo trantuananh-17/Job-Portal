@@ -36,6 +36,11 @@ export const jobCreateSchema = Joi.object({
   skills: Joi.array().items(Joi.string()).default([]).messages({
     'array.base': 'Skills must be an array',
     'string.base': 'Each skill must be a string'
+  }),
+  activeDays: Joi.number().integer().min(7).optional().messages({
+    'number.base': 'Active days must be a number',
+    'number.min': 'Active days must be at least 7 day',
+    'number.integer': 'Active days must be an integer'
   })
 });
 

@@ -3,6 +3,7 @@ import HttpStatus from '~/global/constants/http.constant';
 import { jobService } from '../services/implements/job.service.impl';
 import { IJobService } from '../services/job.service';
 import { IJob } from '../interfaces/job.interface';
+import { JobStatus } from '@prisma/client';
 
 class JobController {
   constructor(private readonly jobService: IJobService) {
@@ -19,10 +20,30 @@ class JobController {
 
   public async create(req: Request, res: Response) {
     const userId = +req.user.id;
-    const { companyId, title, description, benefits, jobRoleName, requirements, minSalary, maxSalary, skills } =
-      req.body;
+    const {
+      companyId,
+      title,
+      description,
+      benefits,
+      jobRoleName,
+      requirements,
+      minSalary,
+      maxSalary,
+      skills,
+      activeDays
+    } = req.body;
 
-    const payload: IJob = { companyId, title, description, benefits, jobRoleName, requirements, minSalary, maxSalary };
+    const payload: IJob = {
+      companyId,
+      title,
+      description,
+      benefits,
+      jobRoleName,
+      requirements,
+      minSalary,
+      maxSalary,
+      activeDays
+    };
 
     const job = await this.jobService.create(payload, skills, userId);
 
@@ -55,26 +76,21 @@ class JobController {
   }
 
   public async getAllForRecruiter(req: Request, res: Response) {
-    const { page = 1, limit = 5, filter = '', minSalary = 0 } = req.query;
+    const { page = 1, limit = 5, status, minSalary = 0 } = req.query;
     const userId = +req.user.id;
+    const jobStatus = status && status !== 'all' ? (status as JobStatus) : undefined;
 
-    const { data, totalCounts } = await this.jobService.getAllForRecruiter(
-      {
-        page: parseInt(page as string),
-        limit: parseInt(limit as string),
-        filter,
-        minSalary: parseFloat(minSalary as string)
-      },
-      userId
-    );
+    const data = await this.jobService.getAllJobByRecruiter(+page, +limit, userId, jobStatus);
 
     return res.status(HttpStatus.OK).json({
       message: 'Get all jobs',
       pagination: {
-        totalCounts,
-        currentPage: parseInt(page as string)
+        totalDocs: data.totalDocs,
+        totalPages: data.totalPages,
+        currentPage: data.page,
+        limit: data.limit
       },
-      data
+      data: data.data
     });
   }
 
@@ -99,14 +115,7 @@ class JobController {
   }
 
   public async updateStatus(req: Request, res: Response) {
-    const userId = +req.user.id;
-
-    const job = await this.jobService.updateStatus(
-      parseInt(req.params.id),
-      parseInt(req.params.companyId),
-      req.body.status,
-      userId
-    );
+    const job = await this.jobService.updateStatus(parseInt(req.params.id), req.body.status);
 
     return res.status(HttpStatus.OK).json({
       message: 'Update job status successfully',

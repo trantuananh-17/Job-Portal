@@ -184,6 +184,8 @@ model Job {
   minSalary   Float
   maxSalary   Float?
   totalViews  Int       @default(0)
+  expirationDate DateTime?     
+  activeDays     Int?  
 
   benefits     String
   requirements String
