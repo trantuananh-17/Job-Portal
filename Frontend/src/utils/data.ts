@@ -37,6 +37,13 @@ const FORM_TAB = [
 
 const JOB_LEVEL_ITEM = ['Internship', 'Fresher', 'Junior', 'Mid-level', 'Senior', 'Tech Lead'];
 
+const STATUS_FILTER = [
+  { key: 'all', label: 'All Status' },
+  { key: 'active', label: 'Active' },
+  { key: 'expired', label: 'Expired' },
+  { key: 'reject', label: 'Reject' }
+];
+
 const ADDRESS_LOCATION = [
   'Hà Nội',
   'Hà Giang',
@@ -103,4 +110,4 @@ const ADDRESS_LOCATION = [
   'Cà Mau'
 ];
 
-export { NAVIGATION_MENU, RECRUITER_DASHBOARD_ACTION, ADDRESS_LOCATION, FORM_TAB, JOB_LEVEL_ITEM };
+export { NAVIGATION_MENU, RECRUITER_DASHBOARD_ACTION, ADDRESS_LOCATION, FORM_TAB, JOB_LEVEL_ITEM, STATUS_FILTER };

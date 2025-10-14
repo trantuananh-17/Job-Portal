@@ -9,7 +9,7 @@ import usePagination from '@hooks/usePagination';
 import { Pagination, useMediaQuery } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { ADDRESS_LOCATION } from '@utils/data';
-import { ChevronDown, Inbox, MapPin, Search } from 'lucide-react';
+import { ChevronDown, Inbox, MapPin, Search, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router-dom';
@@ -299,7 +299,9 @@ const Jobs = () => {
                 </ul>
               )}
 
-              {isError && <ErrorState title='Đã xảy ra lỗi' description='Không thể kết nối tới server.' icon={Inbox} />}
+              {isError && (
+                <ErrorState title='Đã xảy ra lỗi' description='Không thể kết nối tới server.' icon={XCircle} />
+              )}
 
               {isSuccess && jobsData.data.length > 0 && (
                 <ul className='flex flex-col gap-5'>

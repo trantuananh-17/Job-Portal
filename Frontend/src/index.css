@@ -145,6 +145,10 @@ body {
     font-size: 1.2rem;
   }
 
+  button {
+    cursor: pointer;
+  }
+
   @media (width >= 640px) {
     ul li::marker {
       font-size: 1.6rem;

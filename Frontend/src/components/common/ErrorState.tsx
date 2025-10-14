@@ -8,7 +8,7 @@ interface Props {
 
 const ErrorState: React.FC<Props> = ({ title, description, icon: Icon }) => {
   return (
-    <div className={`flex flex-col items-center border-b border-gray-300 py-12 text-center`}>
+    <div className={`flex flex-col items-center py-12 text-center`}>
       {/* Icon */}
       <div className='mb-4'>
         <Icon className='h-12 w-12 text-red-500' />

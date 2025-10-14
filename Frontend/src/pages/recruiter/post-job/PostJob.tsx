@@ -4,7 +4,7 @@ import { useRecruiterAuth } from '@context/RecruiterContext';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FORM_TAB, JOB_LEVEL_ITEM } from '@utils/data';
 import { Briefcase, CircleDollarSign, MapPin } from 'lucide-react';
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import ButtonForm from './components/ButtonForm';
 import InputAreaField from './components/InputAreaField';
@@ -15,13 +15,16 @@ import { createJobApi } from '@apis/jobs/job.api';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import JobPreview from '../job-preview';
+import LoadingSpinner from '@components/common/LoadingSpinner';
+// import JobPreview from '../job-preview';
 
 const SKILL_LIST = ['ReactJS', 'TypeScript', 'NodeJS', 'NestJS', 'NextJS', 'TailwindCSS'];
 
 const JOB_INFO_FIELDS: (keyof CreateJobSchema)[] = ['title', 'description', 'jobRoleName', 'minSalary', 'maxSalary'];
 
 const REQUIREMENT_FIELDS: (keyof CreateJobSchema)[] = ['requirements', 'skills'];
+
+const JobPreview = lazy(() => import('../job-preview'));
 
 const PostJob = () => {
   const [activeTab, setActiveTab] = useState('job-info');
@@ -334,7 +337,7 @@ const PostJob = () => {
                       setIsPreview(true);
                     }}
                     clasName='bg-gray-500 hover:bg-gray-600'
-                    type='submit'
+                    type='button'
                     isPending={isPending}
                   />
                   <ButtonForm
@@ -350,7 +353,11 @@ const PostJob = () => {
           </form>
         </div>
       )}
-      {isPreview && previewData && <JobPreview formData={previewData} onClick={() => setIsPreview(false)} />}
+      {isPreview && previewData && (
+        <Suspense fallback={<LoadingSpinner />}>
+          <JobPreview formData={previewData} onClick={() => setIsPreview(false)} />
+        </Suspense>
+      )}
     </div>
   );
 };
