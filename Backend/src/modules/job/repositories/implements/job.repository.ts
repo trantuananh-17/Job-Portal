@@ -2,11 +2,43 @@ import { Company, Job, JobSkill, JobStatus, PrismaClient, User } from '@prisma/c
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import { IJobRepository } from '../job.repository';
 import prisma from '~/prisma';
-import { IJob, IJobResponse } from '../../interfaces/job.interface';
+import { IJob, IJobByRecruiterResponse, IJobResponse } from '../../interfaces/job.interface';
 
 class JobRepository extends BaseRepository<Job> implements IJobRepository {
   constructor(private readonly prisma: PrismaClient) {
     super(prisma.job);
+  }
+
+  async getAllByRecruiter(
+    page: number,
+    limit: number,
+    userId: number,
+    status?: JobStatus
+  ): Promise<IJobByRecruiterResponse[]> {
+    const jobs = await this.prisma.job.findMany({
+      where: {
+        postById: userId,
+        ...(status ? { status } : {})
+      },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        isDeleted: true,
+        _count: { select: { applies: true } }
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit
+    });
+
+    return jobs.map((job) => ({
+      id: job.id,
+      title: job.title,
+      status: job.status,
+      isDeleted: job.isDeleted,
+      totalApply: job._count.applies
+    }));
   }
 
   async getTotalJob(): Promise<number> {
@@ -14,6 +46,15 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
       where: {
         isDeleted: false,
         status: 'ACTIVE'
+      }
+    });
+  }
+
+  async getTotalJobByReruiter(userId: number, status?: JobStatus): Promise<number> {
+    return await this.prisma.job.count({
+      where: {
+        postById: userId,
+        ...(status ? { status } : {})
       }
     });
   }
@@ -75,7 +116,8 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
   }
 
   async createJob(requestBody: IJob, userId: number): Promise<Job> {
-    const { companyId, description, jobRoleName, maxSalary, minSalary, title, benefits, requirements } = requestBody;
+    const { companyId, description, jobRoleName, maxSalary, minSalary, title, benefits, requirements, activeDays } =
+      requestBody;
     return await this.prisma.job.create({
       data: {
         companyId,
@@ -86,6 +128,7 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
         maxSalary,
         benefits,
         requirements,
+        activeDays,
         postById: userId
       }
     });
@@ -109,10 +152,17 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
     });
   }
 
-  async updateStatus(id: number, companyId: number, userId: number, status: JobStatus): Promise<Job> {
+  async updateStatus(id: number, status: JobStatus): Promise<Job> {
     return await this.prisma.job.update({
-      where: { id, companyId, postById: userId },
+      where: { id },
       data: { status }
+    });
+  }
+
+  async updateExpirationDate(id: number, expirationDate: Date): Promise<Job> {
+    return this.prisma.job.update({
+      where: { id },
+      data: { expirationDate }
     });
   }
 
