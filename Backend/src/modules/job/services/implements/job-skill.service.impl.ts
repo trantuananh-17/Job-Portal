@@ -40,6 +40,10 @@ class JobSkillService implements IJobSkillService {
   async delete(jobId: number, skillName: string, userId: number): Promise<void> {
     await this.jobSkillRepository.deleteJobSkill(jobId, skillName);
   }
+
+  async deleteMany(jobId: number): Promise<void> {
+    await this.jobSkillRepository.deleteMany(jobId);
+  }
 }
 
 export const jobSkillService: IJobSkillService = new JobSkillService(skillService, jobSkillRepository);

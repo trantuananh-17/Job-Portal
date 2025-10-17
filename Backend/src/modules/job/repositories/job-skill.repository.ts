@@ -5,4 +5,6 @@ export interface IJobSkillRepository extends IBaseRepository<JobSkill> {
   getAllByJob(jobId: number): Promise<JobSkill[]>;
   deleteJobSkill(jobId: number, skillName: string): Promise<boolean>;
   createMany(jobId: number, skills: string[]): Promise<number>;
+
+  deleteMany(jobId: number): Promise<number>;
 }

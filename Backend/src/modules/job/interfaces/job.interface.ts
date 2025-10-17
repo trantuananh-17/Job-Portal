@@ -45,3 +45,31 @@ export interface IJobByRecruiterResponse {
   isDeleted: boolean;
   totalApply: number;
 }
+
+export interface IJobIdByRecruiterResponse {
+  id: number;
+  title: string;
+  description: string;
+  jobRoleName: string;
+  minSalary: number;
+  maxSalary: number | null;
+  benefits: string;
+  requirements: string;
+  skills: string[];
+}
+
+export interface IJobIdByRecruiter {
+  id: number;
+  title: string;
+  description: string;
+  jobRoleName: string;
+  minSalary: number;
+  maxSalary: number | null;
+  benefits: string;
+  requirements: string;
+  jobSkills: {
+    skill: {
+      name: string;
+    };
+  }[];
+}
