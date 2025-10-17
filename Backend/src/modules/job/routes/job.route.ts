@@ -12,11 +12,10 @@ jobRoute.post('/', verify, allowRole('RECRUITER', 'ADMIN'), validateSchema(jobCr
 
 jobRoute.get('/search', asyncWrapper(jobController.searchCompletion));
 jobRoute.get('/es/search', asyncWrapper(jobController.searchJobsFilter));
-
 jobRoute.get('/', asyncWrapper(jobController.getAll));
 jobRoute.get('/me', verify, allowRole('RECRUITER'), asyncWrapper(jobController.getAllForRecruiter));
-
 jobRoute.get('/:id', verifyUserOrNot, asyncWrapper(jobController.getOne));
+jobRoute.get('/recruiter/:id', jobController.getJobByRecruiter);
 
 jobRoute.patch(
   '/:id/status',
@@ -30,8 +29,10 @@ jobRoute.patch(
   verify,
   allowRole('RECRUITER'),
   validateSchema(jobUpdateSchema),
-  asyncWrapper(jobController.update)
+  jobController.update
 );
+
 jobRoute.delete('/:id/:companyId', verify, allowRole('RECRUITER'), asyncWrapper(jobController.delete));
+jobRoute.delete('/admin/:id', verify, allowRole('ADMIN'), asyncWrapper(jobController.delete));
 
 export default jobRoute;

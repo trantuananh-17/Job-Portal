@@ -10,6 +10,7 @@ class JobController {
     this.create = this.create.bind(this);
     this.getAll = this.getAll.bind(this);
     this.getAllForRecruiter = this.getAllForRecruiter.bind(this);
+    this.getJobByRecruiter = this.getJobByRecruiter.bind(this);
     this.getOne = this.getOne.bind(this);
     this.update = this.update.bind(this);
     this.updateStatus = this.updateStatus.bind(this);
@@ -94,6 +95,18 @@ class JobController {
     });
   }
 
+  public async getJobByRecruiter(req: Request, res: Response) {
+    const jobId = req.params.id;
+
+    const data = await this.jobService.getJobByRecruiter(Number(jobId));
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Get job successfully',
+
+      data: data
+    });
+  }
+
   public async getOne(req: Request, res: Response) {
     const job = await this.jobService.getOne(parseInt(req.params.id));
 
@@ -105,8 +118,38 @@ class JobController {
 
   public async update(req: Request, res: Response) {
     const userId = +req.user.id;
+    const {
+      companyId,
+      title,
+      description,
+      benefits,
+      jobRoleName,
+      requirements,
+      minSalary,
+      maxSalary,
+      activeDays,
+      skills
+    } = req.body;
 
-    const job = await this.jobService.update(parseInt(req.params.id), parseInt(req.params.companyId), req.body, userId);
+    const payload: IJob = {
+      companyId,
+      title,
+      description,
+      benefits,
+      jobRoleName,
+      requirements,
+      minSalary,
+      maxSalary,
+      activeDays
+    };
+
+    const job = await this.jobService.update(
+      parseInt(req.params.id),
+      parseInt(req.params.companyId),
+      skills,
+      payload,
+      userId
+    );
 
     return res.status(HttpStatus.OK).json({
       message: 'Update job successfully',
@@ -127,6 +170,14 @@ class JobController {
     const userId = +req.user.id;
 
     await this.jobService.delete(parseInt(req.params.id), parseInt(req.params.companyId), userId);
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Delete job successfully'
+    });
+  }
+
+  public async deleteJobByAdmin(req: Request, res: Response) {
+    await this.jobService.deleteJobByAdmin(Number(req.params.id));
 
     return res.status(HttpStatus.OK).json({
       message: 'Delete job successfully'

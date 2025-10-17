@@ -38,6 +38,13 @@ class JobSkillRepository extends BaseRepository<JobSkill> implements IJobSkillRe
 
     return !!deleted;
   }
+
+  async deleteMany(jobId: number): Promise<number> {
+    const result = await this.prisma.jobSkill.deleteMany({
+      where: { jobId }
+    });
+    return result.count;
+  }
 }
 
 export const jobSkillRepository: IJobSkillRepository = new JobSkillRepository(prisma);
