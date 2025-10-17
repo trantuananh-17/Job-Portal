@@ -1,4 +1,3 @@
-import { jobSkillService } from './job-skill.service.impl';
 import { Job, JobStatus } from '@prisma/client';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
 import { esClient } from '~/global/configs/elastic.config';
@@ -16,14 +15,15 @@ import { IJobFilters } from '~/search/job/interface/job.interface';
 import { JobDocument, mapJobToDocument } from '~/search/job/mapper/job.mapper';
 import { jobQuery } from '~/search/job/queries/job.query';
 import { JobSyncService } from '~/search/job/sync/job.sync';
-import { IJob, IJobByRecruiterResponse, IJobResponse } from '../../interfaces/job.interface';
+import { IJob, IJobByRecruiterResponse, IJobIdByRecruiterResponse, IJobResponse } from '../../interfaces/job.interface';
 import { jobMaper } from '../../mappers/job.mapper';
 import { jobRepository } from '../../repositories/implements/job.repository';
 import { IJobRepository } from '../../repositories/job.repository';
 import { IJobRoleService } from '../job-role.service';
+import { IJobSkillService } from '../job-skill.service';
 import { IJobService } from '../job.service';
 import { jobRoleService } from './job-role.service.impl';
-import { IJobSkillService } from '../job-skill.service';
+import { jobSkillService } from './job-skill.service.impl';
 
 class JobService implements IJobService {
   private readonly jobSyncService = new JobSyncService();
@@ -35,6 +35,28 @@ class JobService implements IJobService {
     private readonly jobSkillService: IJobSkillService,
     private readonly packageService: IPackageService
   ) {}
+
+  async getJobByRecruiter(jobId: number): Promise<IJobIdByRecruiterResponse | null> {
+    const jobData = await this.jobRepository.getJobIdByRecruiter(jobId);
+
+    if (!jobData) {
+      throw new NotFoundException('Job not found');
+    }
+
+    const job = {
+      id: jobData.id,
+      title: jobData.title,
+      description: jobData.description,
+      jobRoleName: jobData.jobRoleName,
+      minSalary: jobData.minSalary,
+      maxSalary: jobData.maxSalary,
+      benefits: jobData.benefits,
+      requirements: jobData.requirements,
+      skills: jobData.jobSkills.map((js) => js.skill.name)
+    };
+
+    return job;
+  }
 
   async getAllJobByRecruiter(
     page: number,
@@ -248,10 +270,22 @@ class JobService implements IJobService {
     return excludeFields(data, ['companyId', 'postById']);
   }
 
-  async update(id: number, companyId: number, requestBody: Partial<IJob>, userId: number): Promise<Job> {
+  async update(
+    id: number,
+    companyId: number,
+    skills: string[],
+    requestBody: Partial<IJob>,
+    userId: number
+  ): Promise<Job> {
     await this.findOne(id, companyId, userId);
 
     const job = await this.jobRepository.updateJob(id, companyId, userId, requestBody);
+
+    await this.jobSkillService.deleteMany(id);
+
+    if (skills?.length) {
+      await this.jobSkillService.createMany(job.id, skills, userId);
+    }
 
     const jobIndex = await this.findIndex(job.id);
 
@@ -288,7 +322,21 @@ class JobService implements IJobService {
 
     await this.jobRepository.deleteJob(id, companyId, userId);
 
-    await this.jobSyncService.deleteJob(id);
+    const jobIndex = await this.findIndex(id);
+
+    if (jobIndex) {
+      await this.jobSyncService.deleteJob(id);
+    }
+  }
+
+  async deleteJobByAdmin(jobId: number): Promise<void> {
+    await this.jobRepository.deleteJobByAdmin(jobId);
+
+    const jobIndex = await this.findIndex(jobId);
+
+    if (jobIndex) {
+      await this.jobSyncService.deleteJob(jobId);
+    }
   }
 
   async findOne(id: number, companyId: number, userId: number): Promise<Job> {

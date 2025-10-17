@@ -5,4 +5,6 @@ export interface IJobSkillService {
   getAllByJob(jobId: number): Promise<JobSkill[]>;
   delete(jobId: number, skillName: string, userId: number): Promise<void>;
   createMany(jobId: number, skills: string[], userId: number): Promise<number>;
+
+  deleteMany(jobId: number): Promise<void>;
 }

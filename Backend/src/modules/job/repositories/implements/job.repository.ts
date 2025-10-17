@@ -2,11 +2,36 @@ import { Company, Job, JobSkill, JobStatus, PrismaClient, User } from '@prisma/c
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import { IJobRepository } from '../job.repository';
 import prisma from '~/prisma';
-import { IJob, IJobByRecruiterResponse, IJobResponse } from '../../interfaces/job.interface';
+import { IJob, IJobByRecruiterResponse, IJobIdByRecruiter, IJobResponse } from '../../interfaces/job.interface';
 
 class JobRepository extends BaseRepository<Job> implements IJobRepository {
   constructor(private readonly prisma: PrismaClient) {
     super(prisma.job);
+  }
+
+  async getJobIdByRecruiter(jobId: number): Promise<IJobIdByRecruiter | null> {
+    return await this.prisma.job.findUnique({
+      where: {
+        id: jobId
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        jobRoleName: true,
+        minSalary: true,
+        maxSalary: true,
+        benefits: true,
+        requirements: true,
+        jobSkills: {
+          select: {
+            skill: {
+              select: { name: true }
+            }
+          }
+        }
+      }
+    });
   }
 
   async getAllByRecruiter(
@@ -145,10 +170,10 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
   }
 
   async updateJob(id: number, companyId: number, userId: number, data: Partial<IJob>): Promise<Job> {
-    const { title, description, minSalary, maxSalary } = data;
+    const { title, description, minSalary, maxSalary, jobRoleName, benefits, requirements } = data;
     return await this.prisma.job.update({
       where: { id, companyId, postById: userId },
-      data: { title, description, minSalary, maxSalary }
+      data: { title, description, minSalary, maxSalary, jobRoleName, benefits, requirements }
     });
   }
 
@@ -169,6 +194,15 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
   async deleteJob(id: number, companyId: number, userId: number): Promise<boolean> {
     const deleted = await this.prisma.job.update({
       where: { id, companyId, postById: userId },
+      data: { isDeleted: true }
+    });
+
+    return !!deleted;
+  }
+
+  async deleteJobByAdmin(jobId: number): Promise<boolean> {
+    const deleted = await this.prisma.job.update({
+      where: { id: jobId },
       data: { isDeleted: true }
     });
 
