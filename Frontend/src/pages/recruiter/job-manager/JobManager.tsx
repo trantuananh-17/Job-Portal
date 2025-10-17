@@ -10,6 +10,9 @@ import { Pagination, useMediaQuery } from '@mui/material';
 import TableRowSkeleton from './components/TableRowSkeleton';
 import ErrorState from '@components/common/ErrorState';
 import { useClickOutside } from '@hooks/useClickOutside';
+import { useQuery } from '@tanstack/react-query';
+import { getJobsByRecruiterApi } from '@apis/jobs/job.api';
+import type { IJobByRecruiterResponse, JobStatus } from '@apis/jobs/interfaces/job.interface';
 
 const jobs = [
   { id: 2, title: 'Senior Backend', status: 'ACTIVE', applicants: 5, isDeleted: false },
@@ -43,18 +46,35 @@ const JobManager: React.FC<Props> = ({}) => {
     }
   });
 
+  const page = searchParams.get('page') || 1;
+  const status = searchParams.get('status') || 'all';
+
+  const jobStatus = status === 'all' ? 'all' : status.toUpperCase();
+
+  const { data, isLoading, isError, isSuccess } = useQuery({
+    queryKey: ['getJobsByRecruiter', status, currentPage],
+    queryFn: () => getJobsByRecruiterApi(Number(page), jobStatus as unknown as JobStatus),
+    select: (res) => res.data,
+    staleTime: 1000 * 60 * 60
+  });
+
   useEffect(() => {
     const param = new URLSearchParams(searchParams);
 
     if (!searchParams.get('page')) {
       param.set('page', '1');
     }
-    if (!searchParams.get('status')) {
-      param.set('status', 'all');
-    }
 
     setSearchParams(param);
   }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    if (data?.pagination) {
+      setPagination(data.pagination);
+    }
+  }, [data]);
+
+  console.log(data);
 
   return (
     <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
@@ -101,7 +121,7 @@ const JobManager: React.FC<Props> = ({}) => {
                 >
                   <div className='flex items-center gap-3'>
                     <p className='text-gray-600'>
-                      {STATUS_FILTER.find((s) => s.key === searchParams.get('status'))?.label}
+                      {STATUS_FILTER.find((s) => s.key === (searchParams.get('status') || 'all'))?.label}
                     </p>
                   </div>
                   <ChevronDown
@@ -136,7 +156,7 @@ const JobManager: React.FC<Props> = ({}) => {
 
           {/* Results Sumary */}
           <div className='sort my-5 flex flex-col-reverse items-center justify-between gap-10 px-4 lg:flex-row'>
-            {pagination.totalDocs > 0 ? (
+            {!isLoading && pagination.totalDocs > 0 ? (
               <h3 className='sm:text-md text-sm'>
                 Showing {(pagination.currentPage - 1) * pagination.limit + 1} -{' '}
                 {Math.min(pagination.currentPage * pagination.limit, pagination.totalDocs)} of {pagination.totalDocs}{' '}
@@ -149,9 +169,7 @@ const JobManager: React.FC<Props> = ({}) => {
 
           {/* Table */}
           <div className='overflow-hidden rounded-2xl border-white/20 bg-white/80 backdrop-blur-sm'>
-            {/* <EmptyTable name='Jobs' /> */}
-            <ErrorState title='Đã xảy ra lỗi' description='Không thể kết nối tới server.' icon={XCircle} />
-            {/* <div className='relative overflow-x-auto shadow-md sm:rounded-lg'>
+            <div className='relative overflow-x-auto shadow-md sm:rounded-lg'>
               <table className='w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
                 <thead className='sm:text-md bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400'>
                   <tr>
@@ -173,12 +191,14 @@ const JobManager: React.FC<Props> = ({}) => {
                   </tr>
                 </thead>
                 <tbody>
-                  <>
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <TableRowSkeleton key={i} />
-                    ))}
-                  </>
-                  {jobs.map((job) => (
+                  {isLoading && (
+                    <>
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <TableRowSkeleton key={i} />
+                      ))}
+                    </>
+                  )}
+                  {data?.data?.map((job: IJobByRecruiterResponse) => (
                     <tr
                       key={job.id}
                       className='border-b border-gray-200 odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800'
@@ -198,19 +218,19 @@ const JobManager: React.FC<Props> = ({}) => {
                           onClick={() => navigate(`/recruiter/applicants/${job.id}`)}
                         >
                           <Users className='h-5 w-5' />
-                          {job.applicants}
+                          {job.totalApply}
                         </button>
                       </td>
                       <td className='px-6 py-4'>
                         <span
                           className={`inline-flex items-center justify-center rounded-full border px-3 py-1 text-sm font-medium ${
                             job.isDeleted
-                              ? 'border-red-200 bg-red-200 text-red-700'
-                              : 'border-green-300 bg-green-200 text-green-800'
+                              ? 'border-red-200 bg-red-100 text-red-700'
+                              : 'border-green-200 bg-green-100 text-green-700'
                           }`}
                           style={{ minWidth: '80px' }}
                         >
-                          {job.isDeleted ? 'Deleted' : 'Active'}
+                          {job.isDeleted ? 'Deleted' : 'Not deleted'}
                         </span>
                       </td>
 
@@ -219,7 +239,7 @@ const JobManager: React.FC<Props> = ({}) => {
                           disabled={job.isDeleted || job.status === 'EXPIRED' || job.status === 'REJECT'}
                           className='text-blue-500 transition-all duration-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-blue-500'
                         >
-                          <Edit className='h-5 w-5' />
+                          <Edit className='h-5 w-5' onClick={() => navigate(`/recruiter/edit-job/${job.id}`)} />
                         </button>
 
                         <button
@@ -233,7 +253,9 @@ const JobManager: React.FC<Props> = ({}) => {
                   ))}
                 </tbody>
               </table>
-            </div> */}
+            </div>
+            {isSuccess && data?.data?.length === 0 && !isLoading && <EmptyTable name='Jobs' />}
+            {isError && <ErrorState title='Đã xảy ra lỗi' description='Không thể kết nối tới server.' icon={XCircle} />}
             {pagination.totalDocs > 0 && (
               <div className='navigation mt-5 flex justify-center'>
                 <Pagination

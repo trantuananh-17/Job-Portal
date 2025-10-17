@@ -51,3 +51,19 @@ export interface IJobPayloadCreate {
   requirements: string;
   skills: string[];
 }
+
+export type JobStatus = {
+  ALL: 'all';
+  PENDING: 'PEDING';
+  ACTIVE: 'ACTIVE';
+  EXPIRED: 'EXPIRED';
+  REJECTED: 'REJECTED';
+};
+
+export interface IJobByRecruiterResponse {
+  id: number;
+  title: string;
+  status: string;
+  isDeleted: boolean;
+  totalApply: number;
+}

@@ -1,21 +1,22 @@
 import type { IJobCreate, IJobPayloadCreate } from '@apis/jobs/interfaces/job.interface';
+import { createJobApi, getJobByIdApi } from '@apis/jobs/job.api';
 import { createJobSchema, type CreateJobSchema } from '@apis/jobs/schemas/job.schema';
+import LoadingSpinner from '@components/common/LoadingSpinner';
 import { useRecruiterAuth } from '@context/RecruiterContext';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FORM_TAB, JOB_LEVEL_ITEM } from '@utils/data';
+import axios from 'axios';
 import { Briefcase, CircleDollarSign, MapPin } from 'lucide-react';
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import ButtonForm from './components/ButtonForm';
 import InputAreaField from './components/InputAreaField';
 import InputField from './components/InputField';
 import SelectField from './components/SelectField';
 import TagSkill from './components/TagSkill';
-import { createJobApi } from '@apis/jobs/job.api';
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
-import axios from 'axios';
-import LoadingSpinner from '@components/common/LoadingSpinner';
 // import JobPreview from '../job-preview';
 
 const SKILL_LIST = ['ReactJS', 'TypeScript', 'NodeJS', 'NestJS', 'NextJS', 'TailwindCSS'];
@@ -31,6 +32,23 @@ const PostJob = () => {
   const { company } = useRecruiterAuth();
   const [isPreview, setIsPreview] = useState<boolean>(false);
   const [previewData, setPreviewData] = useState<CreateJobSchema | null>(null);
+  const queryClient = useQueryClient();
+
+  const { id } = useParams();
+  const isEditMode = !!id;
+
+  const { data: jobData, isLoading: isJobLoading } = useQuery({
+    queryKey: ['getJobDetail', id],
+    queryFn: () => getJobByIdApi(Number(id)),
+    enabled: !!id,
+    select: (res) => res.data
+  });
+
+  useEffect(() => {
+    console.log(jobData);
+
+    if (jobData) reset(jobData.data);
+  }, [jobData]);
 
   const {
     control,
@@ -90,6 +108,8 @@ const PostJob = () => {
       toast.success(res.data.message);
       setActiveTab('job-info');
       reset();
+
+      queryClient.invalidateQueries({ queryKey: ['getJobsByRecruiter'] });
     },
     onError: (err) => {
       if (axios.isAxiosError(err)) {

@@ -1,6 +1,6 @@
 import { API_PATHS } from '@utils/apiPath';
 import axiosAuth from '@utils/axiosAuth';
-import type { IJobCreate, IJobPayloadCreate } from './interfaces/job.interface';
+import type { IJobCreate, IJobPayloadCreate, JobStatus } from './interfaces/job.interface';
 import axiosInstance from '@utils/axiosInstance';
 
 export const searchJobCompletionApi = async (q: string) => {
@@ -28,6 +28,20 @@ export const createJobApi = async (payload: IJobPayloadCreate) => {
   const response = await axiosInstance.post(`${API_PATHS.JOBS.CREATE_JOB}`, payload);
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  return response;
+};
+
+export const getJobsByRecruiterApi = async (page: number, status: JobStatus) => {
+  const respone = await axiosInstance.get(`${API_PATHS.JOBS.GET_JOBS_BY_RECRUITER}?page=${page}&status=${status}`);
+
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  return respone;
+};
+
+export const getJobByIdApi = async (id: number) => {
+  const response = await axiosInstance.get(`${API_PATHS.JOBS.GET_JOB_BY_ID}/${id}`);
 
   return response;
 };

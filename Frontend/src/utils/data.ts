@@ -39,9 +39,10 @@ const JOB_LEVEL_ITEM = ['Internship', 'Fresher', 'Junior', 'Mid-level', 'Senior'
 
 const STATUS_FILTER = [
   { key: 'all', label: 'All Status' },
+  { key: 'pending', label: 'Pending' },
   { key: 'active', label: 'Active' },
   { key: 'expired', label: 'Expired' },
-  { key: 'reject', label: 'Reject' }
+  { key: 'rejected', label: 'Rejected' }
 ];
 
 const ADDRESS_LOCATION = [

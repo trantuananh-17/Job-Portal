@@ -22,6 +22,7 @@ export default function RecruiterRoute() {
           <Route index element={<Navigate to='recruiter-dashboard' replace />} />
           <Route path='recruiter-dashboard' element={<RecruiterDashboardWithSuspense />} />
           <Route path='post-job' element={<PostJobWithSuspense />} />
+          <Route path='edit-job/:id' element={<PostJobWithSuspense />} />
           <Route path='manage-jobs' element={<JobManagerWithSuspense />} />
         </Route>
       </Routes>
