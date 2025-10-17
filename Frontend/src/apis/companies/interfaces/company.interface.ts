@@ -1,5 +1,5 @@
 export interface ICompanyResponse {
-  id: string;
+  id: number;
   name: string;
   avatarUrl?: string;
   description: string;
@@ -23,7 +23,7 @@ export interface IUpdateCompanyPayload {
 }
 
 export interface INewCompanyData {
-  id: string;
+  id: number;
   name: string;
   avatarUrl: string;
   description: string;

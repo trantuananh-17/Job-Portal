@@ -1,5 +1,5 @@
-import type { IJobCreate, IJobPayloadCreate } from '@apis/jobs/interfaces/job.interface';
-import { createJobApi, getJobByIdApi } from '@apis/jobs/job.api';
+import type { IJobCreate, IJobPayloadCreate, IJobPayloadUpdate } from '@apis/jobs/interfaces/job.interface';
+import { createJobApi, getJobByIdApi, updateJobApi } from '@apis/jobs/job.api';
 import { createJobSchema, type CreateJobSchema } from '@apis/jobs/schemas/job.schema';
 import LoadingSpinner from '@components/common/LoadingSpinner';
 import { useRecruiterAuth } from '@context/RecruiterContext';
@@ -10,7 +10,7 @@ import axios from 'axios';
 import { Briefcase, CircleDollarSign, MapPin } from 'lucide-react';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ButtonForm from './components/ButtonForm';
 import InputAreaField from './components/InputAreaField';
@@ -33,6 +33,7 @@ const PostJob = () => {
   const [isPreview, setIsPreview] = useState<boolean>(false);
   const [previewData, setPreviewData] = useState<CreateJobSchema | null>(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { id } = useParams();
   const isEditMode = !!id;
@@ -45,8 +46,6 @@ const PostJob = () => {
   });
 
   useEffect(() => {
-    console.log(jobData);
-
     if (jobData) reset(jobData.data);
   }, [jobData]);
 
@@ -102,12 +101,29 @@ const PostJob = () => {
     }
   };
 
-  const { mutate, isPending } = useMutation({
+  const createMutation = useMutation({
     mutationFn: (data: IJobPayloadCreate) => createJobApi(data),
     onSuccess: (res) => {
       toast.success(res.data.message);
       setActiveTab('job-info');
       reset();
+
+      queryClient.invalidateQueries({ queryKey: ['getJobsByRecruiter'] });
+    },
+    onError: (err) => {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data.message || 'Đã xảy ra lỗi!');
+      } else {
+        toast.error('Lỗi không xác định!');
+      }
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: IJobPayloadUpdate) => updateJobApi(data, Number(company?.id), Number(id)),
+    onSuccess: (res) => {
+      toast.success(res.data.message);
+      navigate('/recruiter/manage-jobs');
 
       queryClient.invalidateQueries({ queryKey: ['getJobsByRecruiter'] });
     },
@@ -128,13 +144,23 @@ const PostJob = () => {
       return;
     }
 
-    const payload: IJobPayloadCreate = {
+    const payloadCreate: IJobPayloadCreate = {
       ...data,
       companyId
     };
 
-    mutate(payload);
+    const payloadUpdate: IJobPayloadUpdate = {
+      ...data
+    };
+
+    if (isEditMode) {
+      updateMutation.mutate(payloadUpdate);
+    } else {
+      createMutation.mutate(payloadCreate);
+    }
   };
+
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
     <div className={`${!isPreview ? 'p-6' : ''}`}>
@@ -159,6 +185,7 @@ const PostJob = () => {
             ))}
           </div>
 
+          {isJobLoading && <LoadingSpinner />}
           {/*Form Content */}
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
             {/* Tab Info */}
@@ -361,7 +388,7 @@ const PostJob = () => {
                     isPending={isPending}
                   />
                   <ButtonForm
-                    name='Create Job'
+                    name={isEditMode ? 'Update Job' : 'Create Job'}
                     onClick={() => handleSubmit(onSubmit)}
                     clasName='bg-blue-600 hover:bg-blue-700'
                     type='submit'

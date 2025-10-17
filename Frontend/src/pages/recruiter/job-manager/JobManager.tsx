@@ -1,29 +1,27 @@
-import { STATUS_FILTER } from '@utils/data';
-import usePagination from '@hooks/usePagination';
-import { ChevronDown, Edit, MapPin, Plus, Search, Trash2, Users, XCircle } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import EmptyTable from '@components/common/EmptyTable';
-import StatusTag from './components/StatusTag';
-import { Pagination, useMediaQuery } from '@mui/material';
-import TableRowSkeleton from './components/TableRowSkeleton';
-import ErrorState from '@components/common/ErrorState';
-import { useClickOutside } from '@hooks/useClickOutside';
-import { useQuery } from '@tanstack/react-query';
-import { getJobsByRecruiterApi } from '@apis/jobs/job.api';
 import type { IJobByRecruiterResponse, JobStatus } from '@apis/jobs/interfaces/job.interface';
-
-const jobs = [
-  { id: 2, title: 'Senior Backend', status: 'ACTIVE', applicants: 5, isDeleted: false },
-  { id: 3, title: 'Senior Backend', status: 'PENDING', applicants: 5, isDeleted: false },
-  { id: 4, title: 'Senior Backend', status: 'EXPIRED', applicants: 5, isDeleted: false },
-  { id: 5, title: 'Senior Backend', status: 'REJECT', applicants: 5, isDeleted: true }
-];
+import { deleteJobApi, getJobsByRecruiterApi } from '@apis/jobs/job.api';
+import EmptyTable from '@components/common/EmptyTable';
+import ErrorState from '@components/common/ErrorState';
+import { useRecruiterAuth } from '@context/RecruiterContext';
+import { useClickOutside } from '@hooks/useClickOutside';
+import usePagination from '@hooks/usePagination';
+import { Pagination, useMediaQuery } from '@mui/material';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { STATUS_FILTER } from '@utils/data';
+import axios from 'axios';
+import { ChevronDown, Edit, Plus, Search, Trash2, Users, XCircle } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import StatusTag from './components/StatusTag';
+import TableRowSkeleton from './components/TableRowSkeleton';
 
 interface Props {}
 
 const JobManager: React.FC<Props> = ({}) => {
+  const { company } = useRecruiterAuth();
+  const queryClient = useQueryClient();
   const isMobile = useMediaQuery('(max-width:640px)');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
@@ -51,11 +49,26 @@ const JobManager: React.FC<Props> = ({}) => {
 
   const jobStatus = status === 'all' ? 'all' : status.toUpperCase();
 
-  const { data, isLoading, isError, isSuccess } = useQuery({
+  const { data, isLoading, isError, isSuccess, isFetching } = useQuery({
     queryKey: ['getJobsByRecruiter', status, currentPage],
     queryFn: () => getJobsByRecruiterApi(Number(page), jobStatus as unknown as JobStatus),
     select: (res) => res.data,
     staleTime: 1000 * 60 * 60
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: ({ companyId, jobId }: { companyId: number; jobId: number }) => deleteJobApi(companyId, jobId),
+    onSuccess: (res) => {
+      toast.success(res.data.message);
+      queryClient.invalidateQueries({ queryKey: ['getJobsByRecruiter'] });
+    },
+    onError: (err) => {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data.message || 'Đã xảy ra lỗi!');
+      } else {
+        toast.error('Lỗi không xác định!');
+      }
+    }
   });
 
   useEffect(() => {
@@ -74,7 +87,16 @@ const JobManager: React.FC<Props> = ({}) => {
     }
   }, [data]);
 
-  console.log(data);
+  const onDelete = async (jobId: number) => {
+    const companyId = Number(company?.id);
+
+    if (!companyId) {
+      toast.error('Không tìm thấy công ty. Hãy đăng nhập lại!');
+      return;
+    }
+
+    deleteMutation.mutate({ companyId, jobId });
+  };
 
   return (
     <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
@@ -88,7 +110,7 @@ const JobManager: React.FC<Props> = ({}) => {
             </div>
             <button
               className='inline-flex transform items-center rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-semibold whitespace-nowrap text-white shadow-lg shadow-blue-500/25 transition-all duration-300 hover:-translate-y-0.5 hover:from-blue-700 hover:to-blue-900 hover:shadow-xl hover:shadow-blue-500/30'
-              onClick={() => navigate('recruiter/post-job')}
+              onClick={() => navigate('/recruiter/post-job')}
             >
               <Plus className='mr-2 h-5 w-5' />
               Add New Job
@@ -191,70 +213,78 @@ const JobManager: React.FC<Props> = ({}) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {isLoading && (
+                  {(isLoading || isFetching) && (
                     <>
                       {Array.from({ length: 5 }).map((_, i) => (
                         <TableRowSkeleton key={i} />
                       ))}
                     </>
                   )}
-                  {data?.data?.map((job: IJobByRecruiterResponse) => (
-                    <tr
-                      key={job.id}
-                      className='border-b border-gray-200 odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800'
-                    >
-                      <th
-                        scope='row'
-                        className='text-md px-6 py-4 font-semibold whitespace-nowrap text-gray-900 dark:text-white'
+                  {!isFetching &&
+                    !isLoading &&
+                    isSuccess &&
+                    data?.data?.map((job: IJobByRecruiterResponse) => (
+                      <tr
+                        key={job.id}
+                        className='border-b border-gray-200 odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800'
                       >
-                        {job.title}
-                      </th>
-                      <td className='px-6 py-4'>
-                        <StatusTag status={job.status} />
-                      </td>
-                      <td className='px-6 py-4'>
-                        <button
-                          className='flex cursor-pointer items-center justify-center gap-2 text-blue-500 hover:text-blue-600'
-                          onClick={() => navigate(`/recruiter/applicants/${job.id}`)}
+                        <th
+                          scope='row'
+                          className='text-md px-6 py-4 font-semibold whitespace-nowrap text-gray-900 dark:text-white'
                         >
-                          <Users className='h-5 w-5' />
-                          {job.totalApply}
-                        </button>
-                      </td>
-                      <td className='px-6 py-4'>
-                        <span
-                          className={`inline-flex items-center justify-center rounded-full border px-3 py-1 text-sm font-medium ${
-                            job.isDeleted
-                              ? 'border-red-200 bg-red-100 text-red-700'
-                              : 'border-green-200 bg-green-100 text-green-700'
-                          }`}
-                          style={{ minWidth: '80px' }}
-                        >
-                          {job.isDeleted ? 'Deleted' : 'Not deleted'}
-                        </span>
-                      </td>
+                          {job.title}
+                        </th>
+                        <td className='px-6 py-4'>
+                          <StatusTag status={job.status} />
+                        </td>
+                        <td className='px-6 py-4'>
+                          <button
+                            className='flex cursor-pointer items-center justify-center gap-2 text-blue-500 hover:text-blue-600'
+                            onClick={() => navigate(`/recruiter/applicants/${job.id}`)}
+                          >
+                            <Users className='h-5 w-5' />
+                            {job.totalApply}
+                          </button>
+                        </td>
+                        <td className='px-6 py-4'>
+                          <span
+                            className={`inline-flex items-center justify-center rounded-full border px-3 py-1 text-sm font-medium ${
+                              job.isDeleted
+                                ? 'border-red-200 bg-red-100 text-red-700'
+                                : 'border-green-200 bg-green-100 text-green-700'
+                            }`}
+                            style={{ minWidth: '80px' }}
+                          >
+                            {job.isDeleted ? 'Deleted' : 'Not deleted'}
+                          </span>
+                        </td>
 
-                      <td className='flex gap-2 px-6 py-4'>
-                        <button
-                          disabled={job.isDeleted || job.status === 'EXPIRED' || job.status === 'REJECT'}
-                          className='text-blue-500 transition-all duration-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-blue-500'
-                        >
-                          <Edit className='h-5 w-5' onClick={() => navigate(`/recruiter/edit-job/${job.id}`)} />
-                        </button>
+                        <td className='flex gap-2 px-6 py-4'>
+                          <button
+                            disabled={job.isDeleted || job.status === 'EXPIRED' || job.status === 'REJECT'}
+                            className='text-blue-500 transition-all duration-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-blue-500'
+                          >
+                            <Edit className='h-5 w-5' onClick={() => navigate(`/recruiter/edit-job/${job.id}`)} />
+                          </button>
 
-                        <button
-                          disabled={job.isDeleted === true}
-                          className='text-red-500 transition-all duration-200 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-red-500'
-                        >
-                          <Trash2 className='h-5 w-5' />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                          <button
+                            onClick={() => {
+                              if (window.confirm('Bạn có chắc chắn muốn xoá công việc này không?')) {
+                                onDelete(job.id);
+                              }
+                            }}
+                            disabled={job.isDeleted === true}
+                            className='text-red-500 transition-all duration-200 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-red-500'
+                          >
+                            <Trash2 className='h-5 w-5' />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
-            {isSuccess && data?.data?.length === 0 && !isLoading && <EmptyTable name='Jobs' />}
+            {isSuccess && data?.data?.length === 0 && !isLoading && !isFetching && <EmptyTable name='Jobs' />}
             {isError && <ErrorState title='Đã xảy ra lỗi' description='Không thể kết nối tới server.' icon={XCircle} />}
             {pagination.totalDocs > 0 && (
               <div className='navigation mt-5 flex justify-center'>

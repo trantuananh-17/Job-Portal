@@ -1,6 +1,6 @@
 import { API_PATHS } from '@utils/apiPath';
 import axiosAuth from '@utils/axiosAuth';
-import type { IJobCreate, IJobPayloadCreate, JobStatus } from './interfaces/job.interface';
+import type { IJobPayloadCreate, IJobPayloadUpdate, JobStatus } from './interfaces/job.interface';
 import axiosInstance from '@utils/axiosInstance';
 
 export const searchJobCompletionApi = async (q: string) => {
@@ -24,14 +24,6 @@ export const searchJobsFilterApi = async (limit: number = 6, params: URLSearchPa
   return data;
 };
 
-export const createJobApi = async (payload: IJobPayloadCreate) => {
-  const response = await axiosInstance.post(`${API_PATHS.JOBS.CREATE_JOB}`, payload);
-
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  return response;
-};
-
 export const getJobsByRecruiterApi = async (page: number, status: JobStatus) => {
   const respone = await axiosInstance.get(`${API_PATHS.JOBS.GET_JOBS_BY_RECRUITER}?page=${page}&status=${status}`);
 
@@ -41,7 +33,29 @@ export const getJobsByRecruiterApi = async (page: number, status: JobStatus) => 
 };
 
 export const getJobByIdApi = async (id: number) => {
-  const response = await axiosInstance.get(`${API_PATHS.JOBS.GET_JOB_BY_ID}/${id}`);
+  const response = await axiosInstance.get(`${API_PATHS.JOBS.GET_JOB_BY_ID_FOR_RECRUITER}/${id}`);
+
+  return response;
+};
+
+export const createJobApi = async (payload: IJobPayloadCreate) => {
+  const response = await axiosInstance.post(`${API_PATHS.JOBS.CREATE_JOB}`, payload);
+
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  return response;
+};
+
+export const updateJobApi = async (payload: IJobPayloadUpdate, companyId: number, jobId: number) => {
+  const response = await axiosInstance.patch(`${API_PATHS.JOBS.UPDATE_JOB}/${jobId}/${companyId}`, payload);
+
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  return response;
+};
+
+export const deleteJobApi = async (companyId: number, jobId: number) => {
+  const response = await axiosInstance.delete(`${API_PATHS.JOBS.DELETE_JOB_BY_RECRUITER}/${jobId}/${companyId}`);
 
   return response;
 };

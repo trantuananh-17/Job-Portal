@@ -52,6 +52,17 @@ export interface IJobPayloadCreate {
   skills: string[];
 }
 
+export interface IJobPayloadUpdate {
+  title: string;
+  description: string;
+  jobRoleName: string;
+  minSalary: number;
+  maxSalary: number;
+  benefits: string;
+  requirements: string;
+  skills: string[];
+}
+
 export type JobStatus = {
   ALL: 'all';
   PENDING: 'PEDING';
