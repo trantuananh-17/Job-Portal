@@ -8,11 +8,10 @@ export default function AppRoute() {
   return (
     <Routes>
       <Route path='/auth/*' element={<AuthRoute />} />
-
       <Route path='/*' element={<UserRoute />} />
-      <Route element={<ProtectedRoute />}>
-        <Route path='/recruiter/*' element={<RecruiterRoute />} />
-      </Route>
+      {/* <Route element={<ProtectedRoute role='RECRUITER' />}> */}
+      <Route path='/recruiter/*' element={<RecruiterRoute />} />
+      {/* </Route> */}
     </Routes>
   );
 }

@@ -20,13 +20,7 @@ const Carousel = () => {
         {/* Dãy chính */}
         <div className='animate-carouselLoop flex space-x-12 group-hover:[animation-play-state:paused]'>
           {logos.map((src, i) => (
-            <img
-              key={i}
-              src={src}
-              alt={`logo-${i}`}
-              decoding='async'
-              className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20'
-            />
+            <img key={i} src={src} alt={`logo-${i}`} className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20' />
           ))}
         </div>
 
@@ -39,8 +33,7 @@ const Carousel = () => {
             <img
               key={`clone-${i}`}
               src={src}
-              alt=''
-              decoding='async'
+              alt={`logo-${i}`}
               className='h-10 w-10 max-w-none md:h-15 md:w-15 lg:h-20 lg:w-20'
             />
           ))}

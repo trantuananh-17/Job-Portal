@@ -1,4 +1,4 @@
-import Button from './ui/Button';
+import Button from '../../common/Button';
 
 const BANNER = '/images/img_better.webp';
 
@@ -24,7 +24,7 @@ const BetterFuture = () => {
             Your future begins today! Search for the career opportunities that match your skills and take the first step
             towards a brighter tomorrow.
           </p>
-          <Button name='Search Job' full={true} />
+          <Button name='Search Job' full={true} className='bg-primary' />
         </div>
       </div>
     </section>

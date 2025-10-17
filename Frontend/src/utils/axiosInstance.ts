@@ -4,7 +4,7 @@ import { refreshTokenApi } from '@apis/auth/auth.api';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  timeout: 80000,
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json'

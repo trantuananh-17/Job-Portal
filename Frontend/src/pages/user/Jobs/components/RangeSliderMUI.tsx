@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Slider } from '@mui/material';
 import { SALARY_VALUE } from '@constant/rangeValue';
 
-const RangeSliderMUI: React.FC = () => {
-  const [value, setValue] = useState<number[]>([SALARY_VALUE.MIN, SALARY_VALUE.MAX]);
+interface RangeSliderMUIProps {
+  value: number[];
+  onChange: (value: number[]) => void;
+}
 
+const RangeSliderMUI: React.FC<RangeSliderMUIProps> = ({ value, onChange }) => {
   const handleChange = (event: Event, newValue: number | number[]) => {
-    setValue(newValue as number[]);
+    onChange(newValue as number[]);
   };
 
   return (
@@ -18,8 +21,8 @@ const RangeSliderMUI: React.FC = () => {
         onChange={handleChange}
         valueLabelDisplay='auto'
         valueLabelFormat={(value) => `$${value}`}
-        min={0}
-        max={9999}
+        min={SALARY_VALUE.MIN}
+        max={SALARY_VALUE.MAX}
         disableSwap
       />
 
@@ -27,10 +30,6 @@ const RangeSliderMUI: React.FC = () => {
         <p className='font-semibold'>
           Salary: ${value[0]} - ${value[1]}
         </p>
-
-        <button className='bg-primary rounded-[4px] px-[17px] py-[7px]'>
-          <p className='text-[14px] font-semibold text-white'>Apply</p>
-        </button>
       </div>
     </div>
   );

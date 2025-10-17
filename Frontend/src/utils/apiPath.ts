@@ -9,6 +9,17 @@ export const API_PATHS = {
     LOGOUT: '/api/v1/auth/logout'
   },
   JOBS: {
-    SEARCH_COMPLETE: 'api/v1/jobs/search'
+    SEARCH_COMPLETE: 'api/v1/jobs/search',
+    GET_JOBS_BY_CANDIDATE: 'api/v1/jobs',
+    GET_JOBS_BY_RECRUITER: 'api/v1/jobs/me',
+    GET_JOB_BY_ID_FOR_CANDIDATE: 'api/v1/jobs',
+    GET_JOB_BY_ID_FOR_RECRUITER: 'api/v1/jobs/recruiter',
+    SEARCH_JOBS_FILTER: 'api/v1/jobs/es/search',
+    CREATE_JOB: 'api/v1/jobs',
+    UPDATE_JOB: 'api/v1/jobs',
+    DELETE_JOB_BY_RECRUITER: 'api/v1/jobs'
+  },
+  COMPANIES: {
+    GET_COMPANY_PROFILE: 'api/v1/companies/auth/me'
   }
 };
