@@ -12,7 +12,7 @@ services:
     profiles:
       - setup
     build:
-      context: kibana/
+      context: ./Backend/volumes/kibana/
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
     command:
@@ -22,12 +22,12 @@ services:
 
   elasticsearch:
     build:
-      context: ./Backend/elasticsearch/
+      context: ./Backend/volumes/elasticsearch/
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
-      - ./Backend/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
-      - ./Backend/elasticsearch/data:/usr/share/elasticsearch/data:Z
+      - ./Backend/volumes/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+      - ./Backend/volumes/elasticsearch/data:/usr/share/elasticsearch/data:Z
     ports:
       - 9200:9200
       - 9300:9300
@@ -42,11 +42,11 @@ services:
 
   kibana:
     build:
-      context: ./Backend/kibana/
+      context: ./Backend/volumes/kibana/
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
-      - ./Backend/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
+      - ./Backend/volumes/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
       - 5601:5601
     environment:
@@ -57,6 +57,23 @@ services:
       - elasticsearch
     restart: unless-stopped
 
+  rabbitmq:
+    build:
+      context: ./Backend/volumes/rabbitmq
+      args:
+        RABBITMQ_VERSION: ${RABBITMQ_VERSION:-3.13-rc-management-alpine}
+    hostname: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15675:15675"
+    volumes:
+      - ./Backend/volumes/rabbitmq/config:/etc/rabbitmq/
+      - ./Backend/volumes/rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@rabbitmq
+      - ./Backend/volumes/rabbitmq/logs:/var/log/rabbitmq/log
 networks:
   elk:
     driver: bridge
