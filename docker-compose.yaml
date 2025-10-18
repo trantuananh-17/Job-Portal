@@ -74,6 +74,24 @@ services:
       - ./Backend/volumes/rabbitmq/config:/etc/rabbitmq/
       - ./Backend/volumes/rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@rabbitmq
       - ./Backend/volumes/rabbitmq/logs:/var/log/rabbitmq/log
+
+  redis:
+    build:
+      context: ./Backend/volumes/redis
+      args:
+        REDIS_VERSION: ${REDIS_VERSION:-7.2-alpine}
+    container_name: redis_container
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./Backend/volumes/redis/config:/usr/local/etc/redis/
+      - ./Backend/volumes/redis/data:/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-jobberredispass}
+    networks:
+      - elk
+    restart: unless-stopped
+
 networks:
   elk:
     driver: bridge
