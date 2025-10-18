@@ -1,11 +1,37 @@
-volumes/
+# --- Node & build output ---
 node_modules/
 dist/
-.env
-Backend/elasticsearch/data/
 
-# Elasticsearch runtime data
+# --- Environment files ---
+.env
+
+# --- Volumes and runtime data ---
+volumes/
+
+# --- Elasticsearch runtime data ---
 **/elasticsearch/data/
 **/elasticsearch/logs/
 **/elasticsearch/tmp/
 **/elasticsearch/*.lock
+
+# --- Redis runtime data ---
+**/redis/data/
+**/redis/logs/
+**/redis/tmp/
+**/redis/*.rdb
+**/redis/*.aof
+
+# --- RabbitMQ runtime data ---
+**/rabbitmq/data/
+**/rabbitmq/logs/
+**/rabbitmq/tmp/
+**/rabbitmq/*.pid
+**/rabbitmq/*.log
+
+# --- Backend-specific ignore ---
+Backend/elasticsearch/data/
+
+# --- Optional (editor & system files) ---
+.DS_Store
+.idea/
+.vscode/
