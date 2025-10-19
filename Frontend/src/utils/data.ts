@@ -1,4 +1,4 @@
-import { Building2, LayoutDashboard, Package, Plus, User, Users } from 'lucide-react';
+import { Building2, FileText, LayoutDashboard, Package, Plus, User, Users, Users2 } from 'lucide-react';
 
 const NAVIGATION_MENU = [
   { id: 'recruiter/recruiter-dashboard', name: 'Dashboard', icon: LayoutDashboard },
@@ -7,6 +7,15 @@ const NAVIGATION_MENU = [
   { id: 'recruiter/manage-company-profile', name: 'Company Profile ', icon: Building2 },
   { id: 'recruiter/manage-package', name: 'Package', icon: Package },
   { id: 'recruiter/candidates', name: 'Candidate', icon: User }
+];
+
+const ADMIN_NAVIGATION_MENU = [
+  { id: 'admin/admin-dashboard', name: 'Dashboard', icon: LayoutDashboard },
+  { id: 'admin/manage-jobs', name: 'Manage Jobs', icon: LayoutDashboard },
+  { id: 'admin/manage-companies', name: 'Manage Companies ', icon: Building2 },
+  { id: 'admin/manage-packages', name: 'Manage Package', icon: Package },
+  { id: 'admin/manage-orders', name: 'Manage Order', icon: FileText },
+  { id: 'admin/manage-users', name: 'Manage Users', icon: Users2 }
 ];
 
 const RECRUITER_DASHBOARD_ACTION = [
@@ -111,4 +120,12 @@ const ADDRESS_LOCATION = [
   'Cà Mau'
 ];
 
-export { NAVIGATION_MENU, RECRUITER_DASHBOARD_ACTION, ADDRESS_LOCATION, FORM_TAB, JOB_LEVEL_ITEM, STATUS_FILTER };
+export {
+  ADMIN_NAVIGATION_MENU,
+  NAVIGATION_MENU,
+  RECRUITER_DASHBOARD_ACTION,
+  ADDRESS_LOCATION,
+  FORM_TAB,
+  JOB_LEVEL_ITEM,
+  STATUS_FILTER
+};

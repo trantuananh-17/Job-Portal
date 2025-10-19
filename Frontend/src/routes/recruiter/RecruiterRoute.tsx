@@ -1,3 +1,4 @@
+import { NAVIGATION_MENU } from '@utils/data';
 import { RecruiterAuthProvider } from '@context/RecruiterContext';
 // import DashboardLayout from '@layouts/DashboardLayout';
 import { withSuspense, withSuspenseDashboard } from '@utils/withSuspense';
@@ -18,7 +19,7 @@ export default function RecruiterRoute() {
   return (
     <RecruiterAuthProvider>
       <Routes>
-        <Route element={<DashboardLayoutWithSuspense />}>
+        <Route element={<DashboardLayoutWithSuspense menu={NAVIGATION_MENU} />}>
           <Route index element={<Navigate to='recruiter-dashboard' replace />} />
           <Route path='recruiter-dashboard' element={<RecruiterDashboardWithSuspense />} />
           <Route path='post-job' element={<PostJobWithSuspense />} />
