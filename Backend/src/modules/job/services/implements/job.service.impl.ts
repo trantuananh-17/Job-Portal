@@ -15,7 +15,14 @@ import { IJobFilters } from '~/search/job/interface/job.interface';
 import { JobDocument, mapJobToDocument } from '~/search/job/mapper/job.mapper';
 import { jobQuery } from '~/search/job/queries/job.query';
 import { JobSyncService } from '~/search/job/sync/job.sync';
-import { IJob, IJobByRecruiterResponse, IJobIdByRecruiterResponse, IJobResponse } from '../../interfaces/job.interface';
+import {
+  IJob,
+  IJobByAdmin,
+  IJobByRecruiterResponse,
+  IJobIdByRecruiterResponse,
+  IJobResponse,
+  IJobsByAdmin
+} from '../../interfaces/job.interface';
 import { jobMaper } from '../../mappers/job.mapper';
 import { jobRepository } from '../../repositories/implements/job.repository';
 import { IJobRepository } from '../../repositories/job.repository';
@@ -35,6 +42,70 @@ class JobService implements IJobService {
     private readonly jobSkillService: IJobSkillService,
     private readonly packageService: IPackageService
   ) {}
+
+  async getJobByAdmin(jobId: number): Promise<IJobByAdmin | null> {
+    const job = await this.jobRepository.getJobByAdmin(jobId);
+
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    return job;
+  }
+
+  async getAllByAdmin(
+    page: number,
+    limit: number,
+    search: string,
+    status?: string
+  ): Promise<{ data: IJobsByAdmin[]; totalDocs: number; totalPages: number; page: number; limit: number }> {
+    // const [jobs, totalDocs] = await Promise.all([
+    //   this.jobRepository.getAllByAdmin(page, limit, search, status),
+    //   this.jobRepository.getTotalJobByAdmin(search, status)
+    // ]);
+
+    // const totalPages = Math.ceil(totalDocs / limit);
+    // const data: IJobsByAdmin[] = jobs;
+
+    const query = jobQuery.searchJobFilterByAdmin(page, limit, search, status);
+
+    const response = await esClient.search(query);
+
+    const data: IJobsByAdmin[] = response.hits.hits.map((hit: any) => {
+      const job = hit._source!;
+
+      return {
+        id: hit._id,
+        title: job.title,
+        description: job.description,
+        status: job.status,
+        jobRole: job.jobRoleName,
+        minSalary: job.minSalary,
+        maxSalary: job.maxSalary ?? null,
+        totalViews: job.totalViews ?? 0,
+        createdAt: new Date(job.createdAt),
+        updatedAt: new Date(job.updatedAt),
+        isDeleted: job.isDeleted ?? false,
+        company: {
+          id: job.companyId ?? 0,
+          name: job.companyName ?? ''
+        }
+      };
+    });
+
+    const totalDocs =
+      typeof response.hits.total === 'object' ? response.hits.total.value : (response.hits.total as number);
+
+    const totalPages = Math.ceil(totalDocs / limit);
+
+    return {
+      data,
+      totalDocs,
+      totalPages,
+      page,
+      limit
+    };
+  }
 
   async getJobByRecruiter(jobId: number): Promise<IJobIdByRecruiterResponse | null> {
     const jobData = await this.jobRepository.getJobIdByRecruiter(jobId);

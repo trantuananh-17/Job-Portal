@@ -1,6 +1,13 @@
 import { Company, Job, JobSkill, JobStatus, User } from '@prisma/client';
 import { IBaseRepository } from '~/global/base/repositories/base.repository';
-import { IJob, IJobResponse, IJobByRecruiterResponse, IJobIdByRecruiter } from '../interfaces/job.interface';
+import {
+  IJob,
+  IJobResponse,
+  IJobByRecruiterResponse,
+  IJobIdByRecruiter,
+  IJobsByAdmin,
+  IJobByAdmin
+} from '../interfaces/job.interface';
 
 export interface IJobRepository extends IBaseRepository<Job> {
   jobsCount(userId: number, activePackage: any): Promise<number>;
@@ -31,7 +38,11 @@ export interface IJobRepository extends IBaseRepository<Job> {
 
   getTotalJob(): Promise<number>;
   getTotalJobByReruiter(userId: number, status?: JobStatus): Promise<number>;
+  getTotalJobByAdmin(search?: string, status?: JobStatus): Promise<number>;
   getJobIdByRecruiter(jobId: number): Promise<IJobIdByRecruiter | null>;
+
+  getAllByAdmin(page: number, limit: number, search?: string, status?: JobStatus): Promise<IJobsByAdmin[]>;
+  getJobByAdmin(jobId: number): Promise<IJobByAdmin | null>;
 
   deleteJobByAdmin(jobId: number): Promise<boolean>;
   deleteJob(id: number, companyId: number, userId: number): Promise<boolean>;

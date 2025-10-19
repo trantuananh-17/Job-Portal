@@ -22,24 +22,6 @@ class JobQuery {
     };
   }
 
-  // const filter: any[] = [];
-  //   filter.push({
-  //     term: { isDeleted: filters.isDeleted ?? false }
-  //   });
-
-  //   if (filters.status && filters.status !== '') {
-  //     filter.push({ term: { status: filters.status } });
-  //   }
-
-  //   if (filters.jobRoleName && filters.jobRoleName !== '') {
-  //     filter.push({ term: { jobRoleName: filters.jobRoleName } });
-  //   }
-
-  //   const salaryRange: any = {};
-  //   if (filters.minSalary != null) salaryRange.gte = filters.minSalary;
-  //   if (filters.maxSalary != null) salaryRange.lte = filters.maxSalary;
-  //   if (Object.keys(salaryRange).length > 0) filter.push({ range: { minSalary: salaryRange } });
-
   searchComplete(page: number, limit: number, q: string): SearchRequest {
     return {
       index: 'jobs',
@@ -178,6 +160,60 @@ class JobQuery {
           must: mustQueries,
           should: shouldQueries,
           filter
+        }
+      },
+      sort: [{ createdAt: 'desc' as const }]
+    };
+  }
+
+  searchJobFilterByAdmin(page: number, limit: number, q?: string, status?: string) {
+    const mustQueries: any[] =
+      q && q.trim().length > 0
+        ? [
+            {
+              dis_max: {
+                queries: [
+                  {
+                    multi_match: {
+                      query: q,
+                      type: 'bool_prefix',
+                      fields: ['title^3', 'title._2gram', 'title._3gram']
+                    }
+                  },
+                  {
+                    multi_match: {
+                      query: q,
+                      fields: ['title.ngram^2']
+                    }
+                  }
+                ],
+                tie_breaker: 0.1
+              }
+            }
+          ]
+        : [{ match_all: {} }];
+
+    return {
+      index: 'jobs',
+      from: (page - 1) * limit,
+      size: limit,
+      query: {
+        bool: {
+          must: mustQueries,
+          should: q
+            ? [
+                {
+                  match_phrase_prefix: {
+                    title: {
+                      query: q,
+                      slop: 3,
+                      boost: 5
+                    }
+                  }
+                }
+              ]
+            : [],
+          filter: status ? [{ term: { status } }] : []
         }
       },
       sort: [{ createdAt: 'desc' as const }]
