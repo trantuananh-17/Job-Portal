@@ -2,11 +2,95 @@ import { Company, Job, JobSkill, JobStatus, PrismaClient, User } from '@prisma/c
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
 import { IJobRepository } from '../job.repository';
 import prisma from '~/prisma';
-import { IJob, IJobByRecruiterResponse, IJobIdByRecruiter, IJobResponse } from '../../interfaces/job.interface';
+import {
+  IJob,
+  IJobByAdmin,
+  IJobByRecruiterResponse,
+  IJobIdByRecruiter,
+  IJobResponse,
+  IJobsByAdmin
+} from '../../interfaces/job.interface';
 
 class JobRepository extends BaseRepository<Job> implements IJobRepository {
   constructor(private readonly prisma: PrismaClient) {
     super(prisma.job);
+  }
+
+  async getJobByAdmin(jobId: number): Promise<IJobByAdmin | null> {
+    return await this.prisma.job.findUnique({
+      where: { id: jobId },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        jobRoleName: true,
+        minSalary: true,
+        maxSalary: true,
+        benefits: true,
+        requirements: true,
+        createdAt: true,
+        updatedAt: true,
+
+        jobSkills: {
+          select: {
+            skill: {
+              select: {
+                name: true
+              }
+            }
+          }
+        },
+
+        company: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true
+          }
+        },
+
+        postBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    });
+  }
+
+  async getAllByAdmin(page: number, limit: number, search?: string, status?: JobStatus): Promise<IJobsByAdmin[]> {
+    return await this.prisma.job.findMany({
+      where: {
+        ...(status ? { status } : {}),
+        ...(search
+          ? {
+              title: {
+                contains: search.trim(),
+                mode: 'insensitive'
+              }
+            }
+          : {})
+      },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        isDeleted: true,
+        createdAt: true,
+        updatedAt: true,
+        company: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit
+    });
   }
 
   async getJobIdByRecruiter(jobId: number): Promise<IJobIdByRecruiter | null> {
@@ -84,6 +168,22 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
     });
   }
 
+  async getTotalJobByAdmin(search?: string, status?: JobStatus): Promise<number> {
+    return await this.prisma.job.count({
+      where: {
+        ...(status ? { status } : {}),
+        ...(search
+          ? {
+              title: {
+                contains: search.trim(),
+                mode: 'insensitive'
+              }
+            }
+          : {})
+      }
+    });
+  }
+
   async getAllByCandidate(page: number, limit: number): Promise<(Job & { company: Company })[]> {
     return await this.prisma.job.findMany({
       // where: {
@@ -99,13 +199,7 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
     });
   }
 
-  async findIndex(id: number): Promise<
-    | (Job & {
-        company: Company;
-        postBy: User;
-      })
-    | null
-  > {
+  async findIndex(id: number): Promise<(Job & { company: Company; postBy: User }) | null> {
     return this.prisma.job.findUnique({
       where: { id },
       include: {
