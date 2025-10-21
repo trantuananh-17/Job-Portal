@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= subject || 'Công ty của bạn đã được duyệt!' %></title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f5f4f2; font-family: Arial, Helvetica, sans-serif;">
+  <center>
+    <table width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f5f4f2;">
+      <tr>
+        <td align="center" style="padding: 16px;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px;">
+            
+            <!-- Header -->
+            <tr>
+              <td style="text-align: center; padding: 24px;">
+                <a href="<%= appLink %>" target="_blank">
+                  <img src="<%= appIcon %>" alt="App Logo" width="180" style="max-width: 200px; height: auto; border: 0;" />
+                </a>
+              </td>
+            </tr>
+
+            <!-- Divider -->
+            <tr>
+              <td style="border-top: 1px solid #f0f0f0;"></td>
+            </tr>
+
+            <!-- Main Content -->
+            <tr>
+              <td style="padding: 24px 32px; text-align: left; color: #0c0c14;">
+                <h2 style="color: #333333; font-size: 20px; margin-bottom: 16px;">
+                  <%= header || '🎉 Chúc mừng, công ty của bạn đã được duyệt!' %>
+                </h2>
+
+                <p style="font-size: 16px; line-height: 1.6em; margin: 12px 0;">
+                  Xin chào <%= username || 'bạn' %>,
+                </p>
+                <p style="font-size: 16px; line-height: 1.6em; margin: 12px 0;">
+                  <%= message || `Chúng tôi rất vui thông báo rằng hồ sơ công ty <b>${companyName || ''}</b> của bạn đã được quản trị viên phê duyệt. Bạn có thể truy cập trang quản lý công ty để cập nhật thông tin hoặc đăng tin tuyển dụng.` %>
+                </p>
+
+                <% if (planName) { %>
+                  <p style="font-size: 15px; color: #555;">Gói dịch vụ hiện tại: <strong><%= planName %></strong></p>
+                <% } %>
+                <% if (createdAt) { %>
+                  <p style="font-size: 14px; color: #888;">Duyệt ngày: <%= createdAt %></p>
+                <% } %>
+              </td>
+            </tr>
+
+            <!-- Action Button -->
+            <% if (actionLink && actionText) { %>
+            <tr>
+              <td align="center" style="padding-bottom: 32px;">
+                <a
+                  href="<%= actionLink %>"
+                  target="_blank"
+                  style="
+                    background-color: #4aa1f3;
+                    color: #ffffff;
+                    text-decoration: none;
+                    font-weight: bold;
+                    padding: 14px 32px;
+                    border-radius: 8px;
+                    display: inline-block;
+                    letter-spacing: 0.5px;
+                  "
+                >
+                  <%= actionText %>
+                </a>
+              </td>
+            </tr>
+            <% } %>
+
+            <!-- Footer -->
+            <tr>
+              <td style="border-top: 1px solid #f0f0f0; padding: 16px 32px; text-align: left; color: #777; font-size: 14px; border-radius: 0 0 16px 16px;">
+                <p style="margin: 4px 0;">
+                  <%= 'Cảm ơn bạn đã đồng hành cùng chúng tôi. Đừng quên cập nhật hồ sơ để thu hút thêm ứng viên!' %>
+                </p>
+                <p style="margin: 4px 0;">— <%= sender || 'Đội ngũ quản trị' %></p>
+              </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+</body>
+</html>
