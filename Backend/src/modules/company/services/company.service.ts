@@ -1,5 +1,5 @@
-import { Company } from '@prisma/client';
-import { ICompany } from '../interfaces/company.interface';
+import { Company, CompanyStatus } from '@prisma/client';
+import { ICompany, ICompanyInfoResponse } from '../interfaces/company.interface';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
 
 export interface ICompanyService {
@@ -13,6 +13,7 @@ export interface ICompanyService {
   getOneAdmin(id: number): Promise<Company>;
   findOne(companyId: number, userId: number): Promise<Company>;
   update(id: number, requestBody: Partial<ICompany>, userId: number): Promise<Company>;
-  approved(id: number, isApproved: boolean): Promise<Company>;
+  approved(id: number, isApproved: boolean): Promise<ICompanyInfoResponse>;
+  updateStatus(id: number, status: CompanyStatus, isApproved: boolean, note?: string): Promise<ICompanyInfoResponse>;
   delete(id: number, userId: number): Promise<void>;
 }

@@ -1,6 +1,6 @@
-import { Company } from '@prisma/client';
+import { Company, CompanyStatus } from '@prisma/client';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
-import { ICompany } from '../interfaces/company.interface';
+import { ICompany, ICompanyInfoResponse } from '../interfaces/company.interface';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
 
 export interface ICompanyRepository extends BaseRepository<Company> {
@@ -10,6 +10,7 @@ export interface ICompanyRepository extends BaseRepository<Company> {
   getMyCompany(userId: number): Promise<Company | null>;
   getOne(companyId: number, userId: number): Promise<Company | null>;
   updateCompany(id: number, data: Partial<ICompany>, userId: number): Promise<Company>;
-  updateApproved(id: number, isApproved: boolean): Promise<Company>;
+  updateApproved(id: number, isApproved: boolean): Promise<ICompanyInfoResponse>;
+  updateStatus(id: number, status: CompanyStatus, isApproved: boolean): Promise<ICompanyInfoResponse>;
   deleteCompany(id: number, userId: number): Promise<boolean>;
 }

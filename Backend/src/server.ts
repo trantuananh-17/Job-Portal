@@ -13,6 +13,10 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { checkElasticConnection } from './global/configs/elastic.config';
 import cors from 'cors';
+import { Channel } from 'amqplib';
+import { createConnection } from './queues/connection';
+
+let channel: Channel;
 
 export class Server {
   private app: Application;
@@ -27,6 +31,7 @@ export class Server {
     this.setupRoutes();
     this.setupGlobalError();
     this.listenServer();
+    this.startQueues();
   }
 
   private setupMiddleware(): void {
@@ -46,6 +51,10 @@ export class Server {
 
   private setupRoutes(): void {
     appRoutes(this.app);
+  }
+
+  private async startQueues(): Promise<void> {
+    channel = (await createConnection()) as Channel;
   }
 
   private setupSwagger(): void {
@@ -126,3 +135,5 @@ export class Server {
     });
   }
 }
+
+export { channel };

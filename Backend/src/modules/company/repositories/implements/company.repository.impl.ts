@@ -1,11 +1,32 @@
-import { Company, PrismaClient } from '@prisma/client';
+import { Company, CompanyStatus, PrismaClient } from '@prisma/client';
 import { ICompanyRepository } from '../company.repository';
 import prisma from '~/prisma';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
-import { ICompany } from '../../interfaces/company.interface';
+import { ICompany, ICompanyInfoResponse } from '../../interfaces/company.interface';
 class CompanyRepository extends BaseRepository<Company> implements ICompanyRepository {
   constructor(private readonly prisma: PrismaClient) {
     super(prisma.company);
+  }
+
+  async updateStatus(id: number, status: CompanyStatus, isApproved: boolean): Promise<ICompanyInfoResponse> {
+    return await this.prisma.company.update({
+      where: { id },
+      data: { isApproved, status },
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true
+          }
+        }
+      }
+    });
   }
 
   async getMyCompany(userId: number): Promise<Company | null> {
@@ -66,10 +87,24 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
     });
   }
 
-  async updateApproved(id: number, isApproved: boolean): Promise<Company> {
+  async updateApproved(id: number, isApproved: boolean): Promise<ICompanyInfoResponse> {
     return await this.prisma.company.update({
       where: { id },
-      data: { isApproved }
+      data: { isApproved },
+      select: {
+        id: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+        isApproved: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true
+          }
+        }
+      }
     });
   }
 

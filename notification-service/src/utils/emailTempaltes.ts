@@ -43,7 +43,7 @@ async function emailTemplates(template: string, receiver: string, locals: IEmail
 
     await email.send({
       template: path.join(__dirname, '..', 'emails', template),
-      message: { to: receiver },
+      message: { to: receiver, subject: locals.subject },
       locals
     });
   } catch (error) {}

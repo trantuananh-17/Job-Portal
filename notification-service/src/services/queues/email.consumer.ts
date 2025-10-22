@@ -60,7 +60,8 @@ async function consumeApprovedCompanyEmailMessages(channel: Channel): Promise<vo
         actionLink,
         actionText,
         message,
-        subject
+        subject,
+        header
       } = JSON.parse(msg.content.toString());
 
       const locals: IEmailLocals = {
@@ -71,7 +72,7 @@ async function consumeApprovedCompanyEmailMessages(channel: Channel): Promise<vo
         planName,
         createdAt,
         sender: sender,
-        header: 'Chúc mừng, công ty của bạn đã được duyệt!',
+        header,
         message: message,
         actionText: actionText,
         actionLink: actionLink,
