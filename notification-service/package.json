@@ -1,0 +1,50 @@
+{
+  "name": "notification-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --watch src --exec ts-node -r tsconfig-paths/register src/index.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prettier": "prettier --check .",
+    "prettier:fix": "prettier --write .",
+    "test": "jest --coverage=true -w=1 --forceExit --detectOpenHandles --watchAll=false"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "amqplib": "^0.10.9",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "elastic-apm-node": "^4.15.0",
+    "email-templates": "^12.0.3",
+    "express": "^5.1.0",
+    "nodemailer": "^7.0.9",
+    "winston": "^3.18.3"
+  },
+  "devDependencies": {
+    "@jest/types": "^30.2.0",
+    "@types/amqplib": "^0.10.7",
+    "@types/ejs": "^3.1.5",
+    "@types/email-templates": "^10.0.4",
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.9.1",
+    "@types/nodemailer": "^7.0.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "eslint": "^9.38.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "jest": "^30.2.0",
+    "prettier": "^3.6.2",
+    "ts-jest": "^29.4.5",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.16",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.3"
+  }
+}
