@@ -14,6 +14,21 @@ class ApplyRepository implements IApplyRepository {
       }
     });
   }
+
+  async updateCv(candidateProfileId: number, jobId: number, cv: string): Promise<Apply> {
+    return this.prisma.apply.update({
+      where: {
+        candidateProfileId_jobId: {
+          candidateProfileId,
+          jobId
+        }
+      },
+      data: {
+        cv
+      }
+    });
+  }
+
   async updateStatusApply(candidateProfileId: number, jobId: number, status: ApplyStatus): Promise<Apply> {
     return await this.prisma.apply.update({
       where: {

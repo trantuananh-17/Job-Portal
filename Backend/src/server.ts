@@ -15,6 +15,7 @@ import { checkElasticConnection } from './global/configs/elastic.config';
 import cors from 'cors';
 import { Channel } from 'amqplib';
 import { createConnection } from './queues/connection';
+import { uploadCvConsumer } from './modules/apply/queues/apply.consumer';
 
 let channel: Channel;
 
@@ -54,7 +55,13 @@ export class Server {
   }
 
   private async startQueues(): Promise<void> {
-    channel = (await createConnection()) as Channel;
+    try {
+      const channel: Channel = (await createConnection()) as Channel;
+      await uploadCvConsumer(channel);
+      logger.info('Notification Email Consumer is running...');
+    } catch (error) {
+      logger.error(' NotificationService startQueues() error:', error);
+    }
   }
 
   private setupSwagger(): void {
