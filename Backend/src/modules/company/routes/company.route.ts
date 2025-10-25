@@ -42,4 +42,6 @@ companyRoute.get('/admin/get-all', verify, allowRole('ADMIN'), asyncWrapper(comp
 
 companyRoute.get('/:id/admin', verify, allowRole('ADMIN'), asyncWrapper(companyController.getOneAdmin));
 
+companyRoute.patch('/admin/:id/status', verify, allowRole('ADMIN'), asyncWrapper(companyController.updateStatus));
+
 export default companyRoute;

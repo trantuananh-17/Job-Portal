@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
-    "prettier:fix": "prettier --write ."
+    "prettier:fix": "prettier --write .",
+    "sync:es": "ts-node src/scripts/sync-elasticsearch.ts"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -19,6 +20,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/amqplib": "^0.10.7",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
@@ -47,6 +49,7 @@
     "@aws-sdk/client-s3": "^3.859.0",
     "@elastic/elasticsearch": "^9.1.1",
     "@prisma/client": "^6.16.3",
+    "amqplib": "^0.10.9",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

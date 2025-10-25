@@ -17,6 +17,8 @@ class JobController {
     this.delete = this.delete.bind(this);
     this.searchCompletion = this.searchCompletion.bind(this);
     this.searchJobsFilter = this.searchJobsFilter.bind(this);
+    this.getAllForAdmin = this.getAllForAdmin.bind(this);
+    this.getJobByIdForAdmin = this.getJobByIdForAdmin.bind(this);
   }
 
   public async create(req: Request, res: Response) {
@@ -113,6 +115,33 @@ class JobController {
     return res.status(HttpStatus.OK).json({
       message: 'Get single job',
       data: job
+    });
+  }
+
+  public async getJobByIdForAdmin(req: Request, res: Response) {
+    const job = await this.jobService.getJobByAdmin(parseInt(req.params.id));
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Get job successfully',
+      data: job
+    });
+  }
+
+  public async getAllForAdmin(req: Request, res: Response) {
+    const { page = 1, limit = 8, status, q } = req.query;
+    const jobStatus = status && status !== 'all' ? (status as string) : undefined;
+
+    const data = await this.jobService.getAllByAdmin(+page, +limit, q as string, jobStatus);
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Get all jobs by admin succesfully',
+      pagination: {
+        totalDocs: data.totalDocs,
+        totalPages: data.totalPages,
+        currentPage: data.page,
+        limit: data.limit
+      },
+      data: data.data
     });
   }
 

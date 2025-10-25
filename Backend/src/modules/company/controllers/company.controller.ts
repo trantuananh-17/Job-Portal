@@ -15,6 +15,7 @@ class CompanyController {
     this.update = this.update.bind(this);
     this.getOneAdmin = this.getOneAdmin.bind(this);
     this.remove = this.remove.bind(this);
+    this.updateStatus = this.updateStatus.bind(this);
   }
 
   public async create(req: Request, res: Response) {
@@ -146,6 +147,18 @@ class CompanyController {
 
     return res.status(HttpStatus.OK).json({
       message: 'Change approved successfully',
+      data: company
+    });
+  }
+
+  public async updateStatus(req: Request, res: Response) {
+    const id = +req.params.id;
+    const { note, status, isApproved } = req.body;
+
+    const company = await this.companyService.updateStatus(id, status, isApproved, note);
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Update status company successfully',
       data: company
     });
   }

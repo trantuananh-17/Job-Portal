@@ -1,0 +1,18 @@
+-- CreateEnum
+CREATE TYPE "CompanyStatus" AS ENUM ('PENDING', 'ACTIVE', 'REJECTED');
+
+-- AlterEnum
+ALTER TYPE "Role" ADD VALUE 'RECRUITER_PENDING';
+
+-- AlterTable
+ALTER TABLE "CandidateProfile" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "updatedAt" TIMESTAMP(3);
+
+-- AlterTable
+ALTER TABLE "Company" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "status" "CompanyStatus" NOT NULL DEFAULT 'PENDING',
+ADD COLUMN     "updatedAt" TIMESTAMP(3);
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "isActive" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN     "isVerified" BOOLEAN NOT NULL DEFAULT true;

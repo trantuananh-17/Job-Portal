@@ -12,7 +12,7 @@ services:
     profiles:
       - setup
     build:
-      context: ./Backend/volumes/kibana/
+      context: ./stacks/kibana/
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
     command:
@@ -22,12 +22,12 @@ services:
 
   elasticsearch:
     build:
-      context: ./Backend/volumes/elasticsearch/
+      context: ./stacks/elasticsearch/
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
-      - ./Backend/volumes/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
-      - ./Backend/volumes/elasticsearch/data:/usr/share/elasticsearch/data:Z
+      - ./stacks/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+      - ./stacks/elasticsearch/data:/usr/share/elasticsearch/data:Z
     ports:
       - 9200:9200
       - 9300:9300
@@ -42,11 +42,11 @@ services:
 
   kibana:
     build:
-      context: ./Backend/volumes/kibana/
+      context: ./stacks/kibana/
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
-      - ./Backend/volumes/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
+      - ./stacks/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
       - 5601:5601
     environment:
@@ -59,7 +59,7 @@ services:
 
   rabbitmq:
     build:
-      context: ./Backend/volumes/rabbitmq
+      context: ./stacks/rabbitmq
       args:
         RABBITMQ_VERSION: ${RABBITMQ_VERSION:-3.13-rc-management-alpine}
     hostname: rabbitmq
@@ -71,21 +71,21 @@ services:
       - "15672:15672"
       - "15675:15675"
     volumes:
-      - ./Backend/volumes/rabbitmq/config:/etc/rabbitmq/
-      - ./Backend/volumes/rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@rabbitmq
-      - ./Backend/volumes/rabbitmq/logs:/var/log/rabbitmq/log
+      - ./stacks/rabbitmq/config:/etc/rabbitmq/
+      - ./stacks/rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@rabbitmq
+      - ./stacks/rabbitmq/logs:/var/log/rabbitmq/log
 
   redis:
     build:
-      context: ./Backend/volumes/redis
+      context: ./stacks/redis
       args:
         REDIS_VERSION: ${REDIS_VERSION:-7.2-alpine}
     container_name: redis_container
     ports:
       - "6379:6379"
     volumes:
-      - ./Backend/volumes/redis/config:/usr/local/etc/redis/
-      - ./Backend/volumes/redis/data:/data
+      - ./stacks/redis/config:/usr/local/etc/redis/
+      - ./stacks/redis/data:/data
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD:-jobberredispass}
     networks:

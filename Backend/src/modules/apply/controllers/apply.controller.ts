@@ -14,7 +14,7 @@ class ApplyController {
   public async create(req: Request, res: Response) {
     const { jobId } = req.body;
     const userId = +req.user.id;
-    const apply = await this.applyService.create(jobId, userId);
+    const apply = await this.applyService.create(+jobId, userId, req.file as Express.Multer.File);
 
     return res.status(HttpStatus.CREATED).json({
       message: 'Apply job successfully',
