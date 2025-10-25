@@ -1,7 +1,7 @@
 import { applyRepository } from './../../repositories/implements/apply.repository.impl';
 import { Apply } from '@prisma/client';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
-import { IApply } from '../../interfaces/apply.interface';
+import { IApply, IApplyMessage } from '../../interfaces/apply.interface';
 import { IApplyService } from '../apply.service';
 import { candidateProfileService } from '~/modules/candidate-profile/service/implements/candidate-profile.service.impl';
 import { jobService } from '~/modules/job/services/implements/job.service.impl';
@@ -11,6 +11,8 @@ import { serializeData } from '~/global/helpers/serialize.helper';
 import { IApplyRepository } from '../../repositories/apply.repository';
 import { IJobService } from '~/modules/job/services/job.service';
 import { ICandidateProfileService } from '~/modules/candidate-profile/service/candidate-profile.service';
+import { publishDirectMessage } from '~/queues/producer';
+import { channel } from '~/server';
 
 class ApplyService implements IApplyService {
   constructor(
@@ -19,7 +21,7 @@ class ApplyService implements IApplyService {
     private readonly candidateProfileService: ICandidateProfileService
   ) {}
 
-  async create(jobId: number, userId: number): Promise<Apply> {
+  async create(jobId: number, userId: number, cv: Express.Multer.File): Promise<Apply> {
     const candidateProfile = await this.candidateProfileService.getOneByUserId(userId);
     await this.jobService.findOneActive(jobId);
     const existApply = await this.getOne(candidateProfile.id, jobId);
@@ -29,6 +31,26 @@ class ApplyService implements IApplyService {
     }
 
     const apply = await this.applyRepository.createApply(candidateProfile.id, jobId);
+
+    if (apply) {
+      const messageDetails: IApplyMessage = {
+        candidateProfileId: candidateProfile.id,
+        jobId,
+        cv: {
+          originalname: cv.originalname,
+          mimeType: cv.mimetype,
+          file: cv.buffer.toString('base64')
+        }
+      };
+
+      await publishDirectMessage(
+        channel,
+        'apply-job',
+        'upload-cv',
+        JSON.stringify(messageDetails),
+        'Apply job for candidate.'
+      );
+    }
 
     return apply;
   }
