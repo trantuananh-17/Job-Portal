@@ -33,3 +33,17 @@ export interface INewCompanyData {
   mapLink: string;
   address: string;
 }
+
+export interface ICompanyByAdminResponse {
+  id: number;
+  name: string;
+  status?: string;
+  createdAt: Date;
+  updatedAt: Date | null;
+  isApproved?: boolean;
+  user: {
+    id: number;
+    email: string;
+    name: string | null;
+  };
+}

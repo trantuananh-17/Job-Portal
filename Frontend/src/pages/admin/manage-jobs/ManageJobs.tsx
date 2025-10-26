@@ -1,13 +1,23 @@
-import usePagination from '@hooks/usePagination';
-import { useClickOutside } from '@hooks/useClickOutside';
-import { useMediaQuery } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
-import { ChevronDown, Search } from 'lucide-react';
-import { useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { STATUS_FILTER } from '@utils/data';
-import { useForm } from 'react-hook-form';
+import type { IJobByAdminGetAllResponse, JobStatus } from '@apis/jobs/interfaces/job.interface';
+import { deleteJobByAdminApi, getJobsByAdmin } from '@apis/jobs/job.api';
 import TitleHeader from '@components/common/TitleHeader';
+import { useClickOutside } from '@hooks/useClickOutside';
+import { useDebounce } from '@hooks/useDebounce';
+import usePagination from '@hooks/usePagination';
+import { Pagination, useMediaQuery } from '@mui/material';
+import StatusTag from '@pages/recruiter/job-manager/components/StatusTag';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { STATUS_FILTER } from '@utils/data';
+import { ChevronDown, Edit, Search, Trash2, XCircle } from 'lucide-react';
+import moment from 'moment';
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import JobsSkeleton from './components/JobsSkeleton';
+import ErrorState from '@components/common/ErrorState';
+import EmptyTable from '@components/common/EmptyTable';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 interface Props {}
 
@@ -35,10 +45,74 @@ const ManageJobs: React.FC<Props> = ({}) => {
     }
   });
 
+  const page = searchParams.get('page') || 1;
+  const status = searchParams.get('status') || 'all';
+  const q = searchParams.get('q') || '';
+
+  const jobStatus = status === 'all' ? 'all' : status.toUpperCase();
+
+  const search = watch('search');
+  const debouncedSearch = useDebounce(search, 500);
+
+  const { data, isLoading, isError, isSuccess, isFetching } = useQuery({
+    queryKey: ['getJobsByAdmin', status, currentPage, q],
+    queryFn: () => getJobsByAdmin(Number(page), 5, jobStatus as unknown as JobStatus, q),
+    select: (res) => res.data,
+    staleTime: 1000 * 60 * 60
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: ({ jobId }: { jobId: number }) => deleteJobByAdminApi(jobId),
+    onSuccess: (res) => {
+      toast.success(res.data.message);
+      queryClient.invalidateQueries({ queryKey: ['getJobsByAdmin'] });
+    },
+    onError: (err) => {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data.message || 'Đã xảy ra lỗi!');
+      } else {
+        toast.error('Lỗi không xác định!');
+      }
+    }
+  });
+
+  const onDelete = async (jobId: number) => {
+    deleteMutation.mutate({ jobId });
+  };
+
+  useEffect(() => {
+    const param = new URLSearchParams(searchParams);
+
+    if (!searchParams.get('page')) {
+      param.set('page', '1');
+    }
+
+    setSearchParams(param);
+  }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    if (data?.pagination) {
+      setPagination(data.pagination);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+
+    if (debouncedSearch && debouncedSearch.trim() !== '') {
+      params.set('q', debouncedSearch.trim());
+      params.set('page', '1');
+    } else {
+      params.delete('q');
+    }
+
+    setSearchParams(params);
+  }, [debouncedSearch]);
+
   return (
-    <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
+    <div className='min-h-screen p-4 sm:p-6'>
       {/* Header */}
-      <div className='mb-8 px-4'>
+      <div className='mb-6 px-4'>
         <div className='flex flex-row items-center justify-between'>
           <TitleHeader title='Jobs Management' subtitle='Review and approve all jobs posting in the system' />
         </div>
@@ -55,6 +129,7 @@ const ManageJobs: React.FC<Props> = ({}) => {
             <input
               type='text'
               placeholder='Search jobs...'
+              {...register('search')}
               className='block w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pr-4 pl-10 text-sm placeholder-gray-400 outline-0 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
             />
           </div>
@@ -86,6 +161,7 @@ const ManageJobs: React.FC<Props> = ({}) => {
                         setIsOpen(false);
                         const param = new URLSearchParams(searchParams);
                         param.set('status', s.key);
+                        param.set('page', '1');
                         setSearchParams(param);
                       }}
                       className={`cursor-pointer px-4 py-3 hover:bg-gray-100 ${
@@ -143,8 +219,100 @@ const ManageJobs: React.FC<Props> = ({}) => {
                   </th>
                 </tr>
               </thead>
+              <tbody>
+                {(isLoading || isFetching) && (
+                  <>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <JobsSkeleton key={i} />
+                    ))}
+                  </>
+                )}
+                {!isLoading &&
+                  isSuccess &&
+                  data?.data?.map((job: IJobByAdminGetAllResponse) => (
+                    <tr
+                      key={job.id}
+                      className='border-b border-gray-200 odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800'
+                    >
+                      <th
+                        scope='row'
+                        className='text-md max-w-[180px] truncate overflow-hidden px-6 py-4 font-semibold text-ellipsis whitespace-nowrap text-gray-900 dark:text-white'
+                      >
+                        {job.title}
+                      </th>
+                      <td className='max-w-[100px] truncate px-6 py-4 text-ellipsis whitespace-nowrap'>
+                        {job.company.name}
+                      </td>
+                      <td className='px-6 py-4'>
+                        <StatusTag status={job.status} />
+                      </td>
+                      <td className='px-6 py-4'>
+                        <div className='text-sm'>{moment(job.createdAt).format('HH:mm:ss')}</div>
+                        <div className='text-sm'>{moment(job.createdAt).format('DD/MM/YYYY')}</div>
+                      </td>
+                      <td className='px-6 py-4'>
+                        {job.updatedAt ? (
+                          <div className='text-sm'>
+                            <div>{moment(job.updatedAt).format('HH:mm:ss')}</div>
+                            <div className='text-gray-500'>{moment(job.updatedAt).format('DD/MM/YYYY')}</div>
+                          </div>
+                        ) : (
+                          '-'
+                        )}
+                      </td>
+                      <td className='px-6 py-4'>
+                        <span
+                          className={`inline-flex items-center justify-center rounded-full border px-3 py-1 text-sm font-medium whitespace-nowrap ${
+                            job.isDeleted
+                              ? 'border-red-200 bg-red-100 text-red-700'
+                              : 'border-green-200 bg-green-100 text-green-700'
+                          }`}
+                          style={{ minWidth: '80px' }}
+                        >
+                          {job.isDeleted ? 'Deleted' : 'Not deleted'}
+                        </span>
+                      </td>
+
+                      <td className='flex gap-2 px-6 py-4'>
+                        <button
+                          disabled={job.isDeleted || job.status === 'EXPIRED' || job.status === 'REJECT'}
+                          className='text-blue-500 transition-all duration-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-blue-500'
+                        >
+                          <Edit className='h-5 w-5' onClick={() => navigate(`/recruiter/edit-job/${job.id}`)} />
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            if (window.confirm('Bạn có chắc chắn muốn xoá công việc này không?')) {
+                              onDelete(job.id);
+                            }
+                          }}
+                          disabled={job.isDeleted === true}
+                          className='text-red-500 transition-all duration-200 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-red-500'
+                        >
+                          <Trash2 className='h-5 w-5' />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
             </table>
           </div>
+
+          {isSuccess && data?.data?.length === 0 && !isLoading && !isFetching && <EmptyTable name='Jobs' />}
+          {isError && <ErrorState title='Đã xảy ra lỗi' description='Không thể kết nối tới server.' icon={XCircle} />}
+
+          {pagination.totalDocs > 0 && (
+            <div className='navigation mt-5 flex justify-center'>
+              <Pagination
+                count={pagination.totalPages}
+                page={currentPage}
+                size={isMobile ? 'medium' : 'large'}
+                siblingCount={isMobile ? 0 : 1}
+                boundaryCount={isMobile ? 1 : 2}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

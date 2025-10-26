@@ -2,12 +2,16 @@ import { useClickOutside } from '@hooks/useClickOutside';
 import usePagination from '@hooks/usePagination';
 import TitleHeader from '@components/common/TitleHeader';
 import { useMediaQuery } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { STATUS_FILTER } from '@utils/data';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown, Edit, Search, Trash2, Users } from 'lucide-react';
+import { getAllCompaniesByAdmin } from '@apis/companies/company.api';
+import StatusTag from '@pages/recruiter/job-manager/components/StatusTag';
+import type { ICompanyByAdminResponse } from '@apis/companies/interfaces/company.interface';
+import TableRowSkeleton from '@pages/recruiter/job-manager/components/TableRowSkeleton';
 
 interface Props {}
 
@@ -34,6 +38,18 @@ const ManageCompanies: React.FC<Props> = ({}) => {
       status: ''
     }
   });
+
+  const page = searchParams.get('page') || 1;
+
+  // const { data, isLoading, isError, isSuccess, isFetching } = useQuery({
+  //   queryKey: ['getCompaniesByAdmin', currentPage],
+  //   queryFn: () => getAllCompaniesByAdmin(Number(page)),
+  //   select: (res) => ({
+  //     companies: res.data.data.data,
+  //     pagination: res.data.data.pagination
+  //   }),
+  //   staleTime: 1000 * 60 * 60
+  // });
 
   return (
     <div className='min-h-screen p-4 sm:p-6 lg:p-8'>

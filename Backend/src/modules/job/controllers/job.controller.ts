@@ -15,6 +15,7 @@ class JobController {
     this.update = this.update.bind(this);
     this.updateStatus = this.updateStatus.bind(this);
     this.delete = this.delete.bind(this);
+    this.deleteJobByAdmin = this.deleteJobByAdmin.bind(this);
     this.searchCompletion = this.searchCompletion.bind(this);
     this.searchJobsFilter = this.searchJobsFilter.bind(this);
     this.getAllForAdmin = this.getAllForAdmin.bind(this);

@@ -78,3 +78,21 @@ export interface IJobByRecruiterResponse {
   isDeleted: boolean;
   totalApply: number;
 }
+
+export interface IJobByAdminGetAllResponse {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+  jobRole: string;
+  minSalary: number;
+  maxSalary: number;
+  totalViews: number;
+  createdAt: string;
+  updatedAt: string | null;
+  isDeleted: boolean;
+  company: {
+    id: number;
+    name: string;
+  };
+}

@@ -51,6 +51,7 @@ async function fullSyncJobsToElasticsearch() {
       address: job.company.address ?? '',
       recruiter: job.postBy?.name ?? '',
       createdAt: job.createdAt.toISOString(),
+      updatedAt: job.updatedAt?.toISOString() ?? '',
       expirationDate: job.expirationDate ? job.expirationDate.toISOString() : undefined,
       activeDays: job.activeDays ?? undefined,
       isDeleted: job.isDeleted

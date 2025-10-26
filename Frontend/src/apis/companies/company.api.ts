@@ -9,3 +9,9 @@ export const getProfileCompany = async () => {
 };
 
 export const updateProfileCompany = async (company: IUpdateCompanyPayload) => {};
+
+export const getAllCompaniesByAdmin = async (page: number, limit: number = 5) => {
+  const data = await axiosInstance.get(`${API_PATHS.COMPANIES.GET_ALL_BY_ADMIN}?page=${page}&limit=${limit}`);
+
+  return data;
+};

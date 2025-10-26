@@ -40,7 +40,7 @@ jobRoute.patch(
   jobController.update
 );
 
+jobRoute.delete('/admin/:id', verify, allowRole('ADMIN'), jobController.deleteJobByAdmin);
 jobRoute.delete('/:id/:companyId', verify, allowRole('RECRUITER'), asyncWrapper(jobController.delete));
-jobRoute.delete('/admin/:id', verify, allowRole('ADMIN'), asyncWrapper(jobController.delete));
 
 export default jobRoute;
