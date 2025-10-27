@@ -87,7 +87,7 @@ const ManageJobs: React.FC<Props> = ({}) => {
       param.set('page', '1');
     }
 
-    setSearchParams(param);
+    setSearchParams(param, { replace: true });
   }, [searchParams, setSearchParams]);
 
   useEffect(() => {

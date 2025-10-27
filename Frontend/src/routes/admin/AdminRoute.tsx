@@ -10,6 +10,7 @@ const ManagePackages = lazy(() => import('@pages/admin/manage-packages'));
 const ManageOrders = lazy(() => import('@pages/admin/manage-orders'));
 const ManageUsers = lazy(() => import('@pages/admin/manage-users'));
 const ManageJobs = lazy(() => import('@pages/admin/manage-jobs'));
+const JobDetail = lazy(() => import('@pages/admin/job-detail'));
 
 const DashboardLayoutWithSuspense = withSuspense(DashboardLayout);
 const ManageCompaniesWithSuspense = withSuspenseDashboard(ManageCompanies);
@@ -18,6 +19,7 @@ const ManagePackagesWithSuspense = withSuspenseDashboard(ManagePackages);
 const ManageOrdersWithSuspense = withSuspenseDashboard(ManageOrders);
 const ManageUsersWithSuspense = withSuspenseDashboard(ManageUsers);
 const ManageJobsWithSuspense = withSuspenseDashboard(ManageJobs);
+const JobDetailWithSuspense = withSuspenseDashboard(JobDetail);
 
 export default function AdminRoute() {
   return (
@@ -30,6 +32,7 @@ export default function AdminRoute() {
         <Route path='manage-orders' element={<ManageOrdersWithSuspense />} />
         <Route path='manage-users' element={<ManageUsersWithSuspense />} />
         <Route path='manage-jobs' element={<ManageJobsWithSuspense />} />
+        <Route path='job-detail' element={<JobDetailWithSuspense />} />
       </Route>
     </Routes>
   );

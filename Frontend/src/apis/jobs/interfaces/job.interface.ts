@@ -96,3 +96,36 @@ export interface IJobByAdminGetAllResponse {
     name: string;
   };
 }
+
+export interface IJobInfoByAdmin {
+  id: number;
+  title: string;
+  description: string;
+  jobRoleName: string;
+  minSalary: number;
+  maxSalary: number | null;
+  benefits: string;
+  requirements: string;
+  createdAt: Date;
+  updatedAt?: Date | null;
+  isDeleted: boolean;
+  status: JobStatus;
+
+  jobSkills: {
+    skill: {
+      name: string;
+    };
+  }[];
+
+  company: {
+    id: number;
+    name: string;
+    avatarUrl?: string | null;
+  };
+
+  postBy: {
+    id: number;
+    name?: string | null;
+    email: string;
+  };
+}
