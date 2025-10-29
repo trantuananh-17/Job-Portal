@@ -30,7 +30,8 @@ class JobRepository extends BaseRepository<Job> implements IJobRepository {
         requirements: true,
         createdAt: true,
         updatedAt: true,
-
+        status: true,
+        isDeleted: true,
         jobSkills: {
           select: {
             skill: {

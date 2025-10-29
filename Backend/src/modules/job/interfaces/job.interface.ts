@@ -85,6 +85,8 @@ export interface IJobByAdmin {
   requirements: string;
   createdAt: Date;
   updatedAt?: Date | null;
+  status: string;
+  isDeleted: boolean;
 
   jobSkills: {
     skill: {

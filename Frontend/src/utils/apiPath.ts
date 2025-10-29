@@ -15,10 +15,11 @@ export const API_PATHS = {
     GET_JOB_BY_ID_FOR_CANDIDATE: 'api/v1/jobs',
     GET_JOB_BY_ID_FOR_RECRUITER: 'api/v1/jobs/recruiter',
     GET_JOBS_BY_ADMIN: 'api/v1/jobs/admin/get-all',
-    GET_JOB_BY_ADMIN: 'api/v1/jobs/admin/',
+    GET_JOB_BY_ADMIN: 'api/v1/jobs/admin',
     SEARCH_JOBS_FILTER: 'api/v1/jobs/es/search',
     CREATE_JOB: 'api/v1/jobs',
     UPDATE_JOB: 'api/v1/jobs',
+    UPDATE_STATUS: 'api/v1/jobs',
     DELETE_JOB_BY_RECRUITER: 'api/v1/jobs',
     DELETE_JOB_BY_ADMIN: 'api/v1/jobs/admin'
   },

@@ -402,7 +402,7 @@ const PostJob = () => {
       )}
       {isPreview && previewData && (
         <Suspense fallback={<LoadingSpinner />}>
-          <JobPreview formData={previewData} onClick={() => setIsPreview(false)} />
+          <JobPreview job={previewData} onClick={() => setIsPreview(false)} />
         </Suspense>
       )}
     </div>

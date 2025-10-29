@@ -65,7 +65,7 @@ const ManageJobs: React.FC<Props> = ({}) => {
     mutationFn: ({ jobId }: { jobId: number }) => deleteJobByAdminApi(jobId),
     onSuccess: (res) => {
       toast.success(res.data.message);
-      queryClient.invalidateQueries({ queryKey: ['getJobsByAdmin'] });
+      queryClient.invalidateQueries({ queryKey: ['getJobsByAdmin', status, currentPage, q] });
     },
     onError: (err) => {
       if (axios.isAxiosError(err)) {
@@ -228,6 +228,7 @@ const ManageJobs: React.FC<Props> = ({}) => {
                   </>
                 )}
                 {!isLoading &&
+                  !isFetching &&
                   isSuccess &&
                   data?.data?.map((job: IJobByAdminGetAllResponse) => (
                     <tr
@@ -275,10 +276,10 @@ const ManageJobs: React.FC<Props> = ({}) => {
 
                       <td className='flex gap-2 px-6 py-4'>
                         <button
-                          disabled={job.isDeleted || job.status === 'EXPIRED' || job.status === 'REJECT'}
+                          disabled={job.status === 'EXPIRED'}
                           className='text-blue-500 transition-all duration-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-blue-500'
                         >
-                          <Edit className='h-5 w-5' onClick={() => navigate(`/recruiter/edit-job/${job.id}`)} />
+                          <Edit className='h-5 w-5' onClick={() => navigate(`/admin/job-detail/${job.id}`)} />
                         </button>
 
                         <button

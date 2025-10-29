@@ -48,6 +48,12 @@ export const getJobsByAdmin = async (page: number, limit: number = 5, status: Jo
   return response;
 };
 
+export const getJobByAdmin = async (id: number) => {
+  const response = await axiosInstance.get(`${API_PATHS.JOBS.GET_JOB_BY_ADMIN}/${id}`);
+
+  return response;
+};
+
 export const createJobApi = async (payload: IJobPayloadCreate) => {
   const response = await axiosInstance.post(`${API_PATHS.JOBS.CREATE_JOB}`, payload);
 
@@ -60,6 +66,12 @@ export const updateJobApi = async (payload: IJobPayloadUpdate, companyId: number
   const response = await axiosInstance.patch(`${API_PATHS.JOBS.UPDATE_JOB}/${jobId}/${companyId}`, payload);
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  return response;
+};
+
+export const updateStatusJobApi = async (jobId: number, status: JobStatus) => {
+  const response = await axiosInstance.patch(`${API_PATHS.JOBS.UPDATE_JOB}/${jobId}/status`, { status });
 
   return response;
 };

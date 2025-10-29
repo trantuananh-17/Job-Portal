@@ -32,7 +32,7 @@ export default function AdminRoute() {
         <Route path='manage-orders' element={<ManageOrdersWithSuspense />} />
         <Route path='manage-users' element={<ManageUsersWithSuspense />} />
         <Route path='manage-jobs' element={<ManageJobsWithSuspense />} />
-        <Route path='job-detail' element={<JobDetailWithSuspense />} />
+        <Route path='job-detail/:id' element={<JobDetailWithSuspense />} />
       </Route>
     </Routes>
   );
