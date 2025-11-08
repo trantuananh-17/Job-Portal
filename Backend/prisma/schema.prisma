@@ -23,6 +23,7 @@ model User {
   candidateProfile CandidateProfile?
   isActive Boolean @default(true)
   isVerified Boolean @default(true)
+  avatar String?
 
   company Company?
   jobs Job[]

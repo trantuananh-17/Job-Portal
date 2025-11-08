@@ -1,7 +1,7 @@
 import { useClickOutside } from '@hooks/useClickOutside';
 import usePagination from '@hooks/usePagination';
 import TitleHeader from '@components/common/TitleHeader';
-import { useMediaQuery } from '@mui/material';
+import { Button, useMediaQuery } from '@mui/material';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -12,6 +12,7 @@ import { getAllCompaniesByAdmin } from '@apis/companies/company.api';
 import StatusTag from '@pages/recruiter/job-manager/components/StatusTag';
 import type { ICompanyByAdminResponse } from '@apis/companies/interfaces/company.interface';
 import TableRowSkeleton from '@pages/recruiter/job-manager/components/TableRowSkeleton';
+import CompanyPreview from '../company-preview';
 
 interface Props {}
 
@@ -24,6 +25,8 @@ const ManageCompanies: React.FC<Props> = ({}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const currentPage = Number(searchParams.get('page')) || 1;
   useClickOutside(containerRef, () => setIsOpen(false));
+  const [open, setOpen] = useState(false); // đóng mở model
+  const [companyId, setCompanyId] = useState<string | null>(null);
 
   const { pagination, jumpToPage, setPagination } = usePagination({
     totalDocs: 0,
@@ -51,6 +54,11 @@ const ManageCompanies: React.FC<Props> = ({}) => {
   //   staleTime: 1000 * 60 * 60
   // });
 
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => setOpen(false);
+
   return (
     <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
       {/* Header */}
@@ -62,6 +70,9 @@ const ManageCompanies: React.FC<Props> = ({}) => {
           />
         </div>
       </div>
+
+      <Button onClick={handleOpen}>Open Child Modal</Button>
+      <CompanyPreview open={open} onClose={handleClose} companyId={companyId} />
 
       <div className='mb-8 rounded-2xl border border-white/20 bg-white/80 p-6 shadow-xl shadow-black/5 backdrop-blur-sm'>
         <div className='xs:flex-row flex flex-col gap-4'>

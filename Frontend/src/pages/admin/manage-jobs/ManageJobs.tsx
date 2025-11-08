@@ -18,6 +18,7 @@ import ErrorState from '@components/common/ErrorState';
 import EmptyTable from '@components/common/EmptyTable';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import JobDetail from '../job-detail';
 
 interface Props {}
 
@@ -29,6 +30,8 @@ const ManageJobs: React.FC<Props> = ({}) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const currentPage = Number(searchParams.get('page')) || 1;
+  const [open, setOpen] = useState(false); // đóng mở model
+  const [jobId, setjobId] = useState<number | null>(null);
   useClickOutside(containerRef, () => setIsOpen(false));
 
   const { pagination, jumpToPage, setPagination } = usePagination({
@@ -44,6 +47,8 @@ const ManageJobs: React.FC<Props> = ({}) => {
       status: ''
     }
   });
+
+  const handleClose = () => setOpen(false);
 
   const page = searchParams.get('page') || 1;
   const status = searchParams.get('status') || 'all';
@@ -279,7 +284,13 @@ const ManageJobs: React.FC<Props> = ({}) => {
                           disabled={job.status === 'EXPIRED'}
                           className='text-blue-500 transition-all duration-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-blue-500'
                         >
-                          <Edit className='h-5 w-5' onClick={() => navigate(`/admin/job-detail/${job.id}`)} />
+                          <Edit
+                            className='h-5 w-5'
+                            onClick={() => {
+                              setjobId(job.id);
+                              setOpen(true);
+                            }}
+                          />
                         </button>
 
                         <button
@@ -316,6 +327,7 @@ const ManageJobs: React.FC<Props> = ({}) => {
           )}
         </div>
       </div>
+      <JobDetail open={open} onClose={handleClose} jobId={jobId} />
     </div>
   );
 };
