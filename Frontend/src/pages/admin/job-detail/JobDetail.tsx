@@ -68,7 +68,6 @@ const JobDetail: React.FC<Props> = ({ jobId, open, onClose }) => {
     enabled: !!jobId,
     staleTime: 1000 * 60 * 60
   });
-  console.log(jobId);
 
   const queryClient = useQueryClient();
 
