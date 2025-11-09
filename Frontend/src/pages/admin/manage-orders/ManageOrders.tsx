@@ -1,14 +1,79 @@
+import { convertPrice } from '@utils/formatPrice';
+import type { IOrder } from '@apis/orders/interfaces/order.interface';
 import TitleHeader from '@components/common/TitleHeader';
 import { useClickOutside } from '@hooks/useClickOutside';
 import usePagination from '@hooks/usePagination';
 import { useMediaQuery } from '@mui/material';
 import { STATUS_FILTER } from '@utils/data';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown, Edit, Eye, Mail, Search, Trash2, User } from 'lucide-react';
+import moment from 'moment';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import TagOrder from './components/TagOrder';
+import OrderPreview from './components/OrderPreview';
 
 interface Props {}
+
+const orders: IOrder[] = [
+  {
+    id: 1,
+    recruiter: {
+      id: 101,
+      name: 'Nguyễn Văn A',
+      email: 'a@gmail.com',
+      role: 'RECRUITER'
+    },
+    package: {
+      id: 1,
+      label: 'Gói Cơ Bản',
+      price: 199000,
+      jobPostLimit: 5,
+      isActive: true
+    },
+    totalPrice: 199000,
+    status: 'SUCCESS',
+    orderDate: '2025-11-01T08:30:00Z'
+  },
+  {
+    id: 2,
+    recruiter: {
+      id: 102,
+      name: 'Trần Thị B',
+      email: 'b@gmail.com',
+      role: 'RECRUITER'
+    },
+    package: {
+      id: 2,
+      label: 'Gói Nâng Cao',
+      price: 499000,
+      jobPostLimit: 15,
+      isActive: true
+    },
+    totalPrice: 499000,
+    status: 'PENDING',
+    orderDate: '2025-11-05T12:45:00Z'
+  },
+  {
+    id: 3,
+    recruiter: {
+      id: 103,
+      name: 'Lê Hoàng C',
+      email: 'c@gmail.com',
+      role: 'RECRUITER'
+    },
+    package: {
+      id: 3,
+      label: 'Gói Doanh Nghiệp',
+      price: 999000,
+      jobPostLimit: 50,
+      isActive: true
+    },
+    totalPrice: 999000,
+    status: 'FAILED',
+    orderDate: '2025-11-07T10:15:00Z'
+  }
+];
 
 const ManageOrders: React.FC<Props> = ({}) => {
   const isMobile = useMediaQuery('(max-width:640px)');
@@ -18,6 +83,8 @@ const ManageOrders: React.FC<Props> = ({}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const currentPage = Number(searchParams.get('page')) || 1;
   useClickOutside(containerRef, () => setIsOpen(false));
+  const [open, setOpen] = useState(false);
+  const [order, setOrder] = useState<IOrder | null>(null);
 
   const { pagination, jumpToPage, setPagination } = usePagination({
     totalDocs: 0,
@@ -36,12 +103,9 @@ const ManageOrders: React.FC<Props> = ({}) => {
   return (
     <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
       {/* Header */}
-      <div className='mb-8 px-4'>
+      <div className='mb-4 px-4'>
         <div className='flex flex-row items-center justify-between'>
-          <TitleHeader
-            title='Companies Management'
-            subtitle='Review and approve all registered companies in the system'
-          />
+          <TitleHeader title='Quản lý đơn hàng' subtitle='Quản lý danh sách thanh toán gói dịch vụ của người dùng' />
         </div>
       </div>
 
@@ -121,30 +185,80 @@ const ManageOrders: React.FC<Props> = ({}) => {
             <table className='w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
               <thead className='sm:text-md bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
-                  <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Recruiter
+                  <th scope='col' className='min-w-[150px] px-6 py-3 whitespace-nowrap'>
+                    Nhà tuyển dụng
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Package
+                    Gói dịch vụ
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Price
+                    Giá
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Status
+                    Trạng thái
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Order Date
+                    Ngày đăng ký
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Actions
+                    Hành động
                   </th>
                 </tr>
               </thead>
+              <tbody>
+                {orders.map((order: IOrder) => (
+                  <tr
+                    key={order.id}
+                    className='border-b border-gray-200 odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800'
+                  >
+                    <th
+                      scope='row'
+                      className='text-md max-w-[180px] truncate overflow-hidden px-6 py-4 font-semibold text-ellipsis whitespace-nowrap text-gray-900 dark:text-white'
+                    >
+                      <div className='flex items-center gap-3'>
+                        <div>
+                          <div className='flex items-center gap-1 text-sm font-medium'>
+                            <User className='h-4 w-4' />
+                            {order.recruiter.name}
+                          </div>
+                          <div className='flex items-center gap-1 text-sm font-extralight text-gray-500'>
+                            <Mail className='h-4 w-4' />
+                            {order.recruiter.email}
+                          </div>
+                        </div>
+                      </div>
+                    </th>
+
+                    <td className='px-6 py-4 whitespace-nowrap'>{order.package.label}</td>
+                    <td className='px-6 py-4'>{convertPrice(order.totalPrice)}</td>
+                    <td className='px-6 py-4'>
+                      <TagOrder status={order.status} />
+                    </td>
+                    <td className='px-6 py-4'>
+                      <div className='text-sm'>{moment(order.orderDate).format('DD/MM/yyyy')}</div>
+                    </td>
+
+                    <td className=''>
+                      <div className='flex gap-2 px-6 py-4'>
+                        <button className='text-blue-500 transition-all duration-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-blue-500'>
+                          <Eye
+                            className='h-5 w-5'
+                            onClick={() => {
+                              setOpen(true);
+                              setOrder(order);
+                            }}
+                          />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>
       </div>
+      {open && <OrderPreview open={open} orderInfo={order} onClose={() => setOpen(false)} />}
     </div>
   );
 };
