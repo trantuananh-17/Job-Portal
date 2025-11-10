@@ -1,25 +1,69 @@
+import type { ICreateAndUpdatePackage, IPackage } from '@apis/packages/interfaces/package.interface';
+import { createPackageApi, updatePackageApi } from '@apis/packages/package.api';
 import TitleHeader from '@components/common/TitleHeader';
 import { useClickOutside } from '@hooks/useClickOutside';
 import usePagination from '@hooks/usePagination';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { STATUS_FILTER } from '@utils/data';
-import { useMediaQuery } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown, Edit, Plus, Search } from 'lucide-react';
+import moment from 'moment';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import CreateAndEditPackage from './components/CreateAndEditPackage';
+import TagActive from './components/TagActive';
 
 interface Props {}
 
+export const packages: IPackage[] = [
+  {
+    id: 1,
+    label: 'Gói Cơ Bản',
+    price: 0,
+    jobPostLimit: 1,
+    isActive: true,
+    createdAt: '2025-01-10T08:00:00Z'
+  },
+  {
+    id: 2,
+    label: 'Gói Tiêu Chuẩn',
+    price: 199000,
+    jobPostLimit: 5,
+    isActive: true,
+    createdAt: '2025-01-15T10:30:00Z'
+  },
+  {
+    id: 3,
+    label: 'Gói Cao Cấp',
+    price: 499000,
+    jobPostLimit: 15,
+    isActive: true,
+    createdAt: '2025-02-01T09:15:00Z'
+  },
+  {
+    id: 4,
+    label: 'Gói Doanh Nghiệp',
+    price: 999000,
+    jobPostLimit: 50,
+    isActive: false,
+    createdAt: '2025-02-20T11:45:00Z'
+  }
+];
+
 const ManagePackages: React.FC<Props> = ({}) => {
   const queryClient = useQueryClient();
-  const isMobile = useMediaQuery('(max-width:640px)');
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const navigate = useNavigate();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const currentPage = Number(searchParams.get('page')) || 1;
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
   useClickOutside(containerRef, () => setIsOpen(false));
+
+  const [open, setOpen] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [packageInfo, setPackageInfo] = useState<IPackage | null>(null);
 
   const { pagination, jumpToPage, setPagination } = usePagination({
     totalDocs: 0,
@@ -35,15 +79,42 @@ const ManagePackages: React.FC<Props> = ({}) => {
     }
   });
 
+  const createMutation = useMutation({
+    mutationFn: (data: ICreateAndUpdatePackage) => createPackageApi(data),
+    onSuccess: () => {
+      toast.success('Tạo gói dịch vụ thành công!');
+    },
+    onError: () => {
+      toast.error('Có lỗi xảy ra khi tạo gói!');
+    }
+  });
+  const updateMutation = useMutation({
+    mutationFn: ({ data, id }: { data: ICreateAndUpdatePackage; id: number }) => updatePackageApi(data, id),
+    onSuccess: () => {
+      toast.success('Cập nhật gói dịch vụ thành công!');
+    },
+    onError: () => {
+      toast.error('Có lỗi xảy ra khi cập nhật!');
+    }
+  });
+
   return (
     <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
       {/* Header */}
-      <div className='mb-8 px-4'>
+      <div className='mb-4 px-4'>
         <div className='flex flex-row items-center justify-between'>
-          <TitleHeader
-            title='Companies Management'
-            subtitle='Review and approve all registered companies in the system'
-          />
+          <TitleHeader title='Quản lý gói dịch vụ' subtitle='Quản lý tất cả dịch vụ trong hệ thống' />
+          <button
+            className='inline-flex transform items-center rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-semibold whitespace-nowrap text-white shadow-lg shadow-blue-500/25 transition-all duration-300 hover:-translate-y-0.5 hover:from-blue-700 hover:to-blue-900'
+            onClick={() => {
+              setEdit(false);
+              setPackageInfo(null);
+              setOpen(true);
+            }}
+          >
+            <Plus className='mr-2 h-5 w-5' />
+            Thêm gói dịch vụ
+          </button>
         </div>
       </div>
 
@@ -123,33 +194,97 @@ const ManagePackages: React.FC<Props> = ({}) => {
             <table className='w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
               <thead className='sm:text-md bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
-                  <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Name
+                  <th scope='col' className='min-w-[200px] px-6 py-3 whitespace-nowrap'>
+                    Tên gói dịch vụ
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Price
+                    Giá
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Job Post Limit
+                    Số bài đăng
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Active
+                    Trạng thái
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Search
+                    Ngày tạo
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Subscriptions
-                  </th>
-                  <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Actions
+                    Hành động
                   </th>
                 </tr>
               </thead>
+              <tbody>
+                {packages.map((pack: IPackage) => (
+                  <tr
+                    key={pack.id}
+                    className='border-b border-gray-200 odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800'
+                  >
+                    <th
+                      scope='row'
+                      className='text-md max-w-[180px] truncate overflow-hidden px-6 py-4 font-semibold text-ellipsis whitespace-nowrap text-gray-900 dark:text-white'
+                    >
+                      <div>
+                        <div className='font-medium'>{pack.label}</div>
+                      </div>
+                    </th>
+                    <td className='min-w-[100px] truncate px-6 py-4 text-ellipsis whitespace-nowrap'>{pack.price}</td>
+                    <td className='px-6 py-4'>{pack.jobPostLimit}</td>
+                    <td className='px-6 py-4'>
+                      <TagActive isActive={pack.isActive} />
+                    </td>
+                    <td className='px-6 py-4'>
+                      <div className='text-sm'>{moment(pack.createdAt).format('DD/MM/yyyy')}</div>
+                    </td>
+
+                    <td className=''>
+                      <div className='flex gap-2 px-6 py-4'>
+                        <button className='text-blue-500 transition-all duration-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-blue-500'>
+                          <Edit
+                            className='h-5 w-5'
+                            onClick={() => {
+                              setPackageInfo(pack);
+                              setOpen(true);
+                              setEdit(true);
+                            }}
+                          />
+                        </button>
+
+                        {/* <button
+                          onClick={() => {
+                            if (window.confirm('Bạn có chắc chắn muốn xoá công việc này không?')) {
+                            }
+                          }}
+                          className='text-red-500 transition-all duration-200 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-red-500'
+                        >
+                          <Trash2 className='h-5 w-5' />
+                        </button> */}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>
       </div>
+
+      {open && (
+        <CreateAndEditPackage
+          defaultValues={packageInfo}
+          isEdit={edit}
+          isLoading={false}
+          onClose={() => setOpen(false)}
+          open={open}
+          onSubmit={(formData) => {
+            if (edit && packageInfo) {
+              updateMutation.mutate({ data: formData, id: packageInfo.id });
+            } else {
+              createMutation.mutate(formData);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -11,11 +11,11 @@ const NAVIGATION_MENU = [
 
 const ADMIN_NAVIGATION_MENU = [
   { id: 'admin/admin-dashboard', name: 'Dashboard', icon: LayoutDashboard },
-  { id: 'admin/manage-jobs', name: 'Manage Jobs', icon: LayoutDashboard },
-  { id: 'admin/manage-companies', name: 'Manage Companies ', icon: Building2 },
-  { id: 'admin/manage-packages', name: 'Manage Package', icon: Package },
-  { id: 'admin/manage-orders', name: 'Manage Order', icon: FileText },
-  { id: 'admin/manage-users', name: 'Manage Users', icon: Users2 }
+  { id: 'admin/manage-jobs', name: 'Quản lý công việc', icon: LayoutDashboard },
+  { id: 'admin/manage-companies', name: 'Quản lý công ty ', icon: Building2 },
+  { id: 'admin/manage-users', name: 'Quản lý người dùng ', icon: Users2 },
+  { id: 'admin/manage-packages', name: 'Quản lý dịch vụ', icon: Package },
+  { id: 'admin/manage-orders', name: 'Quản lý đơn hàng', icon: FileText }
 ];
 
 const RECRUITER_DASHBOARD_ACTION = [

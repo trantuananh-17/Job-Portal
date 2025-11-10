@@ -1,6 +1,6 @@
+import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
+import { BriefcaseBusiness, MailCheck, User, Users } from 'lucide-react';
 import React from 'react';
-import { Box, Card, CardContent, Grid, Typography, useTheme } from '@mui/material';
-import { Users, BriefcaseBusiness, User, MailCheck } from 'lucide-react';
 
 interface Props {
   totalUsers: number;

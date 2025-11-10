@@ -12,7 +12,7 @@ import { getAllCompaniesByAdmin } from '@apis/companies/company.api';
 import StatusTag from '@pages/recruiter/job-manager/components/StatusTag';
 import type { ICompanyByAdminResponse } from '@apis/companies/interfaces/company.interface';
 import TableRowSkeleton from '@pages/recruiter/job-manager/components/TableRowSkeleton';
-import CompanyPreview from '../company-preview';
+import CompanyPreview from './components/CompanyPreview';
 
 interface Props {}
 

@@ -18,7 +18,7 @@ import ErrorState from '@components/common/ErrorState';
 import EmptyTable from '@components/common/EmptyTable';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import JobDetail from '../job-detail';
+import JobDetail from './components/JobDetail';
 
 interface Props {}
 

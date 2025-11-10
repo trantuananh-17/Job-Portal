@@ -1,4 +1,4 @@
-import type { IPackage } from '@apis/packages/package.interface';
+import type { IPackage } from '@/apis/packages/interfaces/package.interface';
 import type { IUser } from '@apis/users/interfaces/user.interface';
 
 export interface IOrder {
