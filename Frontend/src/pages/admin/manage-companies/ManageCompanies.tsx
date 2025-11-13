@@ -7,14 +7,78 @@ import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { STATUS_FILTER } from '@utils/data';
-import { ChevronDown, Edit, Search, Trash2, Users } from 'lucide-react';
+import { ChevronDown, Edit, Mail, Search, Trash2, User, Users } from 'lucide-react';
 import { getAllCompaniesByAdmin } from '@apis/companies/company.api';
-import StatusTag from '@pages/recruiter/job-manager/components/StatusTag';
 import type { ICompanyByAdminResponse } from '@apis/companies/interfaces/company.interface';
 import TableRowSkeleton from '@pages/recruiter/job-manager/components/TableRowSkeleton';
 import CompanyPreview from './components/CompanyPreview';
+import moment from 'moment';
+import TagStatus from './components/TagStatus';
 
 interface Props {}
+
+export const companyByAdminData: ICompanyByAdminResponse[] = [
+  {
+    id: 1,
+    name: 'Công ty TNHH ABC Software',
+    avatarUrl: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg',
+    emailCompany: 'contact@abcsoftware.vn',
+    status: 'ACTIVE',
+    isDeleted: false,
+    createdAt: new Date('2024-03-15T09:00:00Z'),
+    user: {
+      id: 11,
+      avatar: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg',
+      email: 'nguyenvana@gmail.com',
+      name: 'Nguyễn Văn A'
+    }
+  },
+  {
+    id: 2,
+    name: 'Công ty Cổ phần GreenHouse',
+    avatarUrl: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg',
+    emailCompany: 'info@greenhouse.com.vn',
+    status: 'PENDING',
+    isDeleted: false,
+    createdAt: new Date('2024-04-10T10:30:00Z'),
+    user: {
+      id: 12,
+      avatar: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg',
+      email: 'bichngoc.tran@greenhouse.com.vn',
+      name: 'Trần Bích Ngọc'
+    }
+  },
+  {
+    id: 3,
+    name: 'Công ty TNHH Thực phẩm An Nhiên',
+    avatarUrl: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg',
+    emailCompany: 'support@annhienfoods.vn',
+    status: 'REJECT',
+    isDeleted: false,
+    createdAt: new Date('2024-02-20T08:45:00Z'),
+    user: {
+      id: 13,
+      avatar: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg',
+      email: 'leminhquan@annhienfoods.vn',
+      name: 'Lê Minh Quân'
+    }
+  },
+  {
+    id: 4,
+    name: 'Công ty TNHH Zentech Solutions',
+    avatarUrl: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg',
+    emailCompany: 'contact@zentech.vn',
+    status: 'INACTIVE',
+    isDeleted: true,
+    createdAt: new Date('2024-01-05T11:15:00Z'),
+    user: {
+      id: 14,
+      avatar: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg',
+      email: 'phamthuha@zentech.vn',
+      name: 'Phạm Thu Hà'
+    }
+  }
+];
 
 const ManageCompanies: React.FC<Props> = ({}) => {
   const queryClient = useQueryClient();
@@ -150,26 +214,103 @@ const ManageCompanies: React.FC<Props> = ({}) => {
             <table className='w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
               <thead className='sm:text-md bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
-                  <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Company
+                  <th scope='col' className='min-w-[300px] px-6 py-3 whitespace-nowrap'>
+                    Công ty
+                  </th>
+                  <th scope='col' className='min-w-[250px] px-6 py-3 whitespace-nowrap'>
+                    Nhà tuyển dụng
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Post By
+                    Ngày đăng ký
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Created At
+                    Trạng thái
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Updated At
-                  </th>
-                  <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Approved
-                  </th>
-                  <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Actions
+                    Hành động
                   </th>
                 </tr>
               </thead>
+              <tbody>
+                {companyByAdminData.map((company: ICompanyByAdminResponse) => (
+                  <tr
+                    key={company.id}
+                    className='border-b border-gray-200 odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800'
+                  >
+                    <td
+                      scope='row'
+                      className='text-md max-w-[180px] truncate overflow-hidden px-6 py-4 font-semibold text-ellipsis whitespace-nowrap text-gray-900 dark:text-white'
+                    >
+                      <div className='flex items-center gap-3'>
+                        {company.avatarUrl ? (
+                          <img
+                            src={company.avatarUrl}
+                            alt='avatar'
+                            className='h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12'
+                          />
+                        ) : (
+                          <div className='bg-primary flex h-10 w-10 items-center justify-center rounded-full sm:h-12 sm:w-12'>
+                            <span className='text-sm font-semibold text-white'>
+                              {company.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
+                        <div>
+                          <p className='truncate font-medium' title='Công ty TNHH Zentech Solutions'>
+                            Công ty TNHH Zentech Solutions
+                          </p>
+                          <div className='flex items-center gap-1 text-sm font-extralight text-gray-500'>
+                            <Mail className='h-4 w-4' />
+                            {company.emailCompany}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td
+                      scope='row'
+                      className='text-md max-w-[180px] truncate overflow-hidden px-6 py-4 font-semibold text-ellipsis whitespace-nowrap text-gray-900 dark:text-white'
+                    >
+                      <div className='flex items-center gap-3'>
+                        <div>
+                          <div className='flex items-center gap-1 text-sm font-medium'>
+                            <User className='h-4 w-4' />
+                            {company.user.name}
+                          </div>
+                          <div className='flex items-center gap-1 text-sm font-extralight text-gray-500'>
+                            <Mail className='h-4 w-4' />
+                            <p className='max-w-[300px] truncate font-medium' title={company.user.email}>
+                              {company.user.email}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className='px-6 py-4'>
+                      <div className='text-sm'>{moment(company.createdAt).format('DD/MM/yyyy')}</div>
+                    </td>
+                    <td className='px-6 py-4'>
+                      <TagStatus status={company.status} />
+                    </td>
+                    <td className=''>
+                      <div className='flex gap-2 px-6 py-4'>
+                        <button className='text-blue-500 transition-all duration-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-blue-500'>
+                          <Edit className='h-5 w-5' onClick={() => {}} />
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            if (window.confirm('Bạn có chắc chắn muốn xoá công việc này không?')) {
+                            }
+                          }}
+                          className='text-red-500 transition-all duration-200 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-red-500'
+                        >
+                          <Trash2 className='h-5 w-5' />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>

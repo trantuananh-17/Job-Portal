@@ -37,12 +37,14 @@ export interface INewCompanyData {
 export interface ICompanyByAdminResponse {
   id: number;
   name: string;
-  status?: string;
+  avatarUrl: string;
+  emailCompany: string;
+  status: string;
+  isDeleted: boolean;
   createdAt: Date;
-  updatedAt: Date | null;
-  isApproved?: boolean;
   user: {
     id: number;
+    avatar: string;
     email: string;
     name: string | null;
   };

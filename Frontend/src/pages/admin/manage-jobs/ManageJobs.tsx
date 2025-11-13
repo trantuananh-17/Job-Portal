@@ -202,25 +202,22 @@ const ManageJobs: React.FC<Props> = ({}) => {
               <thead className='sm:text-md bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Job Title
+                    Tên công việc
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Company
+                    Công ty
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Status
+                    Trạng thái
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Created At
-                  </th>
-                  <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Updated At
+                    Ngày tạo
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
                     Deleted
                   </th>
                   <th scope='col' className='px-6 py-3 whitespace-nowrap'>
-                    Actions
+                    Hành động
                   </th>
                 </tr>
               </thead>
@@ -255,16 +252,6 @@ const ManageJobs: React.FC<Props> = ({}) => {
                       <td className='px-6 py-4'>
                         <div className='text-sm'>{moment(job.createdAt).format('HH:mm:ss')}</div>
                         <div className='text-sm'>{moment(job.createdAt).format('DD/MM/YYYY')}</div>
-                      </td>
-                      <td className='px-6 py-4'>
-                        {job.updatedAt ? (
-                          <div className='text-sm'>
-                            <div>{moment(job.updatedAt).format('HH:mm:ss')}</div>
-                            <div className='text-gray-500'>{moment(job.updatedAt).format('DD/MM/YYYY')}</div>
-                          </div>
-                        ) : (
-                          '-'
-                        )}
                       </td>
                       <td className='px-6 py-4'>
                         <span

@@ -29,15 +29,14 @@ const company = {
   isApproved: true,
   mapLink: 'https://maps.app.goo.gl/f6JQ4oZwCuWbWX4Jz7',
   address: 'Nhổn, Bắc Từ Liêm, Hà Nội',
-  avatarUrl:
-    'https://1.bp.blogspot.com/-wqyp1BQ5kZI/YR4BAmmC3tI/AAAAAAAAAUs/lt3tBh9KV0IykYQd28iX8gS_A-A9eRzuwCLcBGAsYHQ/s400-c/anh-sex-0821-135751-001.jpg',
+  avatarUrl: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg',
   createdAt: '2025-10-20T10:58:47.614Z',
   updatedAt: '2025-10-21T13:24:23.033Z',
   user: {
     id: 1,
     name: 'Nguyễn Văn A',
     email: 'abc@gmail.com',
-    avatar: 'https://animephoto.net/wp-content/uploads/2025/08/phim-sex-pi-tien.jpg'
+    avatar: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg'
   }
 };
 
