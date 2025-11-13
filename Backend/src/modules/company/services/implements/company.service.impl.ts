@@ -3,7 +3,8 @@ import {
   ICompany,
   ICompanyApporvedMessage,
   ICompanyByAdminResponse,
-  ICompanyInfoResponse
+  ICompanyInfoResponse,
+  IMyCompany
 } from '../../interfaces/company.interface';
 import { ICompanyService } from '../company.service';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
@@ -40,7 +41,7 @@ class CompanyService implements ICompanyService {
     };
   }
 
-  public async getMyCompany(userId: number): Promise<Company | null> {
+  public async getMyCompany(userId: number): Promise<IMyCompany | null> {
     const company = await this.companyRepository.getMyCompany(userId);
 
     if (!company) {
@@ -66,44 +67,6 @@ class CompanyService implements ICompanyService {
     }
 
     return company;
-  }
-
-  public async getAllPagination({ page, limit, filter }: any): Promise<IPaginatedResult<Company>> {
-    const { data, totalCounts } = await getPaginationAndFilters({
-      page,
-      limit,
-      filter,
-      filterFields: ['name', 'description'],
-      entity: 'company',
-      additionalCondition: { isApproved: true }
-    });
-
-    return { data, totalCounts };
-  }
-
-  public async getAllPaginationForAdmin({ page, limit, filter }: any): Promise<IPaginatedResult<Company>> {
-    const { data, totalCounts } = await getPaginationAndFilters({
-      page,
-      limit,
-      filter,
-      filterFields: ['name', 'description'],
-      entity: 'company'
-    });
-
-    return { data, totalCounts };
-  }
-
-  public async getMyCompanies({ page, limit, filter }: any, userId: number): Promise<IPaginatedResult<Company>> {
-    const { data, totalCounts } = await getPaginationAndFilters({
-      page,
-      limit,
-      filter,
-      filterFields: ['name', 'description'],
-      entity: 'company',
-      additionalCondition: { userId }
-    });
-
-    return { data, totalCounts };
   }
 
   public async getOneAdmin(id: number): Promise<ICompanyByAdminResponse | null> {
@@ -132,20 +95,21 @@ class CompanyService implements ICompanyService {
     return await this.companyRepository.updateCompany(id, requestBody, userId);
   }
 
-  public async approved(id: number, isApproved: boolean): Promise<ICompanyInfoResponse> {
+  // Xóa mềm company
+  public async updateDeleted(id: number, isDeleted: boolean): Promise<ICompanyInfoResponse> {
     await this.getOneAdmin(id);
 
-    const approvedCompany = await this.companyRepository.updateApproved(id, isApproved);
+    const deletedCompany = await this.companyRepository.updateDeleted(id, isDeleted);
 
-    if (approvedCompany.isApproved === true) {
+    if (deletedCompany.isDeleted === true) {
       const messageDetails: ICompanyApporvedMessage = {
-        companyName: approvedCompany.name,
-        username: approvedCompany.user.name || undefined,
+        companyName: deletedCompany.name,
+        username: deletedCompany.user.name || undefined,
         createdAt: `${new Date()}`,
-        receiverEmail: approvedCompany.user.email,
-        subject: 'Công ty của bạn đã được kích hoạt!',
-        header: 'Công ty của bạn đã được kích hoạt!',
-        message: `Chúng tôi đã kích hoạt hồ sơ công ty <b>${approvedCompany.name}</b> của bạn.  Bạn có thể truy cập trang quản lý công ty để tiếp tục đăng tuyển.`
+        receiverEmail: deletedCompany.user.email,
+        subject: 'Công ty của bạn đã bị xóa!',
+        header: 'Công ty của bạn đã bị xóa!',
+        message: `Chúng tôi đã xóa hồ sơ công ty <b>${deletedCompany.name}</b> của bạn. Việc xóa này có thể được thực hiện do vi phạm chính sách sử dụng của nền tảng. <br /><br /> Nếu bạn cần xem xét lại hoặc muốn khôi phục hồ sơ, vui lòng liên hệ đội ngũ hỗ trợ để được hướng dẫn.`
       };
 
       await publishDirectMessage(
@@ -153,19 +117,19 @@ class CompanyService implements ICompanyService {
         'job-company-notification',
         'company-approved-email',
         JSON.stringify(messageDetails),
-        'Approved order details sent to users service.'
+        'Deleted Company By Admin.'
       );
     }
 
-    if (approvedCompany.isApproved === false) {
+    if (deletedCompany.isDeleted === false) {
       const messageDetails: ICompanyApporvedMessage = {
-        companyName: approvedCompany.name,
-        username: approvedCompany.user.name || undefined,
+        companyName: deletedCompany.name,
+        username: deletedCompany.user.name || undefined,
         createdAt: `${new Date().toISOString()}`,
-        receiverEmail: approvedCompany.user.email,
-        subject: 'Tài khoản công ty của bạn đã bị tạm khóa',
-        header: 'Công ty của bạn tạm thời không hoạt động',
-        message: `Chúng tôi rất tiếc phải thông báo rằng hồ sơ công ty <b>${approvedCompany.name}</b> đã bị <b>tạm khóa</b>.  <br /><br /> Nguyên nhân có thể do hồ sơ chưa đầy đủ, vi phạm quy định hoặc cần xác minh lại thông tin.  <br /><br />Nếu bạn cho rằng đây là nhầm lẫn, vui lòng liên hệ đội ngũ hỗ trợ để được để được xem xét và hướng dẫn khôi phục tài khoản. `
+        receiverEmail: deletedCompany.user.email,
+        subject: 'Tài khoản công ty của bạn đã được khôi phục',
+        header: 'Công ty của bạn đã được khôi phục',
+        message: ` Hồ sơ công ty <b>${deletedCompany.name}</b> đã được <b>khôi phục và kích hoạt trở lại</b>. <br /><br />Bạn có thể tiếp tục đăng tuyển và sử dụng các chức năng của hệ thống. <br /><br />Nếu bạn cần hỗ trợ thêm trong quá trình sử dụng, vui lòng liên hệ đội ngũ hỗ trợ của chúng tôi. <br /><br /> `
       };
 
       await publishDirectMessage(
@@ -173,22 +137,17 @@ class CompanyService implements ICompanyService {
         'job-company-notification',
         'company-approved-email',
         JSON.stringify(messageDetails),
-        'Approved order details sent to users service.'
+        'Revert Company By Admin.'
       );
     }
 
-    return approvedCompany;
+    return deletedCompany;
   }
 
-  public async updateStatus(
-    id: number,
-    status: CompanyStatus,
-    isApproved: boolean,
-    note?: string
-  ): Promise<ICompanyInfoResponse> {
+  public async updateStatus(id: number, status: CompanyStatus, note?: string): Promise<ICompanyInfoResponse> {
     await this.getOneAdmin(id);
 
-    const company = await this.companyRepository.updateStatus(id, status, isApproved);
+    const company = await this.companyRepository.updateStatus(id, status);
 
     if (company.status === 'ACTIVE') {
       const messageDetails: ICompanyApporvedMessage = {
@@ -205,7 +164,7 @@ class CompanyService implements ICompanyService {
         'job-company-notification',
         'company-approved-email',
         JSON.stringify(messageDetails),
-        'Approved order details sent to users service.'
+        'Update active company.'
       );
     }
 
@@ -225,7 +184,27 @@ class CompanyService implements ICompanyService {
         'job-company-notification',
         'company-approved-email',
         JSON.stringify(messageDetails),
-        'Approved order details sent to users service.'
+        'Update reject company.'
+      );
+    }
+
+    if (company.status === 'INACTIVE') {
+      const messageDetails: ICompanyApporvedMessage = {
+        companyName: company.name,
+        username: company.user.name || undefined,
+        createdAt: `${new Date().toISOString()}`,
+        receiverEmail: company.user.email,
+        subject: 'Công ty của bạn đã bị khóa!',
+        header: 'Thông báo, công ty của bạn đã bị khóa!',
+        message: `Chúng tôi thông báo rằng hồ sơ công ty <b>${company.name}</b> của bạn đã bị khóa. Với lí do: <i>${note || 'vi phạm nội quy sử dụng.'}</i> Bạn có thể liên hệ tới bộ phận hỗ trợ để yêu cầu xem xét lại và khôi phục lại hồ sơ.`
+      };
+
+      await publishDirectMessage(
+        channel,
+        'job-company-notification',
+        'company-approved-email',
+        JSON.stringify(messageDetails),
+        'Update inactive company.'
       );
     }
 

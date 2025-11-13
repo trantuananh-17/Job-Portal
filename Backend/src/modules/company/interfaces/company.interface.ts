@@ -2,18 +2,8 @@ import { Company, CompanyStatus } from '@prisma/client';
 
 export interface ICompany {
   name: string;
-  description: string;
-  teamSize: number;
-  establishmentDate: string;
-  websiteUrl: string;
-  mapLink: string;
-  address: string;
-}
-
-export interface ICompanyresposne {
-  id: string;
-  name: string;
-  logo?: string;
+  emailCompany: string;
+  phoneCompany: string;
   description: string;
   teamSize: number;
   establishmentDate: string;
@@ -25,10 +15,12 @@ export interface ICompanyresposne {
 export interface ICompanyInfoResponse {
   id: number;
   name: string;
+  emailCompany: string;
+  phoneCompany: string;
   status?: CompanyStatus;
   createdAt: Date;
   updatedAt: Date | null;
-  isApproved?: boolean;
+  isDeleted?: boolean;
   user: {
     id: number;
     email: string;
@@ -50,21 +42,26 @@ export interface ICompanyApporvedMessage {
   header?: string;
 }
 
-export interface ICompanyByAdminResponse {
+export interface ICompanyResponse {
   id: number;
   name: string;
+  emailCompany: string;
+  phoneCompany: string;
   description: string;
   teamSize: number;
   establishmentDate: Date;
   views: number;
   websiteUrl: string | null;
   status: string;
-  isApproved: boolean;
+  isDeleted: boolean;
   mapLink: string | null;
   address: string | null;
   avatarUrl: string | null;
   createdAt: Date;
   updatedAt: Date | null;
+}
+
+export interface ICompanyByAdminResponse extends ICompanyResponse {
   user: {
     id: number;
     name: string | null;
@@ -72,3 +69,5 @@ export interface ICompanyByAdminResponse {
     avatar: string | null;
   };
 }
+
+export interface IMyCompany extends ICompanyResponse {}
