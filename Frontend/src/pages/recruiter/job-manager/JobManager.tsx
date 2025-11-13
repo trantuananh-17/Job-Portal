@@ -16,6 +16,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import StatusTag from './components/StatusTag';
 import TableRowSkeleton from './components/TableRowSkeleton';
+import TitleHeader from '@components/common/TitleHeader';
 
 interface Props {}
 
@@ -104,10 +105,7 @@ const JobManager: React.FC<Props> = ({}) => {
         {/* Header */}
         <div className='mb-8 px-4'>
           <div className='flex flex-row items-center justify-between'>
-            <div className='mb-4 sm:mb-0'>
-              <h1 className='text-xl font-semibold text-gray-900 md:text-2xl'>Job Management</h1>
-              <p className='mt-1 text-sm text-gray-600'>Manage your job postings and track applications</p>
-            </div>
+            <TitleHeader title='Job Management' subtitle='Manage your job postings and track applications' />
             <button
               className='inline-flex transform items-center rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-semibold whitespace-nowrap text-white shadow-lg shadow-blue-500/25 transition-all duration-300 hover:-translate-y-0.5 hover:from-blue-700 hover:to-blue-900 hover:shadow-xl hover:shadow-blue-500/30'
               onClick={() => navigate('/recruiter/post-job')}
@@ -195,19 +193,19 @@ const JobManager: React.FC<Props> = ({}) => {
               <table className='w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
                 <thead className='sm:text-md bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400'>
                   <tr>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-6 py-3 whitespace-nowrap'>
                       Job Title
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-6 py-3 whitespace-nowrap'>
                       Status
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-6 py-3 whitespace-nowrap'>
                       Applicants
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-6 py-3 whitespace-nowrap'>
                       Deleted
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-6 py-3 whitespace-nowrap'>
                       Actions
                     </th>
                   </tr>

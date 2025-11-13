@@ -2,10 +2,104 @@ import { Company, CompanyStatus, PrismaClient } from '@prisma/client';
 import { ICompanyRepository } from '../company.repository';
 import prisma from '~/prisma';
 import { BaseRepository } from '~/global/base/repositories/implements/base.repository.impl';
-import { ICompany, ICompanyInfoResponse } from '../../interfaces/company.interface';
+import { ICompany, ICompanyByAdminResponse, ICompanyInfoResponse } from '../../interfaces/company.interface';
 class CompanyRepository extends BaseRepository<Company> implements ICompanyRepository {
   constructor(private readonly prisma: PrismaClient) {
     super(prisma.company);
+  }
+
+  async getTotalCompanyByAdmin(q: string, status?: CompanyStatus): Promise<number> {
+    return await this.prisma.company.count({
+      where: {
+        ...(status ? { status } : {}),
+        ...(q
+          ? {
+              name: {
+                contains: q.trim(),
+                mode: 'insensitive'
+              }
+            }
+          : {})
+      }
+    });
+  }
+
+  async getCompanyByAdmin(id: number): Promise<ICompanyByAdminResponse | null> {
+    return await this.prisma.company.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        teamSize: true,
+        establishmentDate: true,
+        views: true,
+        websiteUrl: true,
+        status: true,
+        isApproved: true,
+        mapLink: true,
+        address: true,
+        avatarUrl: true,
+        createdAt: true,
+        updatedAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true
+          }
+        }
+      }
+    });
+  }
+
+  async getAllAdmin(
+    page: number,
+    limit: number,
+    q: string,
+    status?: CompanyStatus
+  ): Promise<ICompanyByAdminResponse[]> {
+    return await this.prisma.company.findMany({
+      where: {
+        ...(status ? { status } : {}),
+        ...(q
+          ? {
+              name: {
+                contains: q.trim(),
+                mode: 'insensitive'
+              }
+            }
+          : {})
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        teamSize: true,
+        establishmentDate: true,
+        views: true,
+        websiteUrl: true,
+        status: true,
+        isApproved: true,
+        mapLink: true,
+        address: true,
+        avatarUrl: true,
+        createdAt: true,
+        updatedAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit
+    });
   }
 
   async updateStatus(id: number, status: CompanyStatus, isApproved: boolean): Promise<ICompanyInfoResponse> {

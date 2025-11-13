@@ -3,6 +3,7 @@ import ProtectedRoute from './auth/ProtectedRoute';
 import AuthRoute from './auth/AuthRoute';
 import UserRoute from './user/UserRoute';
 import RecruiterRoute from './recruiter/RecruiterRoute';
+import AdminRoute from './admin/AdminRoute';
 
 export default function AppRoute() {
   return (
@@ -12,6 +13,8 @@ export default function AppRoute() {
       {/* <Route element={<ProtectedRoute role='RECRUITER' />}> */}
       <Route path='/recruiter/*' element={<RecruiterRoute />} />
       {/* </Route> */}
+
+      <Route path='/admin/*' element={<AdminRoute />} />
     </Routes>
   );
 }

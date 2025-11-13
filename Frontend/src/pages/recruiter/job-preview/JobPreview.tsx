@@ -2,11 +2,11 @@ import type { CreateJobSchema } from '@apis/jobs/schemas/job.schema';
 import { ArrowLeft, Briefcase, BriefcaseBusiness, Wallet } from 'lucide-react';
 
 interface Props {
-  formData: CreateJobSchema;
+  job: CreateJobSchema;
   onClick: () => void;
 }
 
-const JobPreview: React.FC<Props> = ({ onClick, formData }) => {
+const JobPreview: React.FC<Props> = ({ onClick, job }) => {
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 px-4 py-6 sm:px-6 lg:px-8'>
       <div className='mx-auto max-w-4xl'>
@@ -31,18 +31,18 @@ const JobPreview: React.FC<Props> = ({ onClick, formData }) => {
             {/* Hero section */}
             <div className='relative mt-8 flex flex-col gap-5 border-b border-gray-100 bg-white px-0 pb-8 sm:gap-6 md:gap-8'>
               <div className='flex-1'>
-                <h2 className='mb-2 text-lg leading-tight font-semibold text-gray-900 lg:text-xl'>{formData.title}</h2>
+                <h2 className='mb-2 text-lg leading-tight font-semibold text-gray-900 lg:text-xl'>{job.title}</h2>
 
                 <div className='flex flex-col gap-2 sm:flex-row sm:gap-5'>
                   <div className='ml-2 flex items-center gap-2 text-gray-600'>
                     <BriefcaseBusiness className='text-primary h-4 w-4' />
-                    <span className='text-md md:text-lg'>{formData.jobRoleName}</span>
+                    <span className='text-md md:text-lg'>{job.jobRoleName}</span>
                   </div>
 
                   <div className='ml-2 flex items-center gap-2 text-gray-600'>
                     <Wallet className='text-primary h-4 w-4' />
                     <span className='text-md md:text-lg'>
-                      {formData.minSalary}$ - {formData.maxSalary}${' '}
+                      {job.minSalary}$ - {job.maxSalary}${' '}
                     </span>
                   </div>
                 </div>
@@ -50,14 +50,14 @@ const JobPreview: React.FC<Props> = ({ onClick, formData }) => {
 
               <div className='flex flex-col gap-2'>
                 <h2 className='mb-2 text-lg leading-tight font-semibold text-gray-900 lg:text-xl'>Job Description</h2>
-                <p className='ml-2 text-sm text-gray-600 md:text-lg'>{formData.description}</p>
+                <p className='ml-2 text-sm text-gray-600 md:text-lg'>{job.description}</p>
               </div>
 
               <div className='flex flex-col gap-2'>
                 <h2 className='mb-2 text-lg leading-tight font-semibold text-gray-900 lg:text-xl'>Job Requirements</h2>
                 <ul className='ml-5 list-disc text-xl sm:ml-10'>
-                  {formData.requirements &&
-                    formData.requirements
+                  {job.requirements &&
+                    job.requirements
                       .split('.')
                       .map((item) => <li className='ml-2 text-sm text-gray-600 md:text-lg'>{item}</li>)}
                 </ul>
@@ -66,8 +66,8 @@ const JobPreview: React.FC<Props> = ({ onClick, formData }) => {
               <div className='flex flex-col gap-2'>
                 <h2 className='mb-2 text-lg leading-tight font-semibold text-gray-900 lg:text-xl'>Job Benefits</h2>
                 <ul className='ml-5 list-disc text-xl sm:ml-10'>
-                  {formData.benefits &&
-                    formData.benefits
+                  {job.benefits &&
+                    job.benefits
                       .split('.')
                       .map((item) => <li className='ml-2 text-sm text-gray-600 md:text-lg'>{item}</li>)}
                 </ul>
@@ -76,8 +76,8 @@ const JobPreview: React.FC<Props> = ({ onClick, formData }) => {
               <div className='flex flex-col gap-2'>
                 <h2 className='mb-2 text-lg leading-tight font-semibold text-gray-900 lg:text-xl'>Job Skills</h2>
                 <div className='ml-2 flex flex-wrap gap-5 text-xl'>
-                  {formData.skills &&
-                    formData.skills.map((skill) => (
+                  {job.skills &&
+                    job.skills.map((skill) => (
                       <span className='xs:text-xs rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-center font-semibold text-blue-700 sm:text-sm'>
                         {skill}
                       </span>

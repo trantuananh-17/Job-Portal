@@ -17,6 +17,7 @@ export interface JobDocument {
   address: string;
   recruiter: string;
   createdAt: string;
+  updatedAt: string;
   expirationDate?: string;
   activeDays?: number;
   isDeleted: boolean;
@@ -45,6 +46,7 @@ export function mapJobToDocument(
     address: job.company.address ?? '',
     recruiter: job.postBy?.name ?? '',
     createdAt: job.createdAt.toISOString(),
+    updatedAt: job.updatedAt?.toISOString() ?? '',
     expirationDate: job.expirationDate ? job.expirationDate.toISOString() : undefined,
     activeDays: job.activeDays ?? undefined,
     isDeleted: job.isDeleted

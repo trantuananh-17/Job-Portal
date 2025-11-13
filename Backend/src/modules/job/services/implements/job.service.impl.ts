@@ -393,7 +393,7 @@ class JobService implements IJobService {
     const jobIndex = await this.findIndex(id);
 
     if (jobIndex) {
-      await this.jobSyncService.deleteJob(id);
+      await this.jobSyncService.updateJob(jobIndex);
     }
   }
 
@@ -403,7 +403,7 @@ class JobService implements IJobService {
     const jobIndex = await this.findIndex(jobId);
 
     if (jobIndex) {
-      await this.jobSyncService.deleteJob(jobId);
+      await this.jobSyncService.updateJob(jobIndex);
     }
   }
 

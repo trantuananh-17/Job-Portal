@@ -82,27 +82,20 @@ class CompanyController {
   }
 
   public async getAllForAdmin(req: Request, res: Response) {
-    const { page = 1, limit = 5, filter = '' } = req.query;
+    const { page = 1, limit = 8, status, q } = req.query;
+    const companyStatus = status && status !== 'all' ? (status as string) : undefined;
 
-    console.log('hello');
-
-    const { data, totalCounts } = await this.companyService.getAllPaginationForAdmin({
-      page: parseInt(page as string),
-      limit: parseInt(limit as string),
-      filter
-    });
-
-    console.log(data);
+    const data = await this.companyService.getAllAdmin(+page, +limit, q as string, companyStatus);
 
     res.status(HttpStatus.OK).json({
       message: 'Get all companies',
-      data: {
-        data,
-        pagination: {
-          totalCounts,
-          currentPage: parseInt(page as string)
-        }
-      }
+      pagination: {
+        totalDocs: data.totalDocs,
+        totalPages: data.totalPages,
+        currentPage: data.page,
+        limit: data.limit
+      },
+      data: data.data
     });
   }
 

@@ -78,6 +78,7 @@ export class JobSyncService {
             jobRoles: { type: 'keyword', normalizer: 'lowercase' },
             recruiter: { type: 'keyword' },
             createdAt: { type: 'date' },
+            updatedAt: { type: 'date' },
             isDeleted: { type: 'boolean' }
           }
         }

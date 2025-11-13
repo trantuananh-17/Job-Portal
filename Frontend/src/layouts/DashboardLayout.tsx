@@ -1,13 +1,20 @@
 import ProfileDropdown from '@components/recruiter/ProfileDropdown';
 import NavigationItem from '@components/recruiter/NavigationItem';
-import { NAVIGATION_MENU } from '@utils/data';
-import { Briefcase, Building2, LogOut, Menu, X } from 'lucide-react';
+import { Briefcase, Building2, LogOut, Menu, X, type LucideIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import AdminProfileDropdown from '@components/admin/AdminProfileDropdown';
 
-interface Props {}
+interface Props {
+  menu: {
+    id: string;
+    name: string;
+    icon: LucideIcon;
+  }[];
+  admin?: boolean;
+}
 
-const DashboardLayout: React.FC<Props> = ({}) => {
+const DashboardLayout: React.FC<Props> = ({ menu, admin }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -86,7 +93,7 @@ const DashboardLayout: React.FC<Props> = ({}) => {
         </div>
         {/* Navigation */}
         <nav className='space-y-2 p-4'>
-          {NAVIGATION_MENU.map((item) => (
+          {menu.map((item) => (
             <NavigationItem
               key={item.id}
               item={item}
@@ -134,16 +141,29 @@ const DashboardLayout: React.FC<Props> = ({}) => {
 
           <div className='flex items-center space-x-3'>
             {/* Profile dropdown */}
-            <ProfileDropdown
-              isOpen={profileDropdownOpen}
-              avatar={''}
-              companyName='Tanh Haui'
-              email='anhhaui@gmail.com'
-              onToggle={(e: React.MouseEvent) => {
-                e.stopPropagation();
-                setProfileDropdownOpen(!profileDropdownOpen);
-              }}
-            />
+            {!admin ? (
+              <ProfileDropdown
+                isOpen={profileDropdownOpen}
+                avatar={''}
+                companyName='Tanh Haui'
+                email='anhhaui@gmail.com'
+                onToggle={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  setProfileDropdownOpen(!profileDropdownOpen);
+                }}
+              />
+            ) : (
+              <AdminProfileDropdown
+                isOpen={profileDropdownOpen}
+                avatar={''}
+                companyName='Tuấn Anh'
+                email='admin@gmail.com'
+                onToggle={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  setProfileDropdownOpen(!profileDropdownOpen);
+                }}
+              />
+            )}
           </div>
         </header>
 

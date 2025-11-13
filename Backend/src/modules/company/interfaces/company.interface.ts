@@ -49,3 +49,26 @@ export interface ICompanyApporvedMessage {
   subject?: string;
   header?: string;
 }
+
+export interface ICompanyByAdminResponse {
+  id: number;
+  name: string;
+  description: string;
+  teamSize: number;
+  establishmentDate: Date;
+  views: number;
+  websiteUrl: string | null;
+  status: string;
+  isApproved: boolean;
+  mapLink: string | null;
+  address: string | null;
+  avatarUrl: string | null;
+  createdAt: Date;
+  updatedAt: Date | null;
+  user: {
+    id: number;
+    name: string | null;
+    email: string;
+    avatar: string | null;
+  };
+}

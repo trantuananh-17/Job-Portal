@@ -1,5 +1,10 @@
 import { Company, CompanyStatus } from '@prisma/client';
-import { ICompany, ICompanyApporvedMessage, ICompanyInfoResponse } from '../../interfaces/company.interface';
+import {
+  ICompany,
+  ICompanyApporvedMessage,
+  ICompanyByAdminResponse,
+  ICompanyInfoResponse
+} from '../../interfaces/company.interface';
 import { ICompanyService } from '../company.service';
 import { IPaginatedResult } from '~/global/base/interfaces/base.interface';
 import { getPaginationAndFilters } from '~/global/helpers/pagination-filter.helper';
@@ -11,6 +16,29 @@ import { publishDirectMessage } from '~/queues/producer';
 
 class CompanyService implements ICompanyService {
   constructor(private readonly companyRepository: ICompanyRepository) {}
+
+  async getAllAdmin(
+    page: number,
+    limit: number,
+    q: string,
+    status?: string
+  ): Promise<{ data: ICompanyByAdminResponse[]; totalDocs: number; totalPages: number; page: number; limit: number }> {
+    const [companies, totalDocs] = await Promise.all([
+      this.companyRepository.getAllAdmin(page, limit, q, status as CompanyStatus),
+      this.companyRepository.getTotalCompanyByAdmin(q, status as CompanyStatus)
+    ]);
+
+    const totalPages = Math.ceil(totalDocs / limit);
+    const data: ICompanyByAdminResponse[] = companies;
+
+    return {
+      data,
+      totalDocs,
+      totalPages,
+      page,
+      limit
+    };
+  }
 
   public async getMyCompany(userId: number): Promise<Company | null> {
     const company = await this.companyRepository.getMyCompany(userId);
@@ -78,8 +106,8 @@ class CompanyService implements ICompanyService {
     return { data, totalCounts };
   }
 
-  public async getOneAdmin(id: number): Promise<Company> {
-    const company = await this.companyRepository.findById(id);
+  public async getOneAdmin(id: number): Promise<ICompanyByAdminResponse | null> {
+    const company = await this.companyRepository.getCompanyByAdmin(id);
 
     if (!company) {
       throw new NotFoundException(`Cannot find company with id: ${id}`);
