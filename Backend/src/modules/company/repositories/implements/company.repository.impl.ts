@@ -54,7 +54,8 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
             id: true,
             name: true,
             email: true,
-            avatar: true
+            avatarUrl: true,
+            avatarKey: true
           }
         }
       }
@@ -101,7 +102,8 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
             id: true,
             name: true,
             email: true,
-            avatar: true
+            avatarUrl: true,
+            avatarKey: true
           }
         }
       },
@@ -161,7 +163,8 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
             id: true,
             name: true,
             email: true,
-            avatar: true
+            avatarUrl: true,
+            avatarKey: true
           }
         }
       }

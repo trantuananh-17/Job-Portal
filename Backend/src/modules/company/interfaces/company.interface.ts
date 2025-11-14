@@ -66,7 +66,8 @@ export interface ICompanyByAdminResponse extends ICompanyResponse {
     id: number;
     name: string | null;
     email: string;
-    avatar: string | null;
+    avatarUrl: string | null;
+    avatarKey: string | null;
   };
 }
 

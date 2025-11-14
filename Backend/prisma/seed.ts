@@ -1,11 +1,50 @@
-import { Education, Industry, JobRole, Language, PrismaClient, Skill } from '@prisma/client';
+import { Education, Industry, JobRole, Language, PrismaClient, Role, Skill } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 class SeedData {
+  async seedUsers() {
+    const data = [
+      {
+        name: 'Admin',
+        email: 'admin@example.com',
+        password: '123456',
+        role: 'ADMIN' as Role,
+        isActive: true,
+        isVerified: true,
+        isDeleted: false,
+        avatarUrl: null,
+        avatarKey: null
+      },
+      {
+        name: 'Candidate',
+        email: 'candidate@example.com',
+        password: '123456',
+        role: 'CANDIDATE' as Role,
+        isActive: true,
+        isVerified: true,
+        isDeleted: false,
+        avatarUrl: null,
+        avatarKey: null
+      },
+      {
+        name: 'Recruiter',
+        email: 'recruiter@example.com',
+        password: '123456',
+        role: 'RECRUITER' as Role,
+        isActive: true,
+        isVerified: true,
+        isDeleted: false,
+        avatarUrl: null,
+        avatarKey: null
+      }
+    ];
+    await prisma.user.createMany({ data, skipDuplicates: true });
+  }
+
   async seedLanguages() {
     const data: Language[] = [{ name: 'english' }, { name: 'japanese' }, { name: 'chinese' }];
-    await prisma.language.createMany({ data });
+    await prisma.language.createMany({ data, skipDuplicates: true });
   }
 
   async seedEducations() {
@@ -17,7 +56,7 @@ class SeedData {
       { name: 'Thuongmai University', map: 'https://maps.app.goo.gl/GezvMwjS3jK8rXLTA' },
       { name: 'Foreign TradeHanoi University of Civil Engineering', map: 'https://maps.app.goo.gl/2CPFasTivUd324tZ6' }
     ];
-    await prisma.education.createMany({ data });
+    await prisma.education.createMany({ data, skipDuplicates: true });
   }
 
   async seedSkills() {
@@ -56,7 +95,7 @@ class SeedData {
       { name: 'Data Science' },
       { name: 'CI/CD' }
     ];
-    await prisma.skill.createMany({ data });
+    await prisma.skill.createMany({ data, skipDuplicates: true });
   }
 
   async seedIndustries() {
@@ -67,7 +106,7 @@ class SeedData {
       { name: 'Education' },
       { name: 'Finance and economic' }
     ];
-    await prisma.industry.createMany({ data });
+    await prisma.industry.createMany({ data, skipDuplicates: true });
   }
 
   async seedJobRoles() {
@@ -78,17 +117,19 @@ class SeedData {
       { name: 'junior' },
       { name: 'middle' }
     ];
-    await prisma.jobRole.createMany({ data });
+    await prisma.jobRole.createMany({ data, skipDuplicates: true });
   }
 
   async run() {
     try {
       console.log('Seeding data...');
+      await this.seedUsers();
       await this.seedLanguages();
       await this.seedEducations();
       await this.seedSkills();
       await this.seedIndustries();
       await this.seedJobRoles();
+
       console.log('All data seeded successfully!');
     } catch (err) {
       console.error('Error seeding data:', err);

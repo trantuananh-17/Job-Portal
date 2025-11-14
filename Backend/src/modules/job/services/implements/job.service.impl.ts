@@ -10,7 +10,6 @@ import { ICompanyService } from '~/modules/company/services/company.service';
 import { companyService } from '~/modules/company/services/implements/company.service.impl';
 import { packageService } from '~/modules/package/services/implements/package.service.impl';
 import { IPackageService } from '~/modules/package/services/package.service';
-import { userService } from '~/modules/user/services/user.service';
 import { IJobFilters } from '~/search/job/interface/job.interface';
 import { JobDocument, mapJobToDocument } from '~/search/job/mapper/job.mapper';
 import { jobQuery } from '~/search/job/queries/job.query';
@@ -253,7 +252,7 @@ class JobService implements IJobService {
     await this.companyService.findOne(companyId, userId);
     await this.jobRoleService.findOne(jobRoleToLower);
 
-    const user = await userService.findUserUnique(userId);
+    // const user = await userService.findUserUnique(userId);
 
     // const activePackage = await userService.checkActivePackage(user);
 
