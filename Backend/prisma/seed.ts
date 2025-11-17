@@ -1,4 +1,15 @@
-import { Education, Industry, JobRole, Language, PrismaClient, Role, Skill } from '@prisma/client';
+import {
+  Education,
+  Industry,
+  JobRole,
+  Language,
+  Order,
+  Package,
+  PrismaClient,
+  RecruiterPackage,
+  Role,
+  Skill
+} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -120,6 +131,97 @@ class SeedData {
     await prisma.jobRole.createMany({ data, skipDuplicates: true });
   }
 
+  async seedPackage() {
+    const data: Package[] = [
+      {
+        id: 1,
+        label: 'Basic Recruiter',
+        price: 49.99,
+        jobPostLimit: 3,
+        isActive: true,
+        createdAt: new Date('2024-11-01'),
+        updatedAt: null
+      },
+      {
+        id: 2,
+        label: 'Pro Recruiter',
+        price: 99.99,
+        jobPostLimit: 10,
+        isActive: true,
+        createdAt: new Date('2024-11-01'),
+        updatedAt: null
+      },
+      {
+        id: 3,
+        label: 'Enterprise Recruiter',
+        price: 199.99,
+        jobPostLimit: 30,
+        isActive: true,
+        createdAt: new Date('2024-11-01'),
+        updatedAt: null
+      }
+    ];
+
+    await prisma.package.createMany({ data, skipDuplicates: true });
+  }
+  async seedRecruiterPackage() {
+    const data: RecruiterPackage[] = [
+      {
+        id: 1,
+        recruiterId: 3,
+        packageId: 1,
+        startDate: new Date('2024-11-01'),
+        endDate: new Date('2024-12-01')
+      },
+      {
+        id: 2,
+        recruiterId: 3,
+        packageId: 2,
+        startDate: new Date('2025-01-01'),
+        endDate: new Date('2025-02-01')
+      },
+      {
+        id: 3,
+        recruiterId: 3,
+        packageId: 3,
+        startDate: new Date('2024-03-01'),
+        endDate: new Date('2024-04-01')
+      }
+    ];
+
+    await prisma.recruiterPackage.createMany({ data, skipDuplicates: true });
+  }
+  async seedOrder() {
+    const data: Order[] = [
+      {
+        id: 1,
+        recruiterId: 3,
+        packageId: 1,
+        totalPrice: 49.99,
+        status: 'SUCCESS',
+        orderDate: new Date('2024-11-01')
+      },
+      {
+        id: 2,
+        recruiterId: 3,
+        packageId: 2,
+        totalPrice: 99.99,
+        status: 'PENDING',
+        orderDate: new Date('2025-01-01')
+      },
+      {
+        id: 3,
+        recruiterId: 3,
+        packageId: 3,
+        totalPrice: 199.99,
+        status: 'FAILED',
+        orderDate: new Date('2024-03-01')
+      }
+    ];
+
+    await prisma.order.createMany({ data, skipDuplicates: true });
+  }
+
   async run() {
     try {
       console.log('Seeding data...');
@@ -129,6 +231,9 @@ class SeedData {
       await this.seedSkills();
       await this.seedIndustries();
       await this.seedJobRoles();
+      await this.seedPackage();
+      await this.seedRecruiterPackage();
+      await this.seedOrder();
 
       console.log('All data seeded successfully!');
     } catch (err) {

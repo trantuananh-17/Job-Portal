@@ -27,13 +27,10 @@ class UserService implements IUserService {
     verified?: boolean,
     role?: string
   ): Promise<{ data: IUserResponseByAdmin[]; totalDocs: number; totalPages: number; page: number; limit: number }> {
-    console.time('query');
     const [users, totalDocs] = await Promise.all([
       this.userRepository.getAllByAdmin(page, limit, q, active, verified, role as Role),
       this.userRepository.getTotalDocs(q, active, verified, role as Role)
     ]);
-
-    console.timeEnd('query');
 
     const totalPages = Math.ceil(totalDocs / limit);
     const data: IUserResponseByAdmin[] = users;

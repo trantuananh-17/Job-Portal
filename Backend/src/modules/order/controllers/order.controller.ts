@@ -5,14 +5,19 @@ import { IOrderService } from '../services/order.service';
 
 class OrderController {
   constructor(private readonly orderService: IOrderService) {
-    this.getAll = this.getAll.bind(this);
+    this.getAllByAdmin = this.getAllByAdmin.bind(this);
     this.getMyOrder = this.getMyOrder.bind(this);
     this.getOne = this.getOne.bind(this);
     this.updateStatus = this.updateStatus.bind(this);
   }
 
-  public async getAll(req: Request, res: Response) {
-    const orders = await this.orderService.getAll();
+  public async getAllByAdmin(req: Request, res: Response) {
+    const { page = 1, limit = 8, sort, filterDate, status } = req.query;
+    const orderStatus = status && status !== 'all' ? (status as string) : undefined;
+    const orderSort = sort === 'desc' ? 'desc' : 'asc';
+    const filter = filterDate ? filterDate.toString() : undefined;
+
+    const orders = await this.orderService.getAllByAdmin(Number(page), Number(limit), orderSort, filter, orderStatus);
 
     return res.status(HttpStatus.OK).json({
       message: 'Get all orders',
