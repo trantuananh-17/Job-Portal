@@ -13,7 +13,7 @@ export interface IUserRepository {
     active?: boolean,
     verified?: boolean,
     role?: string
-  ): Promise<IUserResponseByAdmin[]>;
+  ): Promise<{ data: IUserResponseByAdmin[]; total: number }>;
 
   updateUserByAdmin(userId: number, requestBody: Partial<IUpdateUserByAdmin>): Promise<User>;
   softDelete(userId: number): Promise<User>;

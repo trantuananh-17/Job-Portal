@@ -24,17 +24,13 @@ class CompanyService implements ICompanyService {
     q: string,
     status?: string
   ): Promise<{ data: ICompanyByAdminResponse[]; totalDocs: number; totalPages: number; page: number; limit: number }> {
-    const [companies, totalDocs] = await Promise.all([
-      this.companyRepository.getAllAdmin(page, limit, q, status as CompanyStatus),
-      this.companyRepository.getTotalCompanyByAdmin(q, status as CompanyStatus)
-    ]);
+    const { data, total } = await this.companyRepository.getAllAdmin(page, limit, q, status as CompanyStatus);
 
-    const totalPages = Math.ceil(totalDocs / limit);
-    const data: ICompanyByAdminResponse[] = companies;
+    const totalPages = Math.ceil(total / limit);
 
     return {
       data,
-      totalDocs,
+      totalDocs: total,
       totalPages,
       page,
       limit

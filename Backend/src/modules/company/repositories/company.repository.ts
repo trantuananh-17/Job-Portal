@@ -10,7 +10,12 @@ export interface ICompanyRepository extends BaseRepository<Company> {
   getMyCompany(userId: number): Promise<IMyCompany | null>;
   getOne(companyId: number, userId: number): Promise<Company | null>;
   updateCompany(id: number, data: Partial<ICompany>, userId: number): Promise<Company>;
-  getAllAdmin(page: number, limit: number, q: string, status?: CompanyStatus): Promise<ICompanyByAdminResponse[]>;
+  getAllAdmin(
+    page: number,
+    limit: number,
+    q: string,
+    status?: CompanyStatus
+  ): Promise<{ data: ICompanyByAdminResponse[]; total: number }>;
   getTotalCompanyByAdmin(q: string, status?: CompanyStatus): Promise<number>;
   getCompanyByAdmin(id: number): Promise<ICompanyByAdminResponse | null>;
   updateDeleted(id: number, isDeleted: boolean): Promise<ICompanyInfoResponse>;

@@ -67,50 +67,67 @@ class CompanyRepository extends BaseRepository<Company> implements ICompanyRepos
     limit: number,
     q: string,
     status?: CompanyStatus
-  ): Promise<ICompanyByAdminResponse[]> {
-    return await this.prisma.company.findMany({
-      where: {
-        ...(status ? { status } : {}),
-        ...(q
-          ? {
-              name: {
-                contains: q.trim(),
-                mode: 'insensitive'
+  ): Promise<{ data: ICompanyByAdminResponse[]; total: number }> {
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.company.findMany({
+        where: {
+          ...(status ? { status } : {}),
+          ...(q
+            ? {
+                name: {
+                  contains: q.trim(),
+                  mode: 'insensitive'
+                }
               }
+            : {})
+        },
+        select: {
+          id: true,
+          name: true,
+          emailCompany: true,
+          phoneCompany: true,
+          description: true,
+          teamSize: true,
+          establishmentDate: true,
+          views: true,
+          websiteUrl: true,
+          status: true,
+          isDeleted: true,
+          mapLink: true,
+          address: true,
+          avatarUrl: true,
+          createdAt: true,
+          updatedAt: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              avatarUrl: true,
+              avatarKey: true
             }
-          : {})
-      },
-      select: {
-        id: true,
-        name: true,
-        emailCompany: true,
-        phoneCompany: true,
-        description: true,
-        teamSize: true,
-        establishmentDate: true,
-        views: true,
-        websiteUrl: true,
-        status: true,
-        isDeleted: true,
-        mapLink: true,
-        address: true,
-        avatarUrl: true,
-        createdAt: true,
-        updatedAt: true,
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            avatarUrl: true,
-            avatarKey: true
           }
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit
+      }),
+      this.prisma.company.count({
+        where: {
+          ...(status ? { status } : {}),
+          ...(q
+            ? {
+                name: {
+                  contains: q.trim(),
+                  mode: 'insensitive'
+                }
+              }
+            : {})
         }
-      },
-      orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * limit,
-      take: limit
-    });
+      })
+    ]);
+
+    return { data, total };
   }
 
   async updateStatus(id: number, status: CompanyStatus): Promise<ICompanyInfoResponse> {

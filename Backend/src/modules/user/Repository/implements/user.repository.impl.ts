@@ -27,38 +27,58 @@ class UserRepository implements IUserRepository {
     active?: boolean,
     verified?: boolean,
     role?: string
-  ): Promise<IUserResponseByAdmin[]> {
-    return await this.prisma.user.findMany({
-      where: {
-        role: { not: Role.ADMIN },
-        ...(active !== undefined ? { isActive: active } : {}),
-        ...(verified !== undefined ? { isVerified: verified } : {}),
-        ...(role ? { role: role as Role } : {}),
-        ...(q
-          ? {
-              name: {
-                contains: q.trim(),
-                mode: 'insensitive'
+  ): Promise<{ data: IUserResponseByAdmin[]; total: number }> {
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.user.findMany({
+        where: {
+          role: { not: Role.ADMIN },
+          ...(active !== undefined ? { isActive: active } : {}),
+          ...(verified !== undefined ? { isVerified: verified } : {}),
+          ...(role ? { role: role as Role } : {}),
+          ...(q
+            ? {
+                name: {
+                  contains: q.trim(),
+                  mode: 'insensitive'
+                }
               }
-            }
-          : {})
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        isActive: true,
-        isVerified: true,
-        isDeleted: true,
-        avatarKey: true,
-        avatarUrl: true,
-        createdAt: true,
-        updatedAt: true
-      }
-    });
+            : {})
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          isActive: true,
+          isVerified: true,
+          isDeleted: true,
+          avatarKey: true,
+          avatarUrl: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      }),
+      this.prisma.user.count({
+        where: {
+          role: { not: Role.ADMIN },
+          ...(active !== undefined ? { isActive: active } : {}),
+          ...(verified !== undefined ? { isVerified: verified } : {}),
+          ...(role ? { role: role as Role } : {}),
+          ...(q
+            ? {
+                name: {
+                  contains: q.trim(),
+                  mode: 'insensitive'
+                }
+              }
+            : {})
+        }
+      })
+    ]);
+
+    return { data, total };
   }
 
   async getTotalDocs(q?: string, active?: boolean, verified?: boolean, role?: string): Promise<number> {
