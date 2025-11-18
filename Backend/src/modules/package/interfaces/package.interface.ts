@@ -1,7 +1,23 @@
 interface IPackage {
+  id: number;
   label: string;
   price: number;
   jobPostLimit: number;
+  salePrice: number | null;
+  priorityLevel: number;
+}
+
+interface IPackageResponseByAdmin extends IPackage {
+  isActive: boolean;
+  isDelete: boolean;
+  isRecommended: boolean;
+
+  _count: {
+    orders: number;
+  };
+
+  createdAt: Date;
+  updatedAt: Date | null;
 }
 
 interface recuiterPackageActive {
@@ -13,4 +29,4 @@ interface recuiterPackageActive {
   status: string;
 }
 
-export { IPackage, recuiterPackageActive };
+export { IPackage, recuiterPackageActive, IPackageResponseByAdmin };

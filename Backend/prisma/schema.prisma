@@ -237,8 +237,12 @@ model Package {
   id    Int     @id @default(autoincrement())
   label String
   price Float
+  salePrice Float?
   jobPostLimit Int
+  priorityLevel Int @default(0)
   isActive Boolean @default(true)
+  isDelete Boolean @default(false)
+  isRecommended Boolean @default(false)
 
   recruiterPackages RecruiterPackage[]
   orders Order[]

@@ -14,7 +14,7 @@ class OrderService implements IOrderService {
   ) {}
 
   async create(packageId: number, userId: number): Promise<Order> {
-    const packageEntity = await this.packageService.readOne(packageId);
+    const packageEntity = await this.packageService.getOne(packageId);
 
     const order = await this.orderRepository.createOrder(packageId, userId, packageEntity.price);
 

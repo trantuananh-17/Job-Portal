@@ -8,7 +8,6 @@ import { packageCreateSchema, packageUpdateActiveSchema, packageUpdateSchema } f
 
 const packageRoute = Router();
 
-packageRoute.get('/', verify, allowRole('ADMIN', 'RECRUITER'), asyncWrapper(packageController.getAll));
 packageRoute.post(
   '/',
   verify,
@@ -17,7 +16,7 @@ packageRoute.post(
   asyncWrapper(packageController.create)
 );
 
-packageRoute.get('/admin', verify, allowRole('ADMIN'), asyncWrapper(packageController.getAllAdmin));
+packageRoute.get('/admin/get-all', verify, allowRole('ADMIN'), asyncWrapper(packageController.getAllByAdmin));
 packageRoute.get('/:id/admin', verify, allowRole('ADMIN'), asyncWrapper(packageController.getOneAdmin));
 
 packageRoute.get('/:id', verify, allowRole('ADMIN', 'RECRUITER'), asyncWrapper(packageController.getOne));

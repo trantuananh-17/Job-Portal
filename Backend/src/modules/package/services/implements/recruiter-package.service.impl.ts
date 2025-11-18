@@ -28,7 +28,7 @@ class RecruiterPackageService implements IRecruiterPackageService {
       existing = null;
     }
 
-    await this.packageService.readOne(packageId, { isActive: true });
+    await this.packageService.getOne(packageId, { isActive: true });
 
     if (existing && existing.endDate > now) {
       throw new BadRequestException('You cannot buy this package');
