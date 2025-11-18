@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Package" ADD COLUMN     "isDelete" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "isRecommended" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "priorityLevel" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "salePrice" DOUBLE PRECISION;
