@@ -1,7 +1,7 @@
 import { Package, Prisma, PrismaClient } from '@prisma/client';
 import { IPackageRepository } from '../package.repository';
 import prisma from '~/prisma';
-import { IPackage } from '../../interfaces/package.interface';
+import { IPackage, IPackageResponseByAdmin } from '../../interfaces/package.interface';
 
 class PackageRepository implements IPackageRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -16,8 +16,35 @@ class PackageRepository implements IPackageRepository {
     });
   }
 
-  async readAll(where?: Prisma.PackageWhereInput): Promise<Package[]> {
-    return await this.prisma.package.findMany({ where });
+  async getAllByAdmin(page: number, limit: number): Promise<{ data: IPackageResponseByAdmin[]; total: number }> {
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.package.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          id: true,
+          label: true,
+          price: true,
+          jobPostLimit: true,
+          salePrice: true,
+          priorityLevel: true,
+          isActive: true,
+          isDelete: true,
+          isRecommended: true,
+          createdAt: true,
+          updatedAt: true,
+          _count: {
+            select: { orders: true }
+          }
+        },
+        orderBy: {
+          jobPostLimit: 'desc'
+        }
+      }),
+      this.prisma.package.count()
+    ]);
+
+    return { data, total };
   }
 
   async readOne(id: number, where?: Prisma.PackageWhereInput): Promise<Package | null> {

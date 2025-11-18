@@ -6,8 +6,7 @@ import { IPackageService } from '../services/package.service';
 class PackageController {
   constructor(private readonly packageService: IPackageService) {
     this.create = this.create.bind(this);
-    this.getAll = this.getAll.bind(this);
-    this.getAllAdmin = this.getAllAdmin.bind(this);
+    this.getAllByAdmin = this.getAllByAdmin.bind(this);
     this.getOne = this.getOne.bind(this);
     this.getOneAdmin = this.getOneAdmin.bind(this);
     this.update = this.update.bind(this);
@@ -23,20 +22,12 @@ class PackageController {
     });
   }
 
-  public async getAll(req: Request, res: Response) {
-    const packages = await this.packageService.readAll({ isActive: true });
+  public async getAllByAdmin(req: Request, res: Response) {
+    const { page = 1, limit = 5 } = req.query;
+    const packages = await this.packageService.getAllByAdmin(Number(page), Number(limit));
 
     return res.status(HttpStatus.OK).json({
-      message: 'Get all packages',
-      data: packages
-    });
-  }
-
-  public async getAllAdmin(req: Request, res: Response) {
-    const packages = await this.packageService.readAll({});
-
-    return res.status(HttpStatus.OK).json({
-      message: 'Get all packages',
+      message: 'Lấy danh sách gói dịch vụ thành công.',
       data: packages
     });
   }
@@ -44,10 +35,10 @@ class PackageController {
   public async getOne(req: Request, res: Response) {
     const packageId = +req.params.id;
 
-    const packageEntity = await this.packageService.readOne(packageId, { isActive: true });
+    const packageEntity = await this.packageService.getOne(packageId, { isActive: true });
 
     return res.status(HttpStatus.OK).json({
-      message: 'Get one package',
+      message: 'Lấy gói dịch vụ thành công',
       data: packageEntity
     });
   }
@@ -55,7 +46,7 @@ class PackageController {
   public async getOneAdmin(req: Request, res: Response) {
     const packageId = +req.params.id;
 
-    const packageEntity = await this.packageService.readOne(packageId);
+    const packageEntity = await this.packageService.getOne(packageId);
 
     return res.status(HttpStatus.OK).json({
       message: 'Get one package',

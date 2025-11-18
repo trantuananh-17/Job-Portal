@@ -1,18 +1,20 @@
 import { Order, OrderStatus } from '@prisma/client';
-import { IOrderService } from '../order.service';
-import { packageService } from '~/modules/package/services/implements/package.service.impl';
-import { orderRepository } from '../../repositories/implements/order.repository.impl';
 import { NotFoundException } from '~/global/core/error.core';
+import { packageService } from '~/modules/package/services/implements/package.service.impl';
 import { IPackageService } from '~/modules/package/services/package.service';
+import { IOrderByAdminResponse } from '../../interfaces/order.interface';
+import { orderRepository } from '../../repositories/implements/order.repository.impl';
 import { IOrderRepository } from '../../repositories/order.repository';
+import { IOrderService } from '../order.service';
 
 class OrderService implements IOrderService {
   constructor(
     private readonly packageService: IPackageService,
     private readonly orderRepository: IOrderRepository
   ) {}
+
   async create(packageId: number, userId: number): Promise<Order> {
-    const packageEntity = await this.packageService.readOne(packageId);
+    const packageEntity = await this.packageService.getOne(packageId);
 
     const order = await this.orderRepository.createOrder(packageId, userId, packageEntity.price);
 
@@ -23,6 +25,32 @@ class OrderService implements IOrderService {
     const orders = await this.orderRepository.findAll();
 
     return orders;
+  }
+
+  async getAllByAdmin(
+    page: number,
+    limit: number,
+    sort?: 'asc' | 'desc',
+    filterDate?: string,
+    status?: string
+  ): Promise<{ data: IOrderByAdminResponse[]; totalDocs: number; totalPages: number; page: number; limit: number }> {
+    const { data, total } = await this.orderRepository.getAllByAdmin(
+      page,
+      limit,
+      sort,
+      filterDate,
+      status as OrderStatus
+    );
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      totalDocs: total,
+      totalPages,
+      page,
+      limit
+    };
   }
 
   async getMyOrders(userId: number): Promise<Order[]> {

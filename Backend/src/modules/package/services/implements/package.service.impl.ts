@@ -1,5 +1,5 @@
 import { Package, Prisma } from '@prisma/client';
-import { IPackage } from '../../interfaces/package.interface';
+import { IPackage, IPackageResponseByAdmin } from '../../interfaces/package.interface';
 import { IPackageService } from '../package.service';
 import { packageRepository } from '../../repositories/implements/package.repository.impl';
 import { NotFoundException } from '~/global/core/error.core';
@@ -16,13 +16,24 @@ class PackageService implements IPackageService {
     return packageEntity;
   }
 
-  async readAll(where?: Prisma.PackageWhereInput): Promise<Package[]> {
-    const packages = await this.packageRepository.readAll(where);
+  async getAllByAdmin(
+    page: number,
+    limit: number
+  ): Promise<{ data: IPackageResponseByAdmin[]; totalDocs: number; totalPages: number; page: number; limit: number }> {
+    const { data, total } = await this.packageRepository.getAllByAdmin(page, limit);
 
-    return packages;
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      totalDocs: total,
+      totalPages,
+      page,
+      limit
+    };
   }
 
-  async readOne(id: number, where?: Prisma.PackageWhereInput): Promise<Package> {
+  async getOne(id: number, where?: Prisma.PackageWhereInput): Promise<Package> {
     const packageEntity = await this.packageRepository.readOne(id, where);
 
     if (!packageEntity) {
@@ -33,7 +44,7 @@ class PackageService implements IPackageService {
   }
 
   async update(id: number, requestBody: Partial<IPackage>): Promise<Package> {
-    await this.readOne(id);
+    await this.getOne(id);
 
     const packageEntity = await this.packageRepository.update(id, requestBody);
 
@@ -41,7 +52,7 @@ class PackageService implements IPackageService {
   }
 
   async updateActive(id: number, isActive: boolean): Promise<Package> {
-    await this.readOne(id);
+    await this.getOne(id);
 
     const packageEntity = await this.packageRepository.updateActive(id, isActive);
 

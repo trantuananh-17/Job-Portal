@@ -5,6 +5,14 @@ export const companyCreateSchema = Joi.object({
     'any.required': 'Company name is required.',
     'string.base': 'Company name must be a string.'
   }),
+  emailCompany: Joi.string().required().messages({
+    'any.required': 'Company name is required.',
+    'string.base': 'Company name must be a string.'
+  }),
+  phoneCompany: Joi.string().required().messages({
+    'any.required': 'Company name is required.',
+    'string.base': 'Company name must be a string.'
+  }),
   description: Joi.string().required().messages({
     'any.required': 'Description is required.',
     'string.base': 'Description must be a string.'
@@ -57,9 +65,9 @@ export const companyUpdateSchema = Joi.object({
   })
 });
 
-export const companyApprovedSchema = Joi.object({
-  isApproved: Joi.boolean().required().messages({
-    'any.required': 'Approval status is required.',
-    'boolean.base': 'Approval status must be a boolean.'
+export const companyDeletedSchema = Joi.object({
+  isDeleted: Joi.boolean().required().messages({
+    'any.required': 'Delete status is required.',
+    'boolean.base': 'Delete status must be a boolean.'
   })
 });

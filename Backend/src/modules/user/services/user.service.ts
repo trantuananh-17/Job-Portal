@@ -1,50 +1,17 @@
 import { User } from '@prisma/client';
-import { BadRequestException, NotFoundException } from '~/global/core/error.core';
-import { recuiterPackageActive } from '~/modules/package/interfaces/package.interface';
-import prisma from '~/prisma';
+import { ICreateUser, IUpdateUserByAdmin, IUserResponseByAdmin } from '../interfaces/user.interface';
 
-class UserService {
-  public async createUser(req: any): Promise<User> {
-    const { name, email, password } = req;
-
-    const user = await prisma.user.create({
-      data: {
-        name: name,
-        email: email,
-        password: password,
-        status: true,
-        role: 'CANDIDATE'
-      }
-    });
-
-    return user;
-  }
-
-  public async getAll(): Promise<User[]> {
-    const users = await prisma.user.findMany();
-
-    return users;
-  }
-
-  public async findUserUnique(userId: number) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { recruiterPackages: true }
-    });
-
-    if (!user) throw new NotFoundException('user does not exist');
-
-    return user;
-  }
-
-  public async checkActivePackage(user: any) {
-    const activePackage = user.recruiterPackages.find(
-      (pkg: recuiterPackageActive) => Date.now() < new Date(pkg.endDate).getTime()
-    );
-    if (!activePackage) throw new BadRequestException('You must buy the package');
-
-    return activePackage;
-  }
+export interface IUserService {
+  createUser(req: ICreateUser): Promise<User>;
+  getAll(
+    page: number,
+    limit: number,
+    q?: string,
+    active?: boolean,
+    verified?: boolean,
+    role?: string
+  ): Promise<{ data: IUserResponseByAdmin[]; totalDocs: number; totalPages: number; page: number; limit: number }>;
+  getUserUnique(userId: number): Promise<User | null>;
+  updateUserByAdmin(userId: number, requestBody: Partial<IUpdateUserByAdmin>): Promise<User>;
+  softDelete(userId: number): Promise<User>;
 }
-
-export const userService: UserService = new UserService();

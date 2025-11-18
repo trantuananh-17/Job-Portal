@@ -6,7 +6,7 @@ import { orderController } from '../controllers/order.controller';
 
 const orderRoute = Router();
 
-orderRoute.get('/', verify, allowRole('ADMIN'), asyncWrapper(orderController.getAll));
+orderRoute.get('/admin/get-all', asyncWrapper(orderController.getAllByAdmin));
 orderRoute.get('/me', verify, allowRole('RECRUITER'), asyncWrapper(orderController.getMyOrder));
 orderRoute.get('/:id', verify, allowRole('RECRUITER', 'ADMIN'), asyncWrapper(orderController.getOne));
 orderRoute.patch('/:id', verify, allowRole('ADMIN'), asyncWrapper(orderController.updateStatus));
