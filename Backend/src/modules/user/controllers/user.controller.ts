@@ -27,11 +27,17 @@ class UserController {
     const isActive = active === 'true' ? true : active === 'false' ? false : undefined;
     const isVerified = verified === 'true' ? true : verified === 'false' ? false : undefined;
 
-    const user = await this.userService.getAll(+page, +limit, q as string, isActive, isVerified, role);
+    const data = await this.userService.getAll(+page, +limit, q as string, isActive, isVerified, role);
 
     return res.status(HttpStatus.CREATED).json({
       message: 'Lấy danh sách người dùng thành công.',
-      data: user
+      pagination: {
+        totalDocs: data.totalDocs,
+        totalPages: data.totalPages,
+        currentPage: data.page,
+        limit: data.limit
+      },
+      data: data.data
     });
   }
 

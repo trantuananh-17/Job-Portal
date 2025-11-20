@@ -15,13 +15,19 @@ class OrderController {
     const { page = 1, limit = 8, sort, filterDate, status } = req.query;
     const orderStatus = status && status !== 'all' ? (status as string) : undefined;
     const orderSort = sort === 'desc' ? 'desc' : 'asc';
-    const filter = filterDate ? filterDate.toString() : undefined;
+    const filter = filterDate === 'all' ? undefined : filterDate?.toString();
 
-    const orders = await this.orderService.getAllByAdmin(Number(page), Number(limit), orderSort, filter, orderStatus);
+    const data = await this.orderService.getAllByAdmin(Number(page), Number(limit), orderSort, filter, orderStatus);
 
     return res.status(HttpStatus.OK).json({
       message: 'Get all orders',
-      data: orders
+      pagination: {
+        totalDocs: data.totalDocs,
+        totalPages: data.totalPages,
+        currentPage: data.page,
+        limit: data.limit
+      },
+      data: data.data
     });
   }
 

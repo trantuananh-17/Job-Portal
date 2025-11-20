@@ -1,4 +1,4 @@
-import { Building2, FileText, LayoutDashboard, Package, Plus, User, Users, Users2 } from 'lucide-react';
+import { Briefcase, Building2, FileText, LayoutDashboard, Package, Plus, User, Users, Users2 } from 'lucide-react';
 
 const NAVIGATION_MENU = [
   { id: 'recruiter/recruiter-dashboard', name: 'Dashboard', icon: LayoutDashboard },
@@ -11,7 +11,7 @@ const NAVIGATION_MENU = [
 
 const ADMIN_NAVIGATION_MENU = [
   { id: 'admin/admin-dashboard', name: 'Dashboard', icon: LayoutDashboard },
-  { id: 'admin/manage-jobs', name: 'Quản lý công việc', icon: LayoutDashboard },
+  { id: 'admin/manage-jobs', name: 'Quản lý công việc', icon: Briefcase },
   { id: 'admin/manage-companies', name: 'Quản lý công ty ', icon: Building2 },
   { id: 'admin/manage-users', name: 'Quản lý người dùng ', icon: Users2 },
   { id: 'admin/manage-packages', name: 'Quản lý dịch vụ', icon: Package },
@@ -120,12 +120,56 @@ const ADDRESS_LOCATION = [
   'Cà Mau'
 ];
 
+const ROLE_FILTER = [
+  { key: 'all', label: 'Tất cả vai trò' },
+  { key: 'recruiter', label: 'Nhà tuyển dụng' },
+  { key: 'candidate', label: 'Ứng viên' }
+];
+
+const ACTIVE_FILTER = [
+  { key: 'all', label: 'Tất cả trạng thái' },
+  { key: 'true', label: 'Đang hoạt động' },
+  { key: 'false', label: 'Ngừng hoạt động' }
+];
+
+const VERIFIED_FILTER = [
+  { key: 'all', label: 'Tất cả xác minh' },
+  { key: 'true', label: 'Đã xác minh' },
+  { key: 'false', label: 'Chưa xác minh' }
+];
+
+const ORDER_STATUS_FILTER = [
+  { key: 'all', label: 'Tất cả trạng thái' },
+  { key: 'pending', label: 'Chờ thanh toán' },
+  { key: 'success', label: 'Thành công' },
+  { key: 'failed', label: 'Thất bại' }
+];
+
+const SORT_ORDER = [
+  { key: 'asc', label: 'Sắp xếp tăng dần' },
+  { key: 'desc', label: 'Sắp xếp giảm dần' }
+];
+
+const ORDER_DATE_FILTER = [
+  { key: 'all', label: 'Tất cả thời gian' },
+  { key: '3d', label: '3 ngày gần đây' },
+  { key: '7d', label: '7 ngày gần đây' },
+  { key: '14d', label: '14 ngày gần đây' },
+  { key: '30d', label: '30 ngày gần đây' }
+];
+
 export {
-  ADMIN_NAVIGATION_MENU,
-  NAVIGATION_MENU,
-  RECRUITER_DASHBOARD_ACTION,
+  ACTIVE_FILTER,
   ADDRESS_LOCATION,
+  ADMIN_NAVIGATION_MENU,
   FORM_TAB,
   JOB_LEVEL_ITEM,
-  STATUS_FILTER
+  NAVIGATION_MENU,
+  ORDER_DATE_FILTER,
+  ORDER_STATUS_FILTER,
+  RECRUITER_DASHBOARD_ACTION,
+  ROLE_FILTER,
+  SORT_ORDER,
+  STATUS_FILTER,
+  VERIFIED_FILTER
 };

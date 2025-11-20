@@ -1,47 +1,33 @@
+import type { ICompanyByAdminResponse } from '@apis/companies/interfaces/company.interface';
 import ButtonForm from '@components/common/ButtonForm';
 import { Box, Modal } from '@mui/material';
-import {
-  ArrowLeft,
-  Building2,
-  CalendarDays,
-  Clock,
-  FileText,
-  Globe,
-  Info,
-  Locate,
-  LocationEdit,
-  Mail,
-  Map,
-  MapPin,
-  Users,
-  X
-} from 'lucide-react';
+import { ArrowLeft, Building2, CalendarDays, Clock, FileText, Globe, Mail, MapPin, Users } from 'lucide-react';
 
-const company = {
-  id: 1,
-  name: 'Tanh',
-  description: 'TOP-IT-Haui',
-  teamSize: 5000,
-  establishmentDate: '19/09/2004',
-  views: 0,
-  websiteUrl: 'https://meta.com',
-  status: 'PENDING',
-  isApproved: true,
-  mapLink: 'https://maps.app.goo.gl/f6JQ4oZwCuWbWX4Jz7',
-  address: 'Nhổn, Bắc Từ Liêm, Hà Nội',
-  avatarUrl: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg',
-  createdAt: '2025-10-20T10:58:47.614Z',
-  updatedAt: '2025-10-21T13:24:23.033Z',
-  user: {
-    id: 1,
-    name: 'Nguyễn Văn A',
-    email: 'abc@gmail.com',
-    avatar: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg'
-  }
-};
+// const company = {
+//   id: 1,
+//   name: 'Tanh',
+//   description: 'TOP-IT-Haui',
+//   teamSize: 5000,
+//   establishmentDate: '19/09/2004',
+//   views: 0,
+//   websiteUrl: 'https://meta.com',
+//   status: 'PENDING',
+//   isApproved: true,
+//   mapLink: 'https://maps.app.goo.gl/f6JQ4oZwCuWbWX4Jz7',
+//   address: 'Nhổn, Bắc Từ Liêm, Hà Nội',
+//   avatarUrl: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg',
+//   createdAt: '2025-10-20T10:58:47.614Z',
+//   updatedAt: '2025-10-21T13:24:23.033Z',
+//   user: {
+//     id: 1,
+//     name: 'Nguyễn Văn A',
+//     email: 'abc@gmail.com',
+//     avatar: 'https://guchat.vn/wp-content/uploads/2025/04/anh-meo-cute-2-1.jpg'
+//   }
+// };
 
 interface Props {
-  companyId: string | null;
+  company: ICompanyByAdminResponse | null;
   open: boolean;
   onClose?: () => void;
 }
@@ -51,7 +37,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '100%',
+  width: '90%',
   maxWidth: 800,
   bgcolor: 'background.paper',
   boxShadow: 20,
@@ -60,7 +46,9 @@ const style = {
   outline: 'none'
 };
 
-const CompanyPreview: React.FC<Props> = ({ open, onClose }) => {
+const CompanyPreview: React.FC<Props> = ({ open, onClose, company }) => {
+  if (!company) return null;
+
   return (
     <Modal
       open={open}
@@ -92,7 +80,7 @@ const CompanyPreview: React.FC<Props> = ({ open, onClose }) => {
                   {/* Logo */}
                   <div className='flex items-center space-x-4'>
                     <img
-                      src={company.user.avatar}
+                      src={company.user.avatarUrl}
                       alt='Company Logo'
                       className='h-20 w-20 rounded-full border-4 border-blue-50 object-cover'
                     />

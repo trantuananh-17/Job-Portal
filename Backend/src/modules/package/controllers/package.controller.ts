@@ -24,11 +24,17 @@ class PackageController {
 
   public async getAllByAdmin(req: Request, res: Response) {
     const { page = 1, limit = 5 } = req.query;
-    const packages = await this.packageService.getAllByAdmin(Number(page), Number(limit));
+    const data = await this.packageService.getAllByAdmin(Number(page), Number(limit));
 
     return res.status(HttpStatus.OK).json({
       message: 'Lấy danh sách gói dịch vụ thành công.',
-      data: packages
+      pagination: {
+        totalDocs: data.totalDocs,
+        totalPages: data.totalPages,
+        currentPage: data.page,
+        limit: data.limit
+      },
+      data: data.data
     });
   }
 

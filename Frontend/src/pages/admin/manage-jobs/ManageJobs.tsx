@@ -115,16 +115,16 @@ const ManageJobs: React.FC<Props> = ({}) => {
   }, [debouncedSearch]);
 
   return (
-    <div className='min-h-screen p-4 sm:p-6'>
+    <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
       {/* Header */}
-      <div className='mb-6 px-4'>
+      <div className='px-4'>
         <div className='flex flex-row items-center justify-between'>
-          <TitleHeader title='Jobs Management' subtitle='Review and approve all jobs posting in the system' />
+          <TitleHeader title='Quản lý công việc' subtitle='Kiểm tra và duyệt tất cả công việc đăng trên hệ thống' />
         </div>
       </div>
 
-      <div className='mb-8 rounded-2xl border border-white/20 bg-white/80 p-6 shadow-xl shadow-black/5 backdrop-blur-sm'>
-        <div className='xs:flex-row flex flex-col gap-4'>
+      <div className='mb-8 rounded-2xl border border-white/20 bg-white/80 p-4 shadow-xl shadow-black/5 backdrop-blur-sm sm:p-6'>
+        <div className='flex flex-col gap-4 sm:flex-row'>
           {/* Search */}
           <div className='relative flex-1'>
             <div className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3'>
@@ -183,12 +183,12 @@ const ManageJobs: React.FC<Props> = ({}) => {
         </div>
 
         {/* Results Sumary */}
-        <div className='sort my-5 flex flex-col-reverse items-center justify-between gap-10 px-4 lg:flex-row'>
+        <div className='sort my-4 flex items-center justify-between gap-10 px-4 sm:flex-row'>
           {pagination.totalDocs > 0 ? (
             <h3 className='sm:text-md text-sm'>
-              Showing {(pagination.currentPage - 1) * pagination.limit + 1} -{' '}
-              {Math.min(pagination.currentPage * pagination.limit, pagination.totalDocs)} of {pagination.totalDocs}{' '}
-              results
+              Hiển thị {(pagination.currentPage - 1) * pagination.limit + 1} -{' '}
+              {Math.min(pagination.currentPage * pagination.limit, pagination.totalDocs)} của {pagination.totalDocs} kết
+              quả
             </h3>
           ) : (
             <h3 className='sm:text-md text-sm'>Loading results...</h3>

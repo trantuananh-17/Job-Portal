@@ -24,7 +24,31 @@ export const API_PATHS = {
     DELETE_JOB_BY_ADMIN: 'api/v1/jobs/admin'
   },
   COMPANIES: {
-    GET_COMPANY_PROFILE: 'api/v1/companies/auth/me',
-    GET_ALL_BY_ADMIN: 'api/v1/companies/admin/get-all'
+    BASE: '/api/v1/companies',
+    ADMIN: {
+      BASE: '/api/v1/companies/admin',
+      GET_ALL: '/api/v1/companies/admin/get-all'
+    }
+  },
+  ORDER: {
+    BASE: '/api/v1/orders',
+    ADMIN: {
+      BASE: '/api/v1/orders/admin',
+      GET_ALL: '/api/v1/orders/admin/get-all'
+    }
+  },
+  USERS: {
+    BASE: '/api/v1/users',
+    ADMIN: {
+      BASE: '/api/v1/users/admin',
+      GET_ALL: '/api/v1/users/admin/get-all'
+    }
+  },
+  PACKAGES: {
+    BASE: '/api/v1/packages',
+    ADMIN: {
+      BASE: '/api/v1/packages/admin',
+      GET_ALL: '/api/v1/packages/admin/get-all'
+    }
   }
 };

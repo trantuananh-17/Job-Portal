@@ -19,7 +19,7 @@ const TagActive: React.FC<Props> = ({ isActive }) => {
   const tagActive = colorActiveTag.find((c) => c.key === isActive);
 
   return (
-    <div className='flex flex-col items-start gap-2'>
+    <div className='flex flex-col items-start gap-2 whitespace-nowrap'>
       {tagActive && (
         <span
           className={`inline-flex items-center justify-center rounded-md px-3 py-1 text-xs font-medium ${tagActive.className}`}

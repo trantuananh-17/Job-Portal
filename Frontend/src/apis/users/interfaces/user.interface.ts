@@ -9,3 +9,9 @@ export interface IUser {
   avatar?: string | null;
   createdAt?: string;
 }
+
+export interface IUpdateUserByAdmin {
+  role: string;
+  isActive: boolean;
+  isVerified: boolean;
+}

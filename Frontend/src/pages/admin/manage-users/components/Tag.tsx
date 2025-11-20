@@ -34,7 +34,7 @@ const Tag: React.FC<Props> = ({ isActive, isVerified }) => {
   const tagVerified = colorVerifiedTag.find((c) => c.key === isVerified);
 
   return (
-    <div className='flex flex-col items-start gap-2'>
+    <div className='flex flex-col items-start gap-2 whitespace-nowrap'>
       {tagActive && (
         <span
           className={`inline-flex items-center justify-center rounded-md px-3 py-1 text-xs font-medium ${tagActive.className}`}
